@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mölkky Pistelaskuri</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav>
+    <a href="index.html">Etusivu</a>
+    <a href="game.html">Peli</a>
+    <a href="rules.html">Säännöt</a>
+  </nav>
+
+  <h1>Mölkky Pistelaskuri</h1>
+
+  <label for="playerName">Lisää pelaaja:</label>
+  <input type="text" id="playerName" placeholder="Pelaajan nimi">
+  <button onclick="addPlayer()">Lisää</button>
+
+  <div class="controls">
+    <button onclick="arvoAloittaja()">Arvo aloittaja</button>
+    <button onclick="resetGame()">Nollaa peli</button>
+  </div>
+
+  <div id="vuoroNaytto" style="margin-top: 1rem; font-size: 1.2rem;"></div>
+  <!-- <div id="vuorojarjestys" style="margin-top: 0.5rem; font-size: 1rem;"></div> -->
+  <div id="kierrosIlmoitus" style="display:none; font-size: 1.3rem; font-weight: bold; margin-top: 0.5rem; color: #008c6e;"></div>
+
+  <!-- Pelaajakortit mobiililaitteille -->
+  <div id="playerCards"></div>
+
+  <!-- Taulukkonäkymä suuremmille näytöille -->
+  <table id="scoreTable">
+    <thead>
+      <tr>
+        <th>Pelaaja</th>
+        <th>Pisteet</th>
+        <th>Syötä kaadetut keilat</th>
+        <th>Toiminnot</th>
+      </tr>
+    </thead>
+    <tbody>
+    </tbody>
+  </table>
+
+  <script src="script.js"></script>
+</body>
+</html>
