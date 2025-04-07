@@ -1,209 +1,176 @@
-// Pelaajat tallennetaan tähän
+console.log("✅ Ladataan oikea script.js!");
+
 let players = [];
-let vuoroIndex = null;
-let kierros = 0;
+let vuoroIndex = 0;
+let vuorojarjestys = [];
+let peliPaattynyt = false;
 
-// Pelaajille kiinteät värit
-const playerColors = [
-  '#b2dfdb', '#bbdefb', '#ffcdd2',
-  '#ffe0b2', '#d1c4e9', '#c8e6c9'
-];
-
-// Ladataan tallennettu peli
-window.onload = () => {
-  const saved = localStorage.getItem("molkky_players");
-  const savedVuoro = localStorage.getItem("molkky_vuoro");
-  const savedKierros = localStorage.getItem("molkky_kierros");
-
-  if (saved) {
-    players = JSON.parse(saved);
-    vuoroIndex = savedVuoro !== null ? parseInt(savedVuoro) : null;
-    kierros = savedKierros !== null ? parseInt(savedKierros) : 0;
-    renderTable();
-    renderCards();
-    renderVuoro();
-    renderVuorojarjestys();
-  }
-};
-
-// Tallennus localStorageen
-function saveGame() {
-  localStorage.setItem("molkky_players", JSON.stringify(players));
-  localStorage.setItem("molkky_vuoro", vuoroIndex);
-  localStorage.setItem("molkky_kierros", kierros);
-}
-
-// Lisää pelaaja
-function addPlayer() {
-  const name = document.getElementById("playerName").value.trim();
-  if (name) {
-    players.push({ name, score: 0, misses: 0 });
-    document.getElementById("playerName").value = "";
-    renderTable();
-    renderCards();
-    renderVuorojarjestys();
-    saveGame();
-  }
-}
-
-// Arvo satunnainen aloittaja
-function arvoAloittaja() {
-  if (players.length === 0) return;
-  vuoroIndex = Math.floor(Math.random() * players.length);
-  kierros = 0;
-  alert("Aloittaja arvottu: " + players[vuoroIndex].name);
-  renderTable();
-  renderCards();
-  renderVuoro();
-  renderVuorojarjestys();
-  saveGame();
-}
-
-// Päivitä pelaajan pisteet
-function updateScore(index, fromCard = false) {
-  const inputId = fromCard ? `card-keilat-${index}` : `keilat-${index}`;
-  const input = document.getElementById(inputId).value.trim();
-  if (!input) return;
-
-  const pins = input
-    .split(',')
-    .map(k => parseInt(k))
-    .filter(k => !isNaN(k) && k >= 1 && k <= 12);
-
-  let player = players[index];
-  let points = 0;
-
-  if (pins.length === 1) {
-    points = pins[0];
-  } else if (pins.length > 1) {
-    points = pins.length;
-  }
-
-  if (pins.length === 0) {
-    player.misses++;
-    if (player.misses >= 3) {
-      alert(`${player.name} on pudonnut pelistä!`);
-      players.splice(index, 1);
-      if (index === vuoroIndex && vuoroIndex >= players.length) {
-        vuoroIndex = 0;
-      }
-    }
-  } else {
-    player.score += points;
-    player.misses = 0;
-
-    if (player.score > 50) {
-      player.score = 25;
-      alert(`${player.name} ylitti 50 pistettä, pudotetaan 25:een!`);
-    } else if (player.score === 50) {
-      alert(`${player.name} voitti pelin!`);
-    }
-  }
-
-  // Vuoron vaihto
-  if (players.length > 0) {
-    vuoroIndex = (vuoroIndex + 1) % players.length;
-    if (vuoroIndex === 0) {
-      kierros++;
-      naytaKierrosIlmoitus(kierros === 1 ? "Aloituskierros alkaa!" : `Kierros ${kierros} alkaa!`);
-    }
-  }
-
-  renderTable();
-  renderCards();
-  renderVuoro();
-  saveGame();
-}
-
-// Kierrosilmoitus (näytetään hetkeksi)
-function naytaKierrosIlmoitus(teksti) {
-  const ilmoitus = document.getElementById("kierrosIlmoitus");
-  if (!ilmoitus) return;
-  ilmoitus.innerText = "🔄 " + teksti;
-  ilmoitus.style.display = "block";
+function showNotification(message, duration = 3000) {
+  const note = document.getElementById("notification");
+  if (!note) return;
+  note.textContent = message;
+  note.classList.add("visible");
   setTimeout(() => {
-    ilmoitus.style.display = "none";
-  }, 2500);
+    note.classList.remove("visible");
+  }, duration);
 }
 
-// Näytä nykyinen vuoro
-function renderVuoro() {
-  const vuoroElem = document.getElementById("vuoroNaytto");
-  if (!vuoroElem) return;
-  if (vuoroIndex !== null && players[vuoroIndex]) {
-    vuoroElem.innerHTML = `Kierros ${kierros} – <strong>Vuorossa: ${players[vuoroIndex].name}</strong>`;
-  } else {
-    vuoroElem.innerHTML = "Peli ei ole vielä alkanut.";
+function addPlayer() {
+  const nameInput = document.getElementById("playerName");
+  const name = nameInput.value.trim();
+  if (!name) return;
+
+  players.push({ name: name, score: 0, misses: 0 });
+  nameInput.value = "";
+  renderPlayers();
+}
+
+function arvoAloittaja() {
+  if (players.length < 2) {
+    showNotification("Lisää vähintään kaksi pelaajaa.");
+    return;
   }
+
+  vuorojarjestys = [...players];
+  for (let i = vuorojarjestys.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [vuorojarjestys[i], vuorojarjestys[j]] = [vuorojarjestys[j], vuorojarjestys[i]];
+  }
+
+  vuoroIndex = 0;
+  peliPaattynyt = false;
+  renderPlayers();
+  paivitaVuoroNaytto();
 }
 
-// Näytä vuorojärjestys
-function renderVuorojarjestys() {
-  // const container = document.getElementById("vuorojarjestys");
-  // if (!container) return;
-  // const lista = players.map((p, i) => `${i + 1}. ${p.name}`).join(", ");
-  // container.innerText = players.length ? `Vuorojärjestys: ${lista}` : "";
+function lisaaPisteetVuorossa() {
+  if (peliPaattynyt) {
+    showNotification("Peli on jo päättynyt.");
+    return;
+  }
+
+  const input = document.getElementById("vuorossaInput");
+  const pisteetStr = input.value.trim();
+  input.value = "";
+
+  if (!/^([0-9]|1[0-2])$/.test(pisteetStr)) {
+    showNotification("Syötä pisteet väliltä 0–12 (0 = huti).");
+    return;
+  }
+
+  const pisteet = parseInt(pisteetStr);
+  const pelaaja = vuorojarjestys[vuoroIndex];
+
+  if (pisteet === 0) {
+    pelaaja.misses += 1;
+
+    if (pelaaja.misses >= 3) {
+      const poista = confirm(`${pelaaja.name} on heittänyt 3 kertaa peräkkäin ohi. Poistetaanko pelaaja pelistä?`);
+      if (poista) {
+        vuorojarjestys.splice(vuoroIndex, 1);
+        if (vuorojarjestys.length === 0) {
+          showNotification("Ei enää pelaajia jäljellä.");
+          resetGame();
+          return;
+        }
+        if (vuoroIndex >= vuorojarjestys.length) vuoroIndex = 0;
+        renderPlayers();
+        paivitaVuoroNaytto();
+        return;
+      } else {
+        pelaaja.misses = 0;
+        showNotification(`${pelaaja.name} jatkaa peliä.`);
+      }
+    } else {
+      showNotification(`${pelaaja.name} heitti ohi (${pelaaja.misses}/3)`);
+    }
+  } else {
+    pelaaja.score += pisteet;
+    pelaaja.misses = 0;
+
+    if (pelaaja.score > 50) {
+      pelaaja.score = 25;
+      showNotification(`${pelaaja.name} ylitti 50 pistettä – palautetaan 25:een.`);
+    } else if (pelaaja.score === 50) {
+      showNotification(`${pelaaja.name} voitti pelin! 🎉`);
+      peliPaattynyt = true;
+      return;
+    } else {
+      // Pelaaja sai pisteitä, mutta ei näytetä siitä erillistä ilmoitusta
+    }
+  }
+
+  seuraavaVuoro();
 }
 
-// Taulukko (desktop)
-function renderTable() {
-  const tbody = document.querySelector("#scoreTable tbody");
-  tbody.innerHTML = "";
-
-  players.forEach((player, index) => {
-    const row = document.createElement("tr");
-    row.classList.add("player-row");
-    if (index === vuoroIndex) row.classList.add("vuorossa");
-
-    const color = playerColors[index % playerColors.length];
-    row.style.backgroundColor = color;
-
-    row.innerHTML = `
-      <td>${player.name}</td>
-      <td>${player.score}</td>
-      <td><input type="text" id="keilat-${index}" placeholder="1-12, esim. 1,4,10"></td>
-      <td><button onclick="updateScore(${index})">Lisää pisteet</button></td>
-    `;
-
-    tbody.appendChild(row);
-  });
+function seuraavaVuoro() {
+  vuoroIndex = (vuoroIndex + 1) % vuorojarjestys.length;
+  renderPlayers();
+  paivitaVuoroNaytto();
 }
 
-// Kortit (mobiili)
-function renderCards() {
+function paivitaVuoroNaytto() {
+  const vuorossa = vuorojarjestys[vuoroIndex];
+  document.getElementById("vuoroNaytto").textContent = "Vuorossa: " + vuorossa.name;
+  document.getElementById("vuorossaPisteet").textContent = vuorossa.score;
+}
+
+function renderPlayers() {
   const container = document.getElementById("playerCards");
-  if (!container) return;
   container.innerHTML = "";
 
-  players.forEach((player, index) => {
+  vuorojarjestys.forEach((player, index) => {
     const card = document.createElement("div");
     card.className = "player-card";
-    if (index === vuoroIndex) card.classList.add("vuorossa");
-
-    const color = playerColors[index % playerColors.length];
-    card.style.backgroundColor = color;
+    card.dataset.name = player.name;
+    card.style.backgroundColor = getColor(index);
 
     card.innerHTML = `
       <h3>${player.name}</h3>
-      <p>Pisteet: ${player.score}</p>
-      <input type="text" id="card-keilat-${index}" placeholder="1-12, esim. 1,4,10">
-      <button onclick="updateScore(${index}, true)">Lisää pisteet</button>
+      <p>${player.score}</p>
+      <button disabled>+ Pisteet</button>
     `;
-
     container.appendChild(card);
+  });
+
+  if (vuorojarjestys.length > 0) {
+    const vuorossa = vuorojarjestys[vuoroIndex];
+    document.getElementById("vuorossaPisteet").textContent = vuorossa.score;
+    scrollaaVuorossaKortti();
+  }
+}
+
+function getColor(index) {
+  const colors = ["#00796b", "#2196f3", "#f44336", "#ff9800", "#9c27b0", "#4caf50"];
+  return colors[index % colors.length];
+}
+
+function scrollaaVuorossaKortti() {
+  const cards = document.querySelectorAll(".player-card");
+  if (!cards.length) return;
+  const vuorossa = vuorojarjestys[vuoroIndex];
+  cards.forEach(card => {
+    if (card.dataset.name === vuorossa.name) {
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
   });
 }
 
-// Tyhjennä peli
 function resetGame() {
-  if (confirm("Haluatko varmasti nollata pelin?")) {
-    players = [];
-    vuoroIndex = null;
-    kierros = 0;
-    localStorage.clear();
-    renderTable();
-    renderCards();
-    renderVuoro();
-    renderVuorojarjestys();
-  }
+  players = [];
+  vuorojarjestys = [];
+  vuoroIndex = 0;
+  peliPaattynyt = false;
+  document.getElementById("playerCards").innerHTML = "";
+  document.getElementById("vuoroNaytto").textContent = "Vuorossa: -";
+  document.getElementById("vuorossaPisteet").textContent = "0";
+  document.getElementById("vuorossaInput").value = "";
+  showNotification("Peli on nollattu.");
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const nappi = document.getElementById("vuorossaNappi");
+  if (nappi) {
+    nappi.addEventListener("click", lisaaPisteetVuorossa);
+  }
+});

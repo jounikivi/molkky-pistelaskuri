@@ -1,50 +1,43 @@
 <!DOCTYPE html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mölkky Pistelaskuri</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <nav>
-    <a href="index.html">Etusivu</a>
-    <a href="game.html">Peli</a>
-    <a href="rules.html">Säännöt</a>
-  </nav>
+  <div class="app-card">
+    <header>
+      <h1>Mölkky<br />Pisteidenlaskuri</h1>
+      <nav>
+        <a href="game.html">Peli</a>
+        <a href="rules.html">Säännöt</a>
+      </nav>
+    </header>
 
-  <h1>Mölkky Pistelaskuri</h1>
+    <main>
+      <section id="vuoroBox" class="vuorossa-kortti">
+        <div class="vuorossa-nimi" id="vuoroNaytto">Vuorossa: -</div>
+        <div class="vuorossa-pisteet">
+          <div class="pisteet-iso" id="vuorossaPisteet">0</div>
+          <input type="text" id="vuorossaInput" placeholder="1–12" />
+          <button id="vuorossaNappi">Pisteet</button>
+        </div>
+      </section>
 
-  <label for="playerName">Lisää pelaaja:</label>
-  <input type="text" id="playerName" placeholder="Pelaajan nimi">
-  <button onclick="addPlayer()">Lisää</button>
+      <div id="playerCards" class="pelaajakortit"></div>
 
-  <div class="controls">
-    <button onclick="arvoAloittaja()">Arvo aloittaja</button>
-    <button onclick="resetGame()">Nollaa peli</button>
+      <section class="toiminnot">
+        <input type="text" id="playerName" placeholder="Pelaajan nimi" />
+        <button onclick="addPlayer()">Lisää</button>
+        <button onclick="arvoAloittaja()">Arvo aloittaja</button>
+        <button onclick="resetGame()">Nollaa peli</button>
+      </section>
+    </main>
   </div>
 
-  <div id="vuoroNaytto" style="margin-top: 1rem; font-size: 1.2rem;"></div>
-  <!-- <div id="vuorojarjestys" style="margin-top: 0.5rem; font-size: 1rem;"></div> -->
-  <div id="kierrosIlmoitus" style="display:none; font-size: 1.3rem; font-weight: bold; margin-top: 0.5rem; color: #008c6e;"></div>
-
-  <!-- Pelaajakortit mobiililaitteille -->
-  <div id="playerCards"></div>
-
-  <!-- Taulukkonäkymä suuremmille näytöille -->
-  <table id="scoreTable">
-    <thead>
-      <tr>
-        <th>Pelaaja</th>
-        <th>Pisteet</th>
-        <th>Syötä kaadetut keilat</th>
-        <th>Toiminnot</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-
   <script src="script.js"></script>
+  <div id="notification" class="hidden"></div>
 </body>
 </html>

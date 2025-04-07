@@ -2,37 +2,32 @@
 <html lang="fi">
 <head>
   <meta charset="UTF-8">
+  <title>Mölkyn säännöt</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mölkky – Pelin säännöt</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <nav>
-    <a href="index.html">Etusivu</a>
-    <a href="game.html">Peli</a>
-    <a href="rules.html">Säännöt</a>
-  </nav>
+  <div class="app-card">
+    <header>
+      <h1>Mölkyn säännöt</h1>
+      <nav>
+        <a href="game.html">Peli</a>
+        <a href="index.html">Etusivu</a>
+      </nav>
+    </header>
 
-  <div class="container">
-    <h1>Mölkyn säännöt</h1>
-
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Molkky-game.jpg/640px-Molkky-game.jpg" alt="Mölkky keilat" style="max-width: 100%; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-
-    <p>Mölkky on hauska ja taktinen ulkopeli, jota pelataan numerokeiloilla. Tässä ovat perussäännöt:</p>
-
-    <ul style="text-align: left; max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
-      <li>Pelin tavoitteena on saada <strong>täsmälleen 50 pistettä</strong>.</li>
-      <li>Jos pelaaja kaataa <strong>vain yhden keilan</strong>, hän saa sen numeron verran pisteitä.</li>
-      <li>Jos pelaaja kaataa <strong>useamman keilan</strong>, pisteitä saa kaatuneiden keilojen lukumäärän verran (ei niiden summana).</li>
-      <li>Keilan katsotaan kaatuneen vain, jos se makaa kokonaan maassa.</li>
-      <li>Jos pelaajan pisteet ylittävät 50, pistemäärä tippuu takaisin <strong>25:een</strong>.</li>
-      <li>Kolme peräkkäistä epäonnistunutta heittoa (<strong>nolla pistettä</strong>) pudottaa pelaajan pelistä.</li>
-      <li>Pelin voittaa se, joka saavuttaa <strong>täsmälleen 50 pistettä</strong>.</li>
-    </ul>
-
-    <p style="margin-top: 2rem;">Peliä voi pelata yksilöinä tai joukkueina. Hauskoja heittoja!</p>
-
-    <a href="game.html" class="button" style="margin-top: 2rem; display: inline-block;">Palaa peliin</a>
+    <main class="container">
+      <p>Mölkyssä tavoitteena on kerätä täsmälleen 50 pistettä. Heittämällä kaadetaan numeroituja keiloja:</p>
+      <ul>
+        <li>Kaadetaan 1 keila: saa sen numeron verran pisteitä</li>
+        <li>Kaadetaan useampi: saa kaadettujen keilojen määrän verran pisteitä</li>
+        <li>Yli 50 pistettä → palautus 25 pisteeseen</li>
+        <li>3 hutia (0 pistettä) peräkkäin → mahdollisuus tippua pelistä</li>
+        <li>50 pistettä → voittaa pelin!</li>
+      </ul>
+      <p>Hyvää peliä!</p>
+      <a href="game.html" class="button">Takaisin peliin</a>
+    </main>
   </div>
 </body>
 </html>
