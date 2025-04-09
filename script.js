@@ -15,6 +15,15 @@ function showNotification(message, duration = 3000) {
   }, duration);
 }
 
+// function addPlayer() {
+//   const nameInput = document.getElementById("playerName");
+//   const name = nameInput.value.trim();
+//   if (!name) return;
+
+//   players.push({ name: name, score: 0, misses: 0 });
+//   nameInput.value = "";
+//   renderPlayers();
+// }
 function addPlayer() {
   const nameInput = document.getElementById("playerName");
   const name = nameInput.value.trim();
@@ -22,8 +31,13 @@ function addPlayer() {
 
   players.push({ name: name, score: 0, misses: 0 });
   nameInput.value = "";
+
+  // Päivitetään vuorojärjestys ja näkymä heti
+  vuorojarjestys = [...players];
   renderPlayers();
+  paivitaVuoroNaytto();
 }
+
 
 function arvoAloittaja() {
   if (players.length < 2) {
