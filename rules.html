@@ -9,8 +9,9 @@
 <body>
   <div class="app-card">
     <header>
-      <h1>Mölkky<br>Pisteidenlaskuri</h1>
-      <nav>
+      <h1>Mölkky<br />Pisteidenlaskuri</h1>
+      <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+      <nav id="mainNav" class="nav-collapsed">
         <a href="index.html">Etusivu</a>
         <a href="game.html">Yksilöpeli</a>
         <a href="team-game.html">Joukkuetila</a>
@@ -32,5 +33,14 @@
       <a href="game.html" class="button">Takaisin peliin</a>
     </main>
   </div>
+
+  
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById("mainNav");
+      nav.classList.toggle("nav-expanded");
+      nav.classList.toggle("nav-collapsed");
+    }
+  </script>
 </body>
 </html>
