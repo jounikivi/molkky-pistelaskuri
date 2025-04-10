@@ -142,12 +142,12 @@ nav a:hover {
 }
 
 /* --- Pelaajakortit --- */
-.pelaajakortit {
+/* .pelaajakortit {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-top: 1.5rem;
-}
+} */
 
 .player-card {
   border-radius: 18px;
