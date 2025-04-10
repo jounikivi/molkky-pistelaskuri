@@ -55,7 +55,7 @@ document.getElementById("vuorossaNappi").addEventListener("click", () => {
     if (currentTurn.misses >= 3) {
       const jatka = confirm(`${currentTurn.name} heitti ohi 3 kertaa. Poistetaanko pelistä?`);
       if (!jatka) {
-        currentTurn.misses = 0; // jatkaa
+        currentTurn.misses = 0;
       } else {
         players = players.filter(p => p !== currentTurn);
         vuorojarjestys = players;
@@ -66,12 +66,17 @@ document.getElementById("vuorossaNappi").addEventListener("click", () => {
   } else {
     currentTurn.score += piste;
     currentTurn.misses = 0;
-    if (currentTurn.score === 50) {
-      showNotification(`${currentTurn.name} voitti pelin!`);
+
+    const currentTeam = players.filter(p => p.team === currentTurn.team);
+    const teamScore = currentTeam.reduce((sum, p) => sum + p.score, 0);
+
+    if (teamScore > 50) {
+      currentTeam.forEach(p => p.score = 0);
+      currentTeam[0].score = 25;
+      showNotification(`${currentTurn.team} ylitti 50 pistettä – palautus 25 pisteeseen.`);
+    } else if (teamScore === 50) {
+      showNotification(`${currentTurn.team} voitti pelin! 🎉`);
       return;
-    } else if (currentTurn.score > 50) {
-      currentTurn.score = 25;
-      showNotification(`${currentTurn.name} meni yli 50 pisteen, palautetaan 25 pisteeseen.`);
     }
   }
 
@@ -82,7 +87,6 @@ document.getElementById("vuorossaNappi").addEventListener("click", () => {
   document.getElementById("vuorossaInput").value = "";
 });
 
-// 🔄 Uusi pelaajien renderöinti joukkueittain
 function renderTeams() {
   const container = document.getElementById("playerCards");
   container.innerHTML = "";
@@ -122,14 +126,12 @@ function renderTeams() {
   });
 }
 
-// 🎨 Joukkueiden värit (hash-pohjainen)
 function getTeamColor(teamName) {
   const colors = ["#00695c", "#1976d2", "#f57c00", "#7b1fa2", "#c2185b"];
   const hash = [...teamName].reduce((acc, char) => acc + char.charCodeAt(0), 0);
   return colors[hash % colors.length];
 }
 
-// 🔔 Ilmoitukset näkyvämmin
 function showNotification(message) {
   const notif = document.getElementById("notification");
   notif.textContent = message;
