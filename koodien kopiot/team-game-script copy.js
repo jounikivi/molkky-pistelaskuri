@@ -107,30 +107,37 @@ function renderTeams() {
 
   Object.values(teams).forEach(team => {
     const card = document.createElement("div");
-    card.className = "joukkuekortti";
+    card.className = "player-card";
+    card.style.backgroundColor = getTeamColor(team.name);
+
     card.innerHTML = `
       <h3>${team.name}</h3>
-      <div class="joukkue-pisteet">${team.totalScore} pistettä</div>
-      <div class="pelaajalista">
-        ${team.players.map(p => `
-          <div class="pelaaja-item"${p === currentTurn ? ' style="font-weight:bold;"' : ''}>
+      <p>Yhteispisteet: ${team.totalScore}</p>
+      <ul style="list-style:none; padding:0; margin-top:0.5rem;">
+        ${team.players.map(p =>
+          `<li${p === currentTurn ? ' style="font-weight:bold;"' : ''}>
             ${p.name} (${p.score})
-          </div>
-        `).join("")}
-      </div>
+          </li>`
+        ).join("")}
+      </ul>
     `;
+
     container.appendChild(card);
   });
+}
+
+function getTeamColor(teamName) {
+  const colors = ["#00695c", "#1976d2", "#f57c00", "#7b1fa2", "#c2185b"];
+  const hash = [...teamName].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
 }
 
 function showNotification(message) {
   const notif = document.getElementById("notification");
   notif.textContent = message;
-  notif.classList.remove("hidden");
   notif.classList.add("visible");
 
   setTimeout(() => {
     notif.classList.remove("visible");
-    notif.classList.add("hidden");
   }, 3000);
 }

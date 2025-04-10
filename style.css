@@ -238,3 +238,63 @@ nav a:hover {
 #notification.hidden {
   display: none;
 }
+
+/* --- Joukkuekortit --- */
+.joukkuekortit {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.joukkuekortti {
+  background-color: #004d40;
+  color: white;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.joukkuekortti h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1.2rem;
+}
+
+.joukkue-pisteet {
+  font-size: 2rem;
+  margin-bottom: 0.6rem;
+  font-weight: bold;
+}
+
+.joukkuekortti .pelaajalista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.pelaaja-item {
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0.6rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  word-break: break-word;
+}
+
+/* Responsiivisuus joukkueille */
+@media (max-width: 480px) {
+  .joukkuekortti {
+    padding: 0.8rem;
+  }
+
+  .joukkuekortti .pelaajalista {
+    grid-template-columns: 1fr;
+  }
+
+  .joukkue-pisteet {
+    font-size: 1.6rem;
+  }
+}
+
