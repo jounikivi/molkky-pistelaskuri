@@ -108,8 +108,8 @@ function renderTeams() {
   Object.values(teams).forEach(team => {
     const card = document.createElement("div");
     card.className = "joukkuekortti";
-    card.style.backgroundColor = getTeamColor(team.name);
-    card.style.backgroundColor = getTeamColor(team.name);
+    card.style.backgroundColor = getTeamColor(team.name); // 💡 tärkeä värihaku
+
     card.innerHTML = `
       <h3>${team.name}</h3>
       <div class="joukkue-pisteet">${team.totalScore} pistettä</div>
@@ -121,8 +121,15 @@ function renderTeams() {
         `).join("")}
       </div>
     `;
+
     container.appendChild(card);
   });
+}
+
+function getTeamColor(teamName) {
+  const colors = ["#00695c", "#1976d2", "#f57c00", "#7b1fa2", "#c2185b"];
+  const hash = [...teamName].reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return colors[hash % colors.length];
 }
 
 function showNotification(message) {
@@ -135,10 +142,4 @@ function showNotification(message) {
     notif.classList.remove("visible");
     notif.classList.add("hidden");
   }, 3000);
-}
-
-function getTeamColor(teamName) {
-  const colors = ["#00695c", "#1976d2", "#f57c00", "#7b1fa2", "#c2185b", "#9e9d24"];
-  const hash = [...teamName].reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return colors[hash % colors.length];
 }
