@@ -142,12 +142,12 @@ nav a:hover {
 }
 
 /* --- Pelaajakortit --- */
-.pelaajakortit {
+/* .pelaajakortit {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-top: 1.5rem;
-}
+} */
 
 .player-card {
   border-radius: 18px;
@@ -298,4 +298,24 @@ nav a:hover {
 #notification.visible {
   display: block;
   opacity: 1;
+}
+
+/* --- Pelaajakorttien asettelu kahteen sarakkeeseen pienilläkin näytöillä --- */
+@media (min-width: 320px) {
+  .player-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .player-card {
+    width: 48%;
+    box-sizing: border-box;
+  }
+
+  .player-card button {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
 }
