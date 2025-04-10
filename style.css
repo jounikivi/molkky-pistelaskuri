@@ -219,3 +219,42 @@ nav a:hover {
 .button:hover {
   background-color: #004d40;
 }
+
+/* --- Pelaajakortit mobiili --- */
+@media (max-width: 480px) {
+  .pelaajakortit {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .player-card {
+    padding: 1.2rem 0.6rem;
+    font-size: 1.1rem;
+    border-radius: 16px;
+  }
+
+  .player-card p {
+    font-size: 2.2rem;
+  }
+
+  .player-card button {
+    font-size: 1.05rem;
+    padding: 0.6rem;
+  }
+
+  .vuorossa-kortti {
+    margin-top: 1rem;
+    padding: 1rem;
+  }
+
+  .vuorossa-nimi {
+    font-size: 1.2rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .pisteet-iso {
+    font-size: 2.6rem;
+  }
+}
