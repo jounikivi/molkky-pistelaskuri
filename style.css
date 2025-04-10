@@ -1,6 +1,7 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
-/* Yleisasetukset */
+/* ========== YLEISTYYLIT ========== */
 body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(135deg, #e9fef7, #f0fdfb);
@@ -11,7 +12,6 @@ body {
   justify-content: center;
 }
 
-/* Sovelluskortti */
 .app-card {
   max-width: 420px;
   width: 100%;
@@ -22,15 +22,17 @@ body {
   margin: 1rem;
 }
 
-/* Ylätunniste */
+/* ========== HEADER ========== */
 header {
   background-color: #00695c;
   border-radius: 20px;
-  padding: 1rem;
+  padding: 2rem 1rem 1rem 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  text-align: center;
 }
 
 header h1 {
-  text-align: center;
   margin: 0.5rem 0;
   font-size: 1.8rem;
   font-weight: 700;
@@ -56,7 +58,23 @@ nav a:hover {
   text-decoration: underline;
 }
 
-/* Vuorossa-osio */
+/* ========== Mobiilivalikon painike ========== */
+.menu-toggle {
+  display: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.8rem;
+  background-color: #004d40;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 1000;
+}
+
+/* ========== VUOROBOXI ========== */
 .vuorossa-kortti {
   background: #e0f2f1;
   border: 2px solid #00695c;
@@ -108,7 +126,7 @@ nav a:hover {
   background-color: #004d40;
 }
 
-/* Pelaajakortit */
+/* ========== PELAAJAKORTIT ========== */
 .pelaajakortit {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -141,7 +159,7 @@ nav a:hover {
   width: 100%;
 }
 
-/* Lomake- ja toimintopainikkeet */
+/* ========== TOIMINNOT ========== */
 .toiminnot {
   margin-top: 1.5rem;
   display: flex;
@@ -169,7 +187,7 @@ nav a:hover {
   background-color: #004d40;
 }
 
-/* Yleinen painiketyyli linkeille */
+/* ========== LINKKITYYLI ========== */
 .button {
   display: inline-block;
   padding: 0.8rem 1.2rem;
@@ -188,29 +206,15 @@ nav a:hover {
   background-color: #004d40;
 }
 
-/* Hampurilaismenu */
-.menu-toggle {
-  background: none;
-  border: none;
-  font-size: 1.8rem;
-  color: white;
-  cursor: pointer;
-  display: none;
-}
-
-/* Näytetään vain mobiilissa */
+/* ========== MEDIAQUERIES ========== */
 @media screen and (max-width: 600px) {
   .menu-toggle {
     display: block;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
   }
 
   nav.nav-collapsed {
     display: none;
     flex-direction: column;
-    gap: 0.5rem;
     background-color: #00695c;
     border-radius: 12px;
     padding: 1rem;
@@ -219,5 +223,11 @@ nav a:hover {
 
   nav.nav-expanded {
     display: flex;
+  }
+
+  nav a {
+    color: white;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
   }
 }
