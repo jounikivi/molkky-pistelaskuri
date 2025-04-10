@@ -277,3 +277,25 @@ nav a:hover {
     margin-top: 0.5rem;
   }
 }
+
+/* --- Ilmoitus keskelle ruutua --- */
+#notification {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #00796b;
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  display: none;
+  transition: opacity 0.3s ease;
+}
+
+#notification.visible {
+  display: block;
+  opacity: 1;
+}
