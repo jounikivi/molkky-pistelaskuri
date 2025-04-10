@@ -1,3 +1,4 @@
+/* Fontit */
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
 body {
@@ -11,7 +12,7 @@ body {
 }
 
 .app-card {
-  max-width: 420px;
+  max-width: 480px;
   width: 100%;
   background: white;
   border-radius: 28px;
@@ -52,6 +53,7 @@ nav a:hover {
   text-decoration: underline;
 }
 
+/* Vuorossa-boksi */
 .vuorossa-kortti {
   background: #e0f2f1;
   border: 2px solid #00695c;
@@ -103,19 +105,22 @@ nav a:hover {
   background-color: #004d40;
 }
 
+/* Pelaajakortit */
 .pelaajakortit {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .player-card {
-  border-radius: 18px;
+  border-radius: 16px;
   padding: 1rem 0.5rem;
   color: white;
   text-align: center;
   font-weight: bold;
   font-size: 1rem;
+  background-color: #607d8b;
 }
 
 .player-card p {
@@ -123,18 +128,13 @@ nav a:hover {
   margin: 0.2rem 0 0.6rem;
 }
 
-.player-card button {
-  background-color: rgba(0,0,0,0.1);
-  border: none;
-  padding: 0.4rem;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  color: white;
-  font-size: 1rem;
-  width: 100%;
+.player-card small {
+  display: block;
+  font-size: 0.9rem;
+  margin-top: 0.3rem;
 }
 
+/* Toiminnot */
 .toiminnot {
   margin-top: 1.5rem;
   display: flex;
@@ -162,107 +162,22 @@ nav a:hover {
   background-color: #004d40;
 }
 
-/* =========================
-   Pelaajakorttien säiliö
-   ========================= */
-#playerCards {
-  max-height: 60vh;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-  scroll-behavior: smooth;
-}
-
-/* =========================
-   Ilmoitus (notification)
-   ========================= */
+/* Ilmoitukset */
 #notification {
   position: fixed;
   top: 1rem;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #00796b;
-  color: #fff;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+  background: #004d40;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
   font-weight: bold;
-  font-size: 1rem;
-  z-index: 999;
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  max-width: 90vw;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
 }
 
 #notification.visible {
   opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) scale(1.02);
-}
-
-/* =========================
-   Responsiivisuus
-   ========================= */
-
-/* Alle 500px näytöt (mobiili pienimmillään) */
-@media screen and (max-width: 500px) {
-  .app-card {
-    margin: 0.5rem;
-    padding: 0.5rem;
-    border-radius: 16px;
-  }
-
-  header h1 {
-    font-size: 1.4rem;
-  }
-
-  .vuorossa-pisteet {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .pisteet-iso {
-    font-size: 2rem;
-  }
-
-  .vuorossa-pisteet input {
-    width: 100%;
-  }
-
-  .vuorossa-pisteet button {
-    width: 100%;
-  }
-
-  .pelaajakortit {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
-}
-}
-
-/* Keskikokoiset näytöt (tablet yms.) */
-@media screen and (min-width: 501px) and (max-width: 768px) {
-  .app-card {
-    max-width: 600px;
-  }
-
-  .pelaajakortit {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
-}
-}
-
-/* Suuret näytöt (työpöydät yms.) */
-@media screen and (min-width: 769px) {
-  .app-card {
-    max-width: 720px;
-  }
-
-  .pelaajakortit {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
-}
 }
