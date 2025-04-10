@@ -1,5 +1,7 @@
+/* Fontti */
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
+/* --- Perusasetukset --- */
 body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(135deg, #e9fef7, #f0fdfb);
@@ -10,6 +12,7 @@ body {
   justify-content: center;
 }
 
+/* --- Sovelluskortti --- */
 .app-card {
   max-width: 420px;
   width: 100%;
@@ -20,8 +23,16 @@ body {
   margin: 1rem;
 }
 
-header h1 {
+/* --- Ylätunniste ja otsikko --- */
+header {
+  background-color: #00695c;
+  border-radius: 20px;
+  padding: 1rem;
+  position: relative;
   text-align: center;
+}
+
+header h1 {
   margin: 0.5rem 0;
   font-size: 1.8rem;
   font-weight: 700;
@@ -29,18 +40,15 @@ header h1 {
   color: white;
 }
 
-header {
-  background-color: #00695c;
-  border-radius: 20px;
-  padding: 1rem;
-}
-
+/* --- Navigointi (menu) --- */
 nav {
-  margin-top: 0.5rem;
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
   font-weight: 600;
   font-size: 1rem;
+  margin-top: 0.5rem;
 }
 
 nav a {
@@ -52,6 +60,39 @@ nav a:hover {
   text-decoration: underline;
 }
 
+/* --- Responsiivinen hampurilaisvalikko --- */
+.menu-toggle {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  color: white;
+  font-size: 1.4rem;
+  border: none;
+  cursor: pointer;
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  nav {
+    flex-direction: column;
+    display: none;
+  }
+
+  .nav-expanded {
+    display: flex !important;
+  }
+
+  .nav-collapsed {
+    display: none !important;
+  }
+}
+
+/* --- Vuorossa-boksi --- */
 .vuorossa-kortti {
   background: #e0f2f1;
   border: 2px solid #00695c;
@@ -103,6 +144,7 @@ nav a:hover {
   background-color: #004d40;
 }
 
+/* --- Pelaajakortit --- */
 .pelaajakortit {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -135,6 +177,7 @@ nav a:hover {
   width: 100%;
 }
 
+/* --- Toimintopaneeli ja lomakkeet --- */
 .toiminnot {
   margin-top: 1.5rem;
   display: flex;
@@ -148,7 +191,9 @@ nav a:hover {
   border: 1px solid #ccc;
 }
 
-.toiminnot button {
+/* --- Painikkeet (yleiskäyttöiset) --- */
+.toiminnot button,
+.button {
   background-color: #00695c;
   color: white;
   border: none;
@@ -156,8 +201,40 @@ nav a:hover {
   border-radius: 10px;
   font-weight: bold;
   cursor: pointer;
+  font-size: 1rem;
+  text-decoration: none;
+  text-align: center;
+  width: 100%;
+  max-width: 300px;
+  margin: 0.4rem auto;
 }
 
+.button:hover,
 .toiminnot button:hover {
   background-color: #004d40;
+  transform: translateY(-2px);
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+/* --- Ilmoitusbanneri --- */
+#notification {
+  text-align: center;
+  font-weight: bold;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  border-radius: 10px;
+  display: none;
+  background-color: #d7ffd9;
+  color: #1b5e20;
+}
+
+#notification.hidden {
+  display: none;
 }

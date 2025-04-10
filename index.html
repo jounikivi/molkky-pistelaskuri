@@ -9,21 +9,25 @@
 <body>
   <div class="app-card">
     <header>
-    <h1>Mölkky<br />Pisteidenlaskuri</h1>
-    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-    <nav id="mainNav" class="nav-collapsed">
-      <a href="index.html">Etusivu</a>
-      <a href="game.html">Yksilöpeli</a>
-      <a href="team-game.html">Joukkuetila</a>
-      <a href="rules.html">Säännöt</a>
-    </nav>
-  </header>
+      <h1>Mölkky<br />Pisteidenlaskuri</h1>
+      <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+      <nav id="mainNav" class="nav-collapsed">
+        <a href="index.html">Etusivu</a>
+        <a href="game.html">Yksilöpeli</a>
+        <a href="team-game.html">Joukkuetila</a>
+        <a href="rules.html">Säännöt</a>
+      </nav>
+    </header>
 
     <main class="container">
-      <p>Voit pelata Mölkkyä yksin tai joukkueittain. Sovellus laskee pisteet automaattisesti ja noudattaa Mölkyn sääntöjä – mukaan lukien hutisäännöt, yli 50 pisteen palautus sekä voitto täsmälleen 50 pisteellä.</p>
+      <p>
+        Voit pelata Mölkkyä yksin tai joukkueittain. Sovellus laskee pisteet
+        automaattisesti ja noudattaa Mölkyn sääntöjä – mukaan lukien hutisäännöt,
+        yli 50 pisteen palautus sekä voitto täsmälleen 50 pisteellä.
+      </p>
 
       <div class="toiminnot">
-        <a href="game.html" class="button">🎯 Aloita yksilöpeli</a>z
+        <a href="game.html" class="button">🎯 Aloita yksilöpeli</a>
         <a href="team-game.html" class="button">🤝 Aloita joukkuetila</a>
         <a href="rules.html" class="button">📖 Katso säännöt</a>
       </div>
@@ -32,13 +36,12 @@
 
   <div id="notification" class="hidden"></div>
 
-<script>
-function toggleMenu() {
-  const nav = document.getElementById("mainNav");
-  nav.classList.toggle("nav-expanded");
-  nav.classList.toggle("nav-collapsed");
-}
-</script>
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById("mainNav");
+      nav.classList.toggle("nav-expanded");
+      nav.classList.toggle("nav-collapsed");
+    }
+  </script>
 </body>
-
 </html>
