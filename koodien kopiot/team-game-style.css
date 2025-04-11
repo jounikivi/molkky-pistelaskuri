@@ -1,0 +1,163 @@
+
+/* Perustyyli säilyy samana */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #e0f7f1, #f9fffd);
+    margin: 0;
+    padding: 0;
+    color: #222;
+    display: flex;
+    justify-content: center;
+}
+
+.app-card {
+    max-width: 480px;
+    width: 100%;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    padding: 1.5rem;
+    margin: 1.5rem;
+}
+
+header {
+    background-color: #00695c;
+    border-radius: 20px;
+    padding: 1rem;
+    color: white;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    line-height: 1.2;
+}
+
+.pelinav {
+    margin-bottom: 0.5rem;
+}
+
+.pelinav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 0.5rem;
+    font-weight: bold;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.vuorossa-kortti {
+    background: #e0f2f1;
+    border: 2px solid #00695c;
+    border-radius: 14px;
+    padding: 1rem;
+    text-align: center;
+}
+
+.vuorossa-pisteet {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.pisteet-iso {
+    font-size: 2.4rem;
+    font-weight: bold;
+}
+
+.vuorossa-pisteet input {
+    width: 60px;
+    padding: 0.4rem;
+    font-size: 1rem;
+    text-align: center;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.vuorossa-pisteet button {
+    background-color: #00796b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.pelaajakortit {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.team-card {
+    padding: 1rem;
+    border-radius: 18px;
+    color: white;
+}
+
+.team-card h2 {
+    margin: 0 0 0.5rem 0;
+}
+
+.team-player-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.team-player {
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 0.8rem;
+    border-radius: 10px;
+}
+
+/* Joukkuekohtaiset värit */
+.team-color-1 {
+    background-color: #00796b;
+}
+.team-color-2 {
+    background-color: #c2185b;
+}
+.team-color-3 {
+    background-color: #3949ab;
+}
+.team-color-4 {
+    background-color: #f57c00;
+}
+.team-color-5 {
+    background-color: #6a1b9a;
+}
+
+.toiminnot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toiminnot input {
+    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.toiminnot button {
+    background-color: #00695c;
+    color: white;
+    border: none;
+    padding: 0.6rem;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.toiminnot button:hover {
+    background-color: #004d40;
+}

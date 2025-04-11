@@ -58,27 +58,15 @@ function createTeamCard(teamName) {
 function renderPlayer(player, teamCard) {
     const playerList = teamCard.querySelector(".team-player-list");
 
+    
     const el = document.createElement("div");
     el.className = "team-player";
     el.dataset.name = player.name;
 
-    const name = document.createElement("strong");
-    name.textContent = player.name;
-
-    const info = document.createElement("span");
-    info.textContent = "0 pistettä, 0 hutia";
-
-    const button = document.createElement("button");
-    button.textContent = "+ Pisteet";
-    button.onclick = () => addPoints(player.name);
-
-    el.appendChild(name);
-    el.appendChild(document.createElement("br"));
-    el.appendChild(info);
-    el.appendChild(document.createElement("br"));
-    el.appendChild(button);
+    el.textContent = `${player.name} – 0 pistettä, 0 hutia`;
 
     playerList.appendChild(el);
+
 }
 
 function startGame() {
@@ -149,9 +137,11 @@ function addPoints(name) {
 }
 
 function updatePlayerUI(player, teamCard) {
-    const el = teamCard.querySelector(`.team-player[data-name="${player.name}"] span`);
+    const el = teamCard.querySelector(`.team-player[data-name="${player.name}"]`);
     if (el) {
-        el.textContent = `${player.points} pistettä, ${player.misses} hutia`;
+        el.textContent = `${player.name} – ${player.points} pistettä, ${player.misses} hutia`;
+    }
+} pistettä, ${player.misses} hutia`;
     }
 }
 
@@ -182,3 +172,9 @@ function resetGame() {
     document.getElementById("vuorossaPisteet").textContent = "0";
     document.getElementById("vuorossaInput").value = "";
 }
+
+
+document.getElementById("vuorossaNappi").addEventListener("click", () => {
+    const name = document.getElementById("vuorossaInput").dataset.name;
+    if (name) addPoints(name);
+});
