@@ -1,4 +1,5 @@
 
+/* Perustyyli */
 body {
   font-family: 'Segoe UI', sans-serif;
   background: linear-gradient(135deg, #e0f7f1, #f9fffd);
@@ -133,7 +134,6 @@ main {
   gap: 1rem;
 }
 
-/* Joukkuekortti */
 .team-card {
   padding: 1rem;
   border-radius: 18px;
@@ -142,10 +142,12 @@ main {
 
 .team-card h2 {
   margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  text-align: center;
 }
 
 /* Pelaajat 2-sarakkeisessa ruudukossa */
-.pelaajakortit .player-grid {
+.player-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 0.5rem;
@@ -158,9 +160,10 @@ main {
   padding: 0.8rem;
   text-align: center;
   font-weight: bold;
+  color: white;
 }
 
-/* Värit joukkueille */
+/* Joukkuekohtaiset värit */
 .team-color-1 { background-color: #00796b; }
 .team-color-2 { background-color: #c2185b; }
 .team-color-3 { background-color: #3949ab; }

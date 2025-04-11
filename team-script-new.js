@@ -1,8 +1,9 @@
 
-const players = [];
-const teams = {};
-let turnOrder = [];
-let currentIndex = 0;
+let players = [];
+let teams = {};
+let vuorojarjestys = [];
+let vuoroIndex = 0;
+let peliPaattynyt = false;
 let teamColorIndex = 1;
 
 function addTeam() {
@@ -24,6 +25,7 @@ function addTeam() {
     option.value = name;
     option.textContent = name;
     document.getElementById("teamSelect").appendChild(option);
+
     document.getElementById("newTeamName").value = "";
 }
 
@@ -38,7 +40,7 @@ function createTeamCard(teamName, colorClass) {
     card.appendChild(header);
 
     const grid = document.createElement("div");
-    grid.className = "pelaajakortit";
+    grid.className = "player-grid";
     card.appendChild(grid);
 
     container.appendChild(card);
@@ -48,24 +50,18 @@ function createTeamCard(teamName, colorClass) {
 function addPlayer() {
     const name = document.getElementById("playerName").value.trim();
     const teamName = document.getElementById("teamSelect").value;
-    if (!name || !teamName) return;
+    if (!name || !teamName || !teams[teamName]) return;
 
-    const player = {
-        name: name,
-        team: teamName,
-        points: 0,
-        misses: 0
-    };
+    const player = { name, team: teamName, score: 0, misses: 0 };
     players.push(player);
-
     teams[teamName].players.push(player);
-    renderPlayer(player, teams[teamName].card);
 
+    renderPlayer(player, teams[teamName].card);
     document.getElementById("playerName").value = "";
 }
 
 function renderPlayer(player, teamCard) {
-    const grid = teamCard.querySelector(".pelaajakortit");
+    const grid = teamCard.querySelector(".player-grid");
 
     const card = document.createElement("div");
     card.className = "player-card";
@@ -84,18 +80,20 @@ function renderPlayer(player, teamCard) {
 
 function startGame() {
     if (players.length < 2) {
-        alert("Lisää vähintään kaksi pelaajaa.");
+        showNotification("Lisää vähintään kaksi pelaajaa.");
         return;
     }
 
-    turnOrder = generateFairTurnOrder(players);
-    currentIndex = 0;
-    setCurrentPlayer(turnOrder[0]);
+    vuorojarjestys = generateFairTurnOrder(players);
+    vuoroIndex = 0;
+    peliPaattynyt = false;
+    paivitaVuoroNaytto();
 }
 
 function generateFairTurnOrder(list) {
     const shuffled = [...list];
     let valid = false;
+
     while (!valid) {
         shuffleArray(shuffled);
         valid = true;
@@ -106,6 +104,7 @@ function generateFairTurnOrder(list) {
             }
         }
     }
+
     return shuffled;
 }
 
@@ -116,71 +115,109 @@ function shuffleArray(arr) {
     }
 }
 
-function setCurrentPlayer(player) {
-    document.getElementById("vuoroNaytto").textContent = "Vuorossa: " + player.name;
-    document.getElementById("vuorossaPisteet").textContent = player.points;
-    document.getElementById("vuorossaInput").dataset.name = player.name;
-}
-
-function addPoints(name) {
-    const input = document.getElementById("vuorossaInput");
-    const value = parseInt(input.value);
-    const player = players.find(p => p.name === name);
-    if (!player || isNaN(value) || value < 0 || value > 12) return;
-
-    if (value === 0) {
-        player.misses++;
-    } else {
-        player.points += value;
-        player.misses = 0;
-        if (player.points > 50) player.points = 25;
+function lisaaPisteetVuorossa() {
+    if (peliPaattynyt) {
+        showNotification("Peli on jo päättynyt.");
+        return;
     }
 
-    const team = teams[player.team];
-    updatePlayerUI(player, team.card);
-    updateTeamHeader(team);
-
-    if (checkVictory(team)) return;
-
+    const input = document.getElementById("vuorossaInput");
+    const pisteetStr = input.value.trim();
     input.value = "";
-    currentIndex = (currentIndex + 1) % turnOrder.length;
-    setCurrentPlayer(turnOrder[currentIndex]);
+
+    if (!/^([0-9]|1[0-2])$/.test(pisteetStr)) {
+        showNotification("Syötä pisteet väliltä 0–12 (0 = huti).");
+        return;
+    }
+
+    const pisteet = parseInt(pisteetStr);
+    const pelaaja = vuorojarjestys[vuoroIndex];
+
+    if (pisteet === 0) {
+        pelaaja.misses++;
+        if (pelaaja.misses >= 3) {
+            pelaaja.misses = 0;
+            showNotification(`${pelaaja.name} on heittänyt 3 hutia. Hutit nollattu.`);
+        } else {
+            showNotification(`${pelaaja.name} heitti ohi (${pelaaja.misses}/3)`);
+        }
+    } else {
+        pelaaja.score += pisteet;
+        pelaaja.misses = 0;
+        if (pelaaja.score > 50) {
+            pelaaja.score = 25;
+            showNotification(`${pelaaja.name} ylitti 50 pistettä – palautettiin 25:een.`);
+        }
+    }
+
+    updatePlayerUI(pelaaja, teams[pelaaja.team].card);
+    updateTeamHeader(pelaaja.team);
+
+    if (checkVictory(pelaaja.team)) return;
+
+    seuraavaVuoro();
 }
 
 function updatePlayerUI(player, teamCard) {
     const el = teamCard.querySelector(`.player-card[data-name="\${player.name}"] p`);
-    if (el) el.textContent = player.points;
+    if (el) el.textContent = player.score;
 }
 
-function updateTeamHeader(team) {
-    const total = team.players.reduce((sum, p) => sum + p.points, 0);
+function updateTeamHeader(teamName) {
+    const team = teams[teamName];
+    const total = team.players.reduce((sum, p) => sum + p.score, 0);
     const h2 = team.card.querySelector("h2");
     if (h2) h2.textContent = team.name + " (" + total + " pistettä)";
 }
 
-function checkVictory(team) {
-    const total = team.players.reduce((sum, p) => sum + p.points, 0);
+function checkVictory(teamName) {
+    const team = teams[teamName];
+    const total = team.players.reduce((sum, p) => sum + p.score, 0);
     if (total === 50) {
-        alert("Joukkue " + team.name + " voitti pelin!");
+        showNotification(`🎉 Joukkue ${teamName} voitti pelin yhteispisteillä 50!`);
+        peliPaattynyt = true;
         return true;
     }
     return false;
 }
 
+function seuraavaVuoro() {
+    vuoroIndex = (vuoroIndex + 1) % vuorojarjestys.length;
+    paivitaVuoroNaytto();
+}
+
+function paivitaVuoroNaytto() {
+    const vuorossa = vuorojarjestys[vuoroIndex];
+    document.getElementById("vuoroNaytto").textContent = "Vuorossa: " + vuorossa.name;
+    document.getElementById("vuorossaPisteet").textContent = vuorossa.score;
+}
+
+function showNotification(message, duration = 3000) {
+    const note = document.getElementById("notification");
+    if (!note) return;
+    note.textContent = message;
+    note.classList.add("visible");
+    setTimeout(() => {
+        note.classList.remove("visible");
+    }, duration);
+}
+
 function resetGame() {
-    players.length = 0;
-    turnOrder = [];
-    currentIndex = 0;
+    players = [];
+    teams = {};
+    vuorojarjestys = [];
+    vuoroIndex = 0;
+    peliPaattynyt = false;
     teamColorIndex = 1;
-    Object.keys(teams).forEach(t => delete teams[t]);
-    document.getElementById("teamSelect").innerHTML = '<option value="">Valitse joukkue</option>';
     document.getElementById("playerCards").innerHTML = "";
+    document.getElementById("teamSelect").innerHTML = '<option value="">Valitse joukkue</option>';
     document.getElementById("vuoroNaytto").textContent = "Vuorossa: -";
     document.getElementById("vuorossaPisteet").textContent = "0";
     document.getElementById("vuorossaInput").value = "";
+    showNotification("Peli on nollattu.");
 }
 
 document.getElementById("vuorossaNappi").addEventListener("click", () => {
     const name = document.getElementById("vuorossaInput").dataset.name;
-    if (name) addPoints(name);
+    if (name) lisaaPisteetVuorossa();
 });
