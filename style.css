@@ -198,3 +198,72 @@ header {
   .app-card { max-width: 720px; }
   .pelaajakortit { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
 }
+
+/* Navigaatiovalikko */
+
+.navbar {
+  position: relative;
+  width: 100%;
+  background-color: #00695c;
+  padding: 0.5rem 1rem;
+  border-radius: 0 0 15px 15px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar .logo {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.navbar #navLinks a {
+  color: white;
+  text-decoration: none;
+  padding: 0.5rem;
+  font-weight: 500;
+}
+
+.navbar #navLinks a:hover {
+  background-color: #004d40;
+  border-radius: 10px;
+}
+
+.navbar .hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+/* Responsiivinen mobiilivalikko */
+@media (max-width: 600px) {
+  .navbar .hamburger {
+    display: block;
+  }
+
+  .navbar #navLinks {
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    background-color: #00695c;
+    width: 200px;
+    flex-direction: column;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    display: none;
+  }
+
+  .navbar #navLinks a {
+    display: block;
+    padding: 0.8rem;
+    border-radius: 8px;
+  }
+}
+
+
