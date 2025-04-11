@@ -4,14 +4,13 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Mölkky Pistelaskuri – Joukkuepeli</title>
+<title>Mölkky Pistelaskuri</title>
 <link href="style.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="app-card">
 <header>
 <h1>Mölkky<br/>Pisteidenlaskuri</h1>
-<button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
 </header>
 <main>
@@ -23,17 +22,16 @@
 <button id="vuorossaNappi">Pisteet</button>
 </div>
 </section>
-<div class="joukkuekortit" id="playerCards"></div>
+<div class="pelaajakortit" id="playerCards"></div>
 <section class="toiminnot">
 <input id="playerName" placeholder="Pelaajan nimi" type="text"/>
-<input id="teamName" placeholder="Joukkueen nimi" type="text"/>
 <button onclick="addPlayer()">Lisää</button>
 <button onclick="arvoAloittaja()">Arvo aloittaja</button>
 <button onclick="resetGame()">Nollaa peli</button>
 </section>
 </main>
 </div>
-<script src="team-game-script.js"></script>
+<script src="script.js"></script>
 <div class="hidden" id="notification"></div>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
