@@ -107,19 +107,19 @@ function renderTeams() {
 
   Object.values(teams).forEach(team => {
     const card = document.createElement("div");
-    card.className = "player-card";
-    card.style.backgroundColor = getTeamColor(team.name);
+    card.className = "joukkuekortti";
+    card.style.backgroundColor = getTeamColor(team.name); // 💡 tärkeä värihaku
 
     card.innerHTML = `
       <h3>${team.name}</h3>
-      <p>Yhteispisteet: ${team.totalScore}</p>
-      <ul style="list-style:none; padding:0; margin-top:0.5rem;">
-        ${team.players.map(p =>
-          `<li${p === currentTurn ? ' style="font-weight:bold;"' : ''}>
+      <div class="joukkue-pisteet">${team.totalScore} pistettä</div>
+      <div class="pelaajalista">
+        ${team.players.map(p => `
+          <div class="pelaaja-item"${p === currentTurn ? ' style="font-weight:bold;"' : ''}>
             ${p.name} (${p.score})
-          </li>`
-        ).join("")}
-      </ul>
+          </div>
+        `).join("")}
+      </div>
     `;
 
     container.appendChild(card);
@@ -135,9 +135,11 @@ function getTeamColor(teamName) {
 function showNotification(message) {
   const notif = document.getElementById("notification");
   notif.textContent = message;
+  notif.classList.remove("hidden");
   notif.classList.add("visible");
 
   setTimeout(() => {
     notif.classList.remove("visible");
+    notif.classList.add("hidden");
   }, 3000);
 }

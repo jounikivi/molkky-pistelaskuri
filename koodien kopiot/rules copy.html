@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mölkyn säännöt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-card">
+    <header>
+      <h1>Mölkky<br />Säänöt</h1>
+      <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+      <nav id="mainNav" class="nav-collapsed">
+        <a href="index.html">Etusivu</a>
+        <a href="game.html">Yksilöpeli</a>
+        <a href="team-game.html">Joukkuetila</a>
+        <a href="rules.html">Säännöt</a>
+      </nav>
+    </header>
+    
+
+    <main class="container">
+      <p>Mölkyssä tavoitteena on kerätä täsmälleen 50 pistettä. Heittämällä kaadetaan numeroituja keiloja:</p>
+      <ul>
+        <li>Kaadetaan 1 keila: saa sen numeron verran pisteitä</li>
+        <li>Kaadetaan useampi: saa kaadettujen keilojen määrän verran pisteitä</li>
+        <li>Yli 50 pistettä → palautus 25 pisteeseen</li>
+        <li>3 hutia (0 pistettä) peräkkäin → mahdollisuus tippua pelistä</li>
+        <li>50 pistettä → voittaa pelin!</li>
+      </ul>
+      <p>Hyvää peliä!</p>
+      <a href="game.html" class="button">Takaisin peliin</a>
+    </main>
+  </div>
+
+  
+  <script>
+    function toggleMenu() {
+      const nav = document.getElementById("mainNav");
+      nav.classList.toggle("nav-expanded");
+      nav.classList.toggle("nav-collapsed");
+    }
+  </script>
+</body>
+</html>
