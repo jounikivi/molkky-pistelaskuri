@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>Mölkky Pistelaskuri</title>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="logo">Mölkky</div>
+  <div id="navLinks">
+    <a href="index.html">Etusivu</a>
+    <a href="game.html">Yksilöpeli</a>
+    <a href="team-game.html">Joukkuepeli</a>
+    <a href="rules.html">Säännöt</a>
+  </div>
+  <button class="hamburger" onclick="toggleMenu()">☰</button>
+</nav>
+
+<div class="app-card">
+  <header>
+    <h1>Mölkky<br/>Pisteidenlaskuri</h1>
+  </header>
+  <main class="container">
+    <p>
+      Voit pelata Mölkkyä yksin tai joukkueittain. Sovellus laskee pisteet
+      automaattisesti ja noudattaa Mölkyn sääntöjä – mukaan lukien hutisäännöt,
+      yli 50 pisteen palautus sekä voitto täsmälleen 50 pisteellä.
+    </p>
+    <div class="toiminnot">
+      <a class="button" href="game.html">🎯 Aloita yksilöpeli</a>
+      <a class="button" href="team-game.html">🤝 Aloita joukkuetila</a>
+      <a class="button" href="rules.html">📖 Katso säännöt</a>
+    </div>
+  </main>
+</div>
+
+<script>
+  function toggleMenu() {
+    const navLinks = document.getElementById('navLinks');
+    if (navLinks.style.display === 'flex') {
+      navLinks.style.display = 'none';
+    } else {
+      navLinks.style.display = 'flex';
+      navLinks.style.flexDirection = 'column';
+    }
+  }
+
+  document.querySelectorAll('#navLinks a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 600) {
+        document.getElementById('navLinks').style.display = 'none';
+      }
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    const navLinks = document.getElementById('navLinks');
+    if (window.innerWidth > 600) {
+      navLinks.style.display = 'flex';
+      navLinks.style.flexDirection = 'row';
+    } else {
+      navLinks.style.display = 'none';
+    }
+  });
+</script>
+
+</body>
+</html>
