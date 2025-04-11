@@ -1,50 +1,45 @@
 <!DOCTYPE html>
-
 <html lang="fi">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Mölkky Pistelaskuri</title>
-<link href="style.css" rel="stylesheet"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mölkky Pistelaskuri</title>
+    <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-<div class="app-card">
-<header>
-<h1>Mölkky<br/>Pisteidenlaskuri</h1>
+    <div class="app-card">
+        <header>
+            <h1>Mölkky<br/>Pisteidenlaskuri</h1>
+        </header>
 
-</header>
-<main>
-<section class="vuorossa-kortti" id="vuoroBox">
-<div class="vuorossa-nimi" id="vuoroNaytto">Vuorossa: -</div>
-<div class="vuorossa-pisteet">
-<div class="pisteet-iso" id="vuorossaPisteet">0</div>
-<input id="vuorossaInput" placeholder="1–12" type="text"/>
-<button id="vuorossaNappi">Pisteet</button>
-</div>
-</section>
-<div class="pelaajakortit" id="playerCards"></div>
-<section class="toiminnot">
-<input id="playerName" placeholder="Pelaajan nimi" type="text"/>
-<button onclick="addPlayer()">Lisää</button>
-<button onclick="arvoAloittaja()">Arvo aloittaja</button>
-<button onclick="resetGame()">Nollaa peli</button>
-</section>
-</main>
-</div>
-<script src="script.js"></script>
-<div class="hidden" id="notification"></div>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const toggleButton = document.querySelector(".menu-toggle");
-    const nav = document.getElementById("mainNav");
+        <main>
+            <!-- Vuorossa oleva pelaaja -->
+            <section class="vuorossa-kortti" id="vuoroBox">
+                <div class="vuorossa-nimi" id="vuoroNaytto">Vuorossa: -</div>
+                <div class="vuorossa-pisteet">
+                    <div class="pisteet-iso" id="vuorossaPisteet">0</div>
+                    <input type="text" id="vuorossaInput" placeholder="1–12"/>
+                    <button id="vuorossaNappi">Pisteet</button>
+                </div>
+            </section>
 
-    if (toggleButton && nav) {
-      toggleButton.addEventListener("click", function () {
-        nav.classList.toggle("nav-expanded");
-        nav.classList.toggle("nav-collapsed");
-      });
-    }
-  });
-</script>
+            <!-- Pelaajakortit -->
+            <div class="pelaajakortit" id="playerCards"></div>
+
+            <!-- Pelaajien lisääminen ja pelin hallinta -->
+            <section class="toiminnot">
+                <input type="text" id="playerName" placeholder="Pelaajan nimi"/>
+                <button onclick="addPlayer()">Lisää</button>
+                <button onclick="arvoAloittaja()">Arvo aloittaja</button>
+                <button onclick="resetGame()">Nollaa peli</button>
+            </section>
+        </main>
+    </div>
+
+    <!-- Ilmoitusviesti -->
+    <div id="notification" class="hidden"></div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
 </body>
 </html>

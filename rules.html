@@ -1,44 +1,29 @@
 <!DOCTYPE html>
-
 <html lang="fi">
 <head>
-<meta charset="utf-8"/>
-<title>Mölkyn säännöt</title>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<link href="style.css" rel="stylesheet"/>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mölkyn säännöt</title>
+    <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
-<div class="app-card">
-<header>
-<h1>Mölkky<br/>Säänöt</h1>
-<button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <div class="app-card">
+        <header>
+            <h1>Mölkky<br/>Säännöt</h1>
+        </header>
 
-</header>
-<main class="container">
-<p>Mölkyssä tavoitteena on kerätä täsmälleen 50 pistettä. Heittämällä kaadetaan numeroituja keiloja:</p>
-<ul>
-<li>Kaadetaan 1 keila: saa sen numeron verran pisteitä</li>
-<li>Kaadetaan useampi: saa kaadettujen keilojen määrän verran pisteitä</li>
-<li>Yli 50 pistettä → palautus 25 pisteeseen</li>
-<li>3 hutia (0 pistettä) peräkkäin → mahdollisuus tippua pelistä</li>
-<li>50 pistettä → voittaa pelin!</li>
-</ul>
-<p>Hyvää peliä!</p>
-<a class="button" href="game.html">Takaisin peliin</a>
-</main>
-</div>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const toggleButton = document.querySelector(".menu-toggle");
-    const nav = document.getElementById("mainNav");
-
-    if (toggleButton && nav) {
-      toggleButton.addEventListener("click", function () {
-        nav.classList.toggle("nav-expanded");
-        nav.classList.toggle("nav-collapsed");
-      });
-    }
-  });
-</script>
+        <main class="container">
+            <p>Mölkyssä tavoitteena on kerätä täsmälleen 50 pistettä. Heittämällä kaadetaan numeroituja keiloja:</p>
+            <ul>
+                <li>Kaadetaan 1 keila: saa sen numeron verran pisteitä</li>
+                <li>Kaadetaan useampi: saa kaadettujen keilojen määrän verran pisteitä</li>
+                <li>Yli 50 pistettä → palautus 25 pisteeseen</li>
+                <li>3 hutia (0 pistettä) peräkkäin → mahdollisuus tippua pelistä</li>
+                <li>50 pistettä → voittaa pelin!</li>
+            </ul>
+            <p>Hyvää peliä!</p>
+            <a class="button" href="game.html">Takaisin peliin</a>
+        </main>
+    </div>
 </body>
 </html>
