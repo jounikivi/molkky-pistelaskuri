@@ -1,0 +1,47 @@
+
+/* Joukkuekortti */
+.team-card {
+  background: #00695c;
+  color: white;
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.team-card h2 {
+  margin-top: 0;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+/* Joukkueen pelaajat kortin sisällä */
+.team-player {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  padding: 0.6rem;
+  margin-bottom: 0.6rem;
+  font-size: 1rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.team-player span {
+  display: inline-block;
+}
+
+/* Responsiivisuus joukkuekortteihin */
+@media screen and (max-width: 600px) {
+  .team-card h2 {
+    font-size: 1.1rem;
+  }
+
+  .team-player {
+    font-size: 0.95rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+}
