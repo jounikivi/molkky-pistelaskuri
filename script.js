@@ -36,6 +36,13 @@ function addPlayer() {
   vuorojarjestys = [...players];
   renderPlayers();
   paivitaVuoroNaytto();
+
+  // Näytetään viimeksi lisätty pelaaja ennen aloittajaa
+  if (vuorojarjestys.length > 0) {
+    const viimeisin = vuorojarjestys[vuorojarjestys.length - 1];
+    document.getElementById("vuoroNaytto").textContent = "Lisätty: " + viimeisin.name;
+    document.getElementById("vuorossaPisteet").textContent = viimeisin.score;
+  }
 }
 
 
