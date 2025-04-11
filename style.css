@@ -267,3 +267,67 @@ header {
 }
 
 
+
+
+
+/* Yksinkertainen pelinavigaatio */
+.pelinav {
+  background-color: #00695c;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  border-radius: 0 0 16px 16px;
+  margin-bottom: 1rem;
+}
+
+.pelinav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 0.5rem;
+  font-weight: bold;
+}
+
+.pelinav a:hover {
+  text-decoration: underline;
+}
+
+/* Footer */
+footer {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Tumma teema toggle (esimerkkiluokka, ei JS-toiminnallisuutta mukana) */
+.dark-mode {
+  background: #121212;
+  color: #f0f0f0;
+}
+
+.dark-mode .app-card {
+  background: #1e1e1e;
+  color: #f0f0f0;
+}
+
+.dark-mode .vuorossa-kortti {
+  background: #2a2a2a;
+  border-color: #4caf50;
+}
+
+.dark-mode .toiminnot button,
+.dark-mode .vuorossa-pisteet button {
+  background-color: #4caf50;
+}
+
+.dark-mode .toiminnot button:hover,
+.dark-mode .vuorossa-pisteet button:hover {
+  background-color: #388e3c;
+}
+
+.dark-mode .pelinav {
+  background-color: #333;
+}
+
+.dark-mode .pelinav a {
+  color: #f0f0f0;
+}
