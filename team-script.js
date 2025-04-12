@@ -38,7 +38,7 @@ function renderTeams() {
   teamsContainer.innerHTML = "";
   teams.forEach((team, index) => {
     const card = document.createElement("div");
-    card.className = "team-card";
+    card.className = `team-card team-color-${index % 4}`;
     card.innerHTML = `
       <h3>${team.name} (Pisteet: ${team.score})</h3>
       <ul class="player-list">

@@ -138,11 +138,27 @@ nav a {
 }
 
 .team-card {
-  background: #ffffff;
-  border: 2px solid #00695c;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 1.2rem;
+  background: white;
+}
+
+.team-color-0 {
+  border: 2px solid #4caf50;
+  background: #e8f5e9;
+}
+.team-color-1 {
+  border: 2px solid #2196f3;
+  background: #e3f2fd;
+}
+.team-color-2 {
+  border: 2px solid #ff9800;
+  background: #fff3e0;
+}
+.team-color-3 {
+  border: 2px solid #9c27b0;
+  background: #f3e5f5;
 }
 
 .team-card h3 {
