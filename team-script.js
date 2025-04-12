@@ -7,6 +7,13 @@ const submitScoreBtn = document.getElementById("submitScoreBtn");
 const scoreInput = document.getElementById("scoreInput");
 const currentTurnDisplay = document.getElementById("currentTurn");
 const teamsContainer = document.getElementById("teamsContainer");
+const notification = document.getElementById("notification");
+
+function showNotification(message) {
+  notification.textContent = message;
+  notification.classList.remove("hidden");
+  setTimeout(() => notification.classList.add("hidden"), 3000);
+}
 
 let teams = [];
 let turnOrder = [];
@@ -15,7 +22,7 @@ let gameStarted = false;
 
 addTeamBtn.onclick = () => {
   const name = teamNameInput.value.trim();
-  if (!name) return alert("Anna joukkueen nimi.");
+  if (!name) return showNotification("Anna joukkueen nimi.");
   const team = {
     name,
     players: [],
@@ -55,7 +62,7 @@ window.addPlayer = (teamIndex) => {
 
 startGameBtn.onclick = () => {
   if (teams.length < 2 || !teams.every(t => t.players.length > 0)) {
-    alert("Tarvitset vähintään kaksi joukkuetta ja pelaajat jokaiseen.");
+    showNotification("Tarvitset vähintään kaksi joukkuetta ja pelaajat jokaiseen.");
     return;
   }
   let allPlayers = [];
@@ -84,7 +91,7 @@ submitScoreBtn.onclick = () => {
   if (!gameStarted) return;
   const input = parseInt(scoreInput.value);
   if (isNaN(input) || input < 0 || input > 12) {
-    alert("Syötä pisteet väliltä 0–12.");
+    showNotification("Syötä pisteet väliltä 0–12.");
     return;
   }
   const turn = turnOrder[turnIndex % turnOrder.length];
@@ -96,12 +103,18 @@ submitScoreBtn.onclick = () => {
   if (input === 0) {
     team.misses[player]++;
     if (team.misses[player] >= 3) {
-      alert(`${player} on pudonnut (3 hutia).`);
-      turnOrder = turnOrder.filter(p => !(p.player === player && p.teamIdx === turn.teamIdx));
-      if (turnOrder.length === 0) {
-        alert("Kaikki pelaajat pudonneet. Peli päättyy.");
-        gameStarted = false;
-        return;
+      const drop = confirm(`${player} on heittänyt 3 hutia. Poistetaanko pelaaja pelistä?`);
+      if (drop) {
+        turnOrder = turnOrder.filter(p => !(p.player === player && p.teamIdx === turn.teamIdx));
+        showNotification(`${player} poistui pelistä.`);
+        if (turnOrder.length === 0) {
+          showNotification("Kaikki pelaajat pudonneet. Peli päättyy.");
+          gameStarted = false;
+          return;
+        }
+      } else {
+        team.misses[player] = 0;
+        showNotification(`${player} jatkaa pelissä.`);
       }
     }
   } else {
@@ -109,9 +122,9 @@ submitScoreBtn.onclick = () => {
     team.score += input;
     if (team.score > 50) {
       team.score = 25;
-      alert(`${team.name} ylitti 50 pistettä! Pisteet palautettiin 25:een.`);
+      showNotification(`${team.name} ylitti 50 pistettä! Pisteet palautettiin 25:een.`);
     } else if (team.score === 50) {
-      alert(`${team.name} voittaa pelin!`);
+      showNotification(`${team.name} voittaa pelin!`);
       gameStarted = false;
       return;
     }

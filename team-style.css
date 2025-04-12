@@ -49,6 +49,22 @@ nav a {
   font-weight: 600;
 }
 
+.notification {
+  background: #ffe082;
+  border: 2px solid #ff9800;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: #333;
+  font-weight: bold;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.hidden {
+  display: none;
+}
+
 .vuorossa-kortti {
   background: #e0f2f1;
   border: 2px solid #00695c;
@@ -114,13 +130,19 @@ nav a {
   cursor: pointer;
 }
 
+#teamsContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 .team-card {
   background: #ffffff;
   border: 2px solid #00695c;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   padding: 1.2rem;
-  margin-bottom: 1.2rem;
 }
 
 .team-card h3 {
@@ -183,5 +205,9 @@ nav a {
   .add-player-btn {
     width: 100%;
     margin-left: 0;
+  }
+
+  #teamsContainer {
+    grid-template-columns: 1fr 1fr;
   }
 }
