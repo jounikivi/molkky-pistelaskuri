@@ -10,10 +10,16 @@ const currentTurnDisplay = document.getElementById("currentTurn");
 const teamsContainer = document.getElementById("teamsContainer");
 const notification = document.getElementById("notification");
 
-function showNotification(message) {
+function showNotification(message, center = false) {
   notification.textContent = message;
   notification.classList.remove("hidden");
-  setTimeout(() => notification.classList.add("hidden"), 3000);
+  notification.classList.add("visible");
+  if (center) notification.classList.add("center");
+  setTimeout(() => {
+    notification.classList.remove("visible");
+    notification.classList.add("hidden");
+    if (center) notification.classList.remove("center");
+  }, 3000);
 }
 
 let teams = [];
@@ -166,7 +172,7 @@ submitScoreBtn.onclick = () => {
       team.score = 25;
       showNotification(`${team.name} ylitti 50 pistettä! Pisteet palautettiin 25:een.`);
     } else if (team.score === 50) {
-      showNotification(`${team.name} voittaa pelin!`);
+      showNotification(`${team.name} voittaa pelin!`, true);
       gameStarted = false;
       return;
     }
