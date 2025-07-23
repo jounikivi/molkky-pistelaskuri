@@ -47,20 +47,26 @@ function renderTeams() {
       </ul>
       <label for="player-${index}">Pelaajan nimi</label>
       <input type="text" id="player-${index}" placeholder="Pelaajan nimi" />
-      <button class="add-player-btn" onclick="addPlayer(${index})">Lisää pelaaja</button>
     `;
+    const button = document.createElement("button");
+    button.className = "add-player-btn";
+    button.textContent = "Lisää pelaaja";
+    button.dataset.teamIndex = index;
+    button.addEventListener("click", handleAddPlayer);
+    card.appendChild(button);
     teamsContainer.appendChild(card);
   });
 }
 
-window.addPlayer = (teamIndex) => {
+function handleAddPlayer(e) {
+  const teamIndex = +e.currentTarget.dataset.teamIndex;
   const input = document.getElementById(`player-${teamIndex}`);
   const name = input.value.trim();
   if (!name) return;
   teams[teamIndex].players.push(name);
   input.value = "";
   renderTeams();
-};
+}
 
 startGameBtn.onclick = () => {
   if (teams.length < 2 || !teams.every(t => t.players.length > 0)) {
