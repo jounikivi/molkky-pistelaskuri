@@ -137,6 +137,51 @@ nav a {
   margin-top: 1rem;
 }
 
+/* Dark mode styles */
+.dark-mode {
+  background: #121212;
+  color: #f0f0f0;
+}
+
+.dark-mode .app-card {
+  background: #1e1e1e;
+  color: #f0f0f0;
+}
+
+.dark-mode header {
+  background-color: #333;
+}
+
+.dark-mode .vuorossa-kortti {
+  background: #2a2a2a;
+  border-color: #4caf50;
+}
+
+.dark-mode .controls button,
+.dark-mode .vuorossa-pisteet button {
+  background-color: #4caf50;
+}
+
+.dark-mode .controls button:hover,
+.dark-mode .vuorossa-pisteet button:hover {
+  background-color: #388e3c;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  margin-top: 0.5rem;
+  background-color: #00695c;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dark-mode .theme-toggle {
+  background-color: #4caf50;
+}
+
 .team-card {
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);

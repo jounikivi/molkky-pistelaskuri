@@ -331,3 +331,18 @@ footer {
 .dark-mode .pelinav a {
   color: #f0f0f0;
 }
+
+/* Dark mode toggle button */
+.theme-toggle {
+  margin-top: 0.5rem;
+  background-color: #00695c;
+  color: #fff;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.dark-mode .theme-toggle {
+  background-color: #4caf50;
+}
