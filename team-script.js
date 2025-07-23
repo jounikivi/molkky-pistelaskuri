@@ -2,6 +2,7 @@
 const teamNameInput = document.getElementById("teamNameInput");
 const addTeamBtn = document.getElementById("addTeamBtn");
 const startGameBtn = document.getElementById("startGameBtn");
+const newRoundBtn = document.getElementById("newRoundBtn");
 const resetGameBtn = document.getElementById("resetGameBtn");
 const submitScoreBtn = document.getElementById("submitScoreBtn");
 const scoreInput = document.getElementById("scoreInput");
@@ -87,6 +88,40 @@ startGameBtn.onclick = () => {
   gameStarted = true;
   updateCurrentTurn();
 };
+
+function startNewRound() {
+  if (teams.length < 2 || !teams.every(t => t.players.length > 0)) {
+    showNotification("Tarvitset vähintään kaksi joukkuetta ja pelaajat jokaiseen.");
+    return;
+  }
+  teams.forEach(team => {
+    team.score = 0;
+    team.misses = {};
+  });
+  let allPlayers = [];
+  teams.forEach((team, tIdx) => {
+    team.players.forEach(player => {
+      allPlayers.push({ teamIdx: tIdx, player });
+    });
+  });
+  let valid = false;
+  while (!valid) {
+    turnOrder = [...allPlayers].sort(() => Math.random() - 0.5);
+    valid = true;
+    for (let i = 1; i < turnOrder.length; i++) {
+      if (turnOrder[i].teamIdx === turnOrder[i - 1].teamIdx) {
+        valid = false;
+        break;
+      }
+    }
+  }
+  turnIndex = 0;
+  gameStarted = true;
+  updateCurrentTurn();
+  renderTeams();
+}
+
+newRoundBtn.onclick = startNewRound;
 
 submitScoreBtn.onclick = () => {
   if (!gameStarted) return;
