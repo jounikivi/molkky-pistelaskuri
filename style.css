@@ -1,5 +1,116 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
+/* Home page styles moved from newstyle.css */
+body.home {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #e9f8f1;
+  color: #1a1a1a;
+  display: block;
+}
+
+body.home header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #006d5b;
+  padding: 1rem 2rem;
+  color: white;
+  border-radius: 0;
+}
+
+body.home nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+body.home nav ul li a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+body.home main {
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+body.home .intro-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 700px;
+  text-align: center;
+}
+
+body.home .intro-card h2 {
+  background-color: #006d5b;
+  color: white;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-top: 0;
+}
+
+body.home .button-group {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+body.home .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  color: white;
+}
+
+body.home .btn.red { background-color: #e74c3c; }
+body.home .btn.purple { background-color: #8e44ad; }
+body.home .btn.blue { background-color: #3498db; }
+
+body.home .btn:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 600px) {
+  body.home header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  body.home nav ul {
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  body.home nav ul li {
+    width: 100%;
+  }
+
+  body.home nav ul li a {
+    display: block;
+    padding: 0.5rem 0;
+  }
+
+  body.home .button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   background: linear-gradient(135deg, #e9fef7, #f0fdfb);
