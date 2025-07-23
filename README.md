@@ -7,6 +7,7 @@ Tämä repositorio sisältää pienen selainpohjaisen sovelluksen Mölkyn pistei
 1. Lataa tai kloonaa tämä repositorio.
 2. Avaa `index.html` (yksinpelille `game.html` ja joukkuepelille `team-game.html`) selaimessasi.
    - Vaihtoehtoisesti voit käynnistää paikallisen web-palvelimen komennolla `python3 -m http.server` ja siirtyä osoitteeseen `http://localhost:8000/index.html`.
+   - https://jounikivi.github.io/molkky-pistelaskuri/
 
 ## Selaintuki
 
