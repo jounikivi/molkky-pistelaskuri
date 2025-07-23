@@ -1,0 +1,11 @@
+# IDE directories
+.vscode/
+
+# Dependency directories
+node_modules/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+*~
