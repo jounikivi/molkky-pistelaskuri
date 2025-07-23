@@ -23,6 +23,7 @@
       <div class="vuorossa-nimi">Vuorossa: <span id="currentTurn">-</span></div>
       <div class="vuorossa-pisteet">
         <div id="currentScore">0</div>
+        <label for="scoreInput">Pisteet (1–12)</label>
         <input type="number" id="scoreInput" placeholder="1–12" min="0" max="12" />
         <button id="submitScoreBtn">Pisteet</button>
       </div>
@@ -31,6 +32,7 @@
     <div id="teamsContainer"></div>
 
     <div class="controls">
+      <label for="teamNameInput">Joukkueen nimi</label>
       <input type="text" id="teamNameInput" placeholder="Joukkueen nimi" />
       <button id="addTeamBtn">Lisää joukkue</button>
       <button id="startGameBtn">Aloita peli</button>

@@ -44,6 +44,7 @@ function renderTeams() {
       <ul class="player-list">
         ${team.players.map(p => `<li>${p}</li>`).join("")}
       </ul>
+      <label for="player-${index}">Pelaajan nimi</label>
       <input type="text" id="player-${index}" placeholder="Pelaajan nimi" />
       <button class="add-player-btn" onclick="addPlayer(${index})">Lisää pelaaja</button>
     `;

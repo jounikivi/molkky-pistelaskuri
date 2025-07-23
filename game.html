@@ -23,6 +23,7 @@
                 <div class="vuorossa-nimi" id="vuoroNaytto">Vuorossa: -</div>
                 <div class="vuorossa-pisteet">
                     <div class="pisteet-iso" id="vuorossaPisteet">0</div>
+                    <label for="vuorossaInput">Pisteet (1–12)</label>
                     <input type="text" id="vuorossaInput" placeholder="1–12"/>
                     <button id="vuorossaNappi">Pisteet</button>
                 </div>
@@ -33,6 +34,7 @@
 
             <!-- Pelaajien lisääminen ja pelin hallinta -->
             <section class="toiminnot">
+                <label for="playerName">Pelaajan nimi</label>
                 <input type="text" id="playerName" placeholder="Pelaajan nimi"/>
                 <button onclick="addPlayer()">Lisää</button>
                 <button onclick="arvoAloittaja()">Arvo aloittaja</button>
