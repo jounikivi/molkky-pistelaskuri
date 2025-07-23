@@ -300,14 +300,22 @@ header {
   .pelaajakortit { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
 }
 
-@media screen and (min-width: 501px) and (max-width: 768px) {
-  .app-card { max-width: 600px; }
-  .pelaajakortit { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+  .app-card { max-width: 700px; }
+  .vuorossa-pisteet { gap: 1rem; }
+  .pelaajakortit {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
 }
 
-@media screen and (min-width: 769px) {
-  .app-card { max-width: 720px; }
-  .pelaajakortit { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
+@media screen and (min-width: 1025px) {
+  .app-card { max-width: 900px; }
+  .vuorossa-pisteet { gap: 1.2rem; }
+  .pelaajakortit {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.2rem;
+  }
 }
 
 /* Navigaatiovalikko */
