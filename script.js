@@ -183,4 +183,8 @@ document.addEventListener("DOMContentLoaded", () => {
   if (nappi) {
     nappi.addEventListener("click", lisaaPisteetVuorossa);
   }
+  const addBtn = document.getElementById("addPlayerBtn");
+  if (addBtn) {
+    addBtn.addEventListener("click", addPlayer);
+  }
 });
