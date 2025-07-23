@@ -199,7 +199,7 @@ header {
 
 .pelaajakortit {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 0.8rem;
 }
 
@@ -297,17 +297,17 @@ header {
   .vuorossa-pisteet { flex-direction: column; gap: 0.5rem; }
   .pisteet-iso { font-size: 2rem; }
   .vuorossa-pisteet input, .vuorossa-pisteet button { width: 100%; }
-  .pelaajakortit { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .pelaajakortit { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
 }
 
 @media screen and (min-width: 501px) and (max-width: 768px) {
   .app-card { max-width: 600px; }
-  .pelaajakortit { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .pelaajakortit { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
 }
 
 @media screen and (min-width: 769px) {
   .app-card { max-width: 720px; }
-  .pelaajakortit { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+  .pelaajakortit { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
 }
 
 /* Navigaatiovalikko */
