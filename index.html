@@ -1,51 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fi">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky Pistelaskuri</title>
-  <meta name="description" content="Mölkky-pistelaskuri: nopea ja selkeä pisteseuranta yksin- ja joukkuetilaan. Mobile-first, tumma/vaalea teema." />
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121417" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
-  
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <title>Mölkky – Dev-testi (Vaihe 1)</title>
 </head>
-<body class="home">
-  <header>
-      <h1 class="logo">Mölkky</h1>
-      <nav>
-          <ul>
-              <li><a href="index.html">Etusivu</a></li>
-              <li><a href="game.html">Yksilöpeli</a></li>
-              <li><a href="team-game.html">Joukkuepeli</a></li>
-              <li><a href="rules.html">Säännöt</a></li>
-          </ul>
-      </nav>
-      <button id="themeToggle" class="theme-toggle" aria-label="Vaihda teemaa">🌙 Tumma tila</button>
-  </header>
+<body>
+  <h1>Mölkky – Sääntömoottorin dev-testi</h1>
+  <p>Avaa konsoli (F12 → Console) ja katso tulokset. Kun ok, siirrymme UI:hin seuraavassa vaiheessa.</p>
 
-  <main>
-      <section class="intro-card">
-          <h2>Mölkky Pistelaskuri</h2>
-          <p>Voit pelata Mölkkyä yksin tai joukkueittain. Sovellus laskee pisteet automaattisesti ja
-          noudattaa Mölkyn sääntöjä – mukaan lukien hutisäännöt, yli 50 pisteen palautus sekä
-          voitto täsmälleen 50 pisteellä.</p>
-          <div class="button-group">
-              <a href="game.html" class="btn red"><i class="fas fa-bullseye"></i> Aloita yksilöpeli</a>
-              <a href="team-game.html" class="btn purple"><i class="fas fa-people-group"></i> Aloita joukkuetila</a>
-              <a href="rules.html" class="btn blue"><i class="fas fa-book-open"></i> Katso säännöt</a>
-          </div>
-      </section>
-  </main>
+  <script type="module">
+    import {
+      ThrowType, createPlayerState, applyThrow, throwFromRawInput
+    } from "./js/rules.js";
 
-  <div id="notification" aria-live="polite" role="status"></div>
+    const p = createPlayerState("Testi");
 
-  <script src="theme.js" defer></script>
+    const log = (label, state, events) => {
+      console.log(label, { score: state.score, misses: state.misses, active: state.active, events });
+    };
+
+    // Huti, huti, huti -> pudotus
+    let r1 = applyThrow(p, ThrowType.MISS, 0);
+    log("MISS #1", r1.player, r1.events);
+    let r2 = applyThrow(r1.player, ThrowType.MISS, 0);
+    log("MISS #2", r2.player, r2.events);
+    let r3 = applyThrow(r2.player, ThrowType.MISS, 0);
+    log("MISS #3", r3.player, r3.events);
+
+    // Uusi pelaaja
+    let a = createPlayerState("A");
+    // S12 (yksi keila numero 12) → 12 pistettä
+    let t1 = applyThrow(a, ThrowType.SINGLE_PIN, 12);
+    log("SINGLE 12", t1.player, t1.events);
+
+    // M5 (useita, määrä 5) → +5 = 17
+    let t2 = applyThrow(t1.player, ThrowType.MULTI_PINS, 5);
+    log("MULTI 5", t2.player, t2.events);
+
+    // nosta yli 50 → pomppu 25:een
+    let pre = { ...t2.player };
+    pre.score = 49;
+    let bounce = applyThrow(pre, ThrowType.SINGLE_PIN, 2); // 49+2 -> 25
+    log("BOUNCE to 25", bounce.player, bounce.events);
+
+    // tarkistus: 50 täsmälleen → voitto
+    let winPre = createPlayerState("Winny");
+    winPre.score = 47;
+    let win = applyThrow(winPre, ThrowType.MULTI_PINS, 3); // 47+3 == 50
+    log("WIN 50", win.player, win.events);
+
+    // raakasyötteestä (0, S#, M#)
+    const ex = ["0", "S7", "M10"];
+    ex.forEach(k => {
+      const { type, value } = throwFromRawInput(k);
+      const s = applyThrow(createPlayerState("Raw"), type, value);
+      log(`RAW ${k}`, s.player, s.events);
+    });
+  </script>
 </body>
 </html>
