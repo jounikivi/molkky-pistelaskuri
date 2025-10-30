@@ -3,12 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky – Yksilöpeli</title>
-  <meta name="description" content="Mölkky-pistelaskuri: mobile-first UI, pikanapit, selkeä vuorotus, Mölkyn säännöt." />
+  <title>Mölkky – Joukkuepeli</title>
+  <meta name="description" content="Mölkky-pistelaskuri: joukkuepeli, vuorotus tiimeittäin, mobile-first." />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
   <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121417" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
@@ -17,15 +16,14 @@
 <body>
   <div class="app-card">
     <header class="app-header">
-      <h1>Mölkky</h1>
+      <h1>Mölkky – Joukkuepeli</h1>
       <nav class="topnav">
-        <button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Vaihda teemaa">Tumma teema</button>
-        <a href="./index.html" class="devlink">Dev</a>
+        <a href="./game.html" class="devlink">Yksilöpeli</a>
       </nav>
     </header>
 
     <main>
-      <!-- Vuorossa + heittosyöte -->
+      <!-- Vuorossa: tiimi & pelaaja -->
       <section class="turn-card" id="turnCard">
         <div class="turn-title" id="turnTitle">Vuorossa: –</div>
 
@@ -50,31 +48,35 @@
         </div>
 
         <div class="inline-input">
-          <input id="freeInput" type="text" inputmode="numeric"
-                 placeholder="0–12 (riittää)"
-                 aria-label="Vapaa syöte: 0–12">
+          <input id="freeInput" type="text" inputmode="numeric" placeholder="0–12 (riittää)" aria-label="Vapaa syöte: 0–12">
           <button type="button" id="submitFree" class="btn blue">Lisää</button>
         </div>
         <p class="help">
-          0 = huti. Numerot 1–12 lisäävät saman pistemäärän. (Halutessasi käy myös S# / M#.)  
-          Yli 50 → 25, täsmälleen 50 → voitto, 3 hutia → tippuu.
+          0 = huti. 1–12 lisää saman pistemäärän tiimille. Yli 50 → 25, tasan 50 → voitto, pelaaja putoaa 3 hudilla.
+          Muista: lisää vähintään 2 tiimiä ja 1 pelaaja/tiimi, sitten **Arvo aloitusjärjestys**.
         </p>
       </section>
 
-      <!-- Pelaajalista -->
+      <!-- Tiimit & pelaajat -->
       <section>
-        <div id="playerGrid" class="player-grid" aria-live="polite"></div>
+        <div id="teamsGrid" class="player-grid" aria-live="polite"></div>
       </section>
 
-      <!-- Pelaajien lisääminen & hallinta -->
+      <!-- Hallinta -->
       <section class="controls">
+        <label for="teamName">Tiimin nimi</label>
+        <input id="teamName" type="text" placeholder="Tiimin nimi" />
+        <button type="button" id="addTeam" class="btn blue">Lisää tiimi</button>
+
         <label for="playerName">Pelaajan nimi</label>
-        <input id="playerName" type="text" placeholder="Pelaajan nimi" autocomplete="name" enterkeyhint="done" />
-        <button type="button" id="addPlayer" class="btn blue">Lisää</button>
+        <input id="playerName" type="text" placeholder="Pelaajan nimi" />
+        <button type="button" id="addPlayer" class="btn">Lisää pelaaja valittuun tiimiin</button>
+
         <div class="split">
-          <button type="button" id="shuffle" class="btn">Arvo aloittaja</button>
+          <button type="button" id="shuffle" class="btn">Arvo aloitusjärjestys</button>
           <button type="button" id="undo" class="btn purple" disabled>Peru viimeisin</button>
-          <button type="button" id="reset" class="btn danger">Nollaa peli</button>
+          <button type="button" id="newSame" class="btn">Uusi peli – sama kokoonpano</button>
+          <button type="button" id="newFresh" class="btn danger">Uusi peli – uudet joukkueet</button>
         </div>
       </section>
     </main>
@@ -82,6 +84,6 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/team-app.js"></script>
 </body>
 </html>

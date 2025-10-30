@@ -1,107 +1,292 @@
-/* Mölkky – mobile-first style */
-:root{
-  --primary:#00695c;
-  --secondary:#3498db;
-  --danger:#e74c3c;
-  --bg:#f5fffb;
-  --text:#1a1a1a;
-  --card:#ffffff;
-  --muted:#6b7280;
-  --radius:18px;
-  --shadow:0 6px 18px rgba(0,0,0,.08);
-  --tap:44px;
+/* =========================================================
+   Mölkky – mobile-first style (puhdistettu 31.10.2025)
+   ========================================================= */
+:root {
+  --primary: #00695c;
+  --secondary: #3498db;
+  --danger: #e74c3c;
+  --bg: #f5fffb;
+  --text: #1a1a1a;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --radius: 18px;
+  --shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  --tap: 44px;
 }
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#121417; --text:#e5e7eb; --card:#1c1f26; --muted:#9ca3af;
-    --primary:#4caf50;
+
+/* Tumma tila (järjestelmän oletus) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #121417;
+    --text: #e5e7eb;
+    --card: #1c1f26;
+    --muted: #9ca3af;
+    --primary: #4caf50;
   }
 }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; font-family:Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:var(--bg); color:var(--text); line-height:1.5;
+/* Manuaalinen teema-override (localStorage) */
+:root[data-theme="light"] {
+  --bg: #f5fffb;
+  --text: #1a1a1a;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --primary: #00695c;
+}
+:root[data-theme="dark"] {
+  --bg: #121417;
+  --text: #e5e7eb;
+  --card: #1c1f26;
+  --muted: #9ca3af;
+  --primary: #4caf50;
 }
 
-.app-card{
-  max-width:520px; margin:12px auto; padding:14px;
-  background:var(--card); border-radius:28px; box-shadow:var(--shadow);
+/* ------------------ PERUSTYYLIT ------------------ */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: Poppins, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
 }
 
-.app-header{
-  display:flex; align-items:center; justify-content:space-between; gap:8px;
-}
-.app-header h1{ margin:0; font-weight:800; }
-.topnav a{ color:var(--secondary); font-weight:600; text-decoration:none; }
-
-.turn-card{
-  position:sticky; top:8px; z-index:5;
-  border:2px solid var(--primary); border-radius:var(--radius);
-  background:color-mix(in oklab, var(--primary), white 90%);
-  padding:12px; margin:12px 0;
-}
-.turn-title{ font-weight:800; font-size:1.2rem; }
-
-.throw-mode{
-  display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:8px 0 10px;
-}
-.throw-mode label{
-  display:flex; align-items:center; gap:8px; background:#eef6f4; padding:8px 12px; border-radius:12px; font-weight:600;
+.app-card {
+  max-width: 520px;
+  margin: 12px auto;
+  padding: 14px;
+  background: var(--card);
+  border-radius: 28px;
+  box-shadow: var(--shadow);
 }
 
-.quick-row{ display:flex; gap:8px; justify-content:center; margin:8px 0; }
-.quick-grid{ display:grid; gap:8px; grid-template-columns:repeat(6,1fr); margin:8px 0 12px; }
-@media (max-width:420px){ .quick-grid{ grid-template-columns:repeat(4,1fr);} }
-
-.quick-btn{
-  min-height:var(--tap); border-radius:12px; border:none; cursor:pointer;
-  background:#e5e7eb; color:#111827; font-weight:800; transition:transform .06s, filter .2s;
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-.quick-btn:hover{ filter:brightness(1.05); }
-.quick-btn:active{ transform:translateY(1px) scale(.99); }
-.quick-btn.miss{ background:var(--danger); color:#fff; }
+.app-header h1 { margin: 0; font-weight: 800; }
 
-.inline-input{ display:flex; gap:8px; }
-.inline-input input{ flex:1; min-height:var(--tap); border-radius:12px; border:1px solid #d1d5db; background:#f3f4f6; padding:0 12px; font-size:16px; }
-
-.help{ color:var(--muted); margin:.25rem 0 0; font-size:.9rem; }
-
-.btn{
-  min-height:var(--tap); padding:.9rem 1.1rem; border-radius:14px; border:none;
-  background:var(--primary); color:#fff; font-weight:800; cursor:pointer; transition:filter .2s, transform .06s;
+.topnav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.btn:hover{ filter:brightness(1.05); }
-.btn:active{ transform:translateY(1px) scale(.99); }
-.btn.blue{ background:var(--secondary); }
-.btn.danger{ background:var(--danger); }
-
-.split{ display:flex; gap:8px; margin-top:8px; }
-.controls{ margin-top:14px; display:flex; flex-direction:column; gap:8px; }
-.controls input{ min-height:var(--tap); border-radius:12px; border:1px solid #d1d5db; background:#f3f4f6; padding:0 12px; font-size:16px; }
-
-.player-grid{
-  display:grid; gap:10px; grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+.topnav .devlink {
+  color: var(--secondary);
+  font-weight: 600;
+  text-decoration: none;
 }
-.player-card{
-  border-radius:18px; padding:12px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.25);
+
+/* ------------------ VUOROSSA-KORTTI ------------------ */
+.turn-card {
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--primary), white 90%);
+  padding: 12px;
+  margin: 12px 0;
 }
-.player-card h3{ margin:.2rem 0; font-size:1.05rem; word-break:break-word; }
-.player-card .score{ font-size:2rem; font-weight:800; margin:.2rem 0 .4rem; }
-.player-card .meta{ font-size:.9rem; opacity:.95; }
-.player-card.inactive{ opacity:.5; filter:grayscale(.2); }
-.player-card.winner{ outline:3px solid gold; }
-
-.toast{
-  position:fixed; left:50%; bottom:16px; transform:translateX(-50%);
-  background:var(--card); color:var(--text); padding:10px 14px; border-radius:12px; box-shadow:var(--shadow);
-  opacity:0; pointer-events:none; transition:opacity .25s, transform .25s; max-width:90vw; text-align:center; font-weight:700;
+.turn-title {
+  font-weight: 800;
+  font-size: 1.2rem;
 }
-.toast.show{ opacity:1; transform:translateX(-50%) translateY(-4px); }
 
-.hidden{ display:none !important; }
+/* ------------------ PIKANAPIT ------------------ */
+.quick-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 8px 0;
+}
+.quick-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(6, 1fr);
+  margin: 8px 0 12px;
+}
+@media (max-width: 420px) {
+  .quick-grid { grid-template-columns: repeat(4, 1fr); }
+}
 
-@media (orientation:landscape) and (max-height:480px){
-  .turn-card{ top:4px; padding:8px; }
+.quick-btn {
+  min-height: var(--tap);
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: #e5e7eb;
+  color: #111827;
+  font-weight: 800;
+  transition: transform .06s, filter .2s;
+}
+.quick-btn:hover { filter: brightness(1.05); }
+.quick-btn:active { transform: translateY(1px) scale(.99); }
+.quick-btn.miss {
+  background: var(--danger);
+  color: #fff;
+}
+
+/* ------------------ INPUTIT ------------------ */
+.inline-input {
+  display: flex;
+  gap: 8px;
+}
+.inline-input input {
+  flex: 1;
+  min-height: var(--tap);
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  padding: 0 12px;
+  font-size: 16px;
+  color: #111827;
+}
+@media (prefers-color-scheme: dark) {
+  .inline-input input {
+    background: #1f2430;
+    border-color: #2f3543;
+    color: #f5f5f5;
+  }
+}
+
+/* ------------------ APUTEKSTIT ------------------ */
+.help {
+  color: var(--muted);
+  margin: .25rem 0 0;
+  font-size: .9rem;
+}
+
+/* ------------------ PAINIKKEET ------------------ */
+.btn {
+  min-height: var(--tap);
+  padding: .9rem 1.1rem;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  transition: filter .2s, transform .06s;
+}
+.btn:hover { filter: brightness(1.05); }
+.btn:active { transform: translateY(1px) scale(.99); }
+.btn.blue { background: var(--secondary); }
+.btn.danger { background: var(--danger); }
+.btn.purple { background: #8e44ad; }
+.btn.ghost {
+  background: transparent;
+  color: var(--secondary);
+  border-color: var(--secondary);
+}
+
+/* ------------------ LAYOUT ------------------ */
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.controls {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.controls input {
+  min-height: var(--tap);
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  background: #f3f4f6;
+  padding: 0 12px;
+  font-size: 16px;
+  color: #111827;
+}
+@media (prefers-color-scheme: dark) {
+  .controls input {
+    background: #1f2430;
+    border-color: #2f3543;
+    color: #f5f5f5;
+  }
+}
+
+/* ------------------ PELAAJAKORTIT ------------------ */
+.player-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+.player-card {
+  border-radius: 18px;
+  padding: 12px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+}
+.player-card h3 {
+  margin: .2rem 0;
+  font-size: 1.05rem;
+  word-break: break-word;
+}
+.player-card .score {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: .2rem 0 .4rem;
+}
+.player-card .meta {
+  font-size: .9rem;
+  opacity: .95;
+}
+.player-card.inactive {
+  opacity: .55;
+  filter: grayscale(.2);
+}
+
+/* Voittajan korostus (pulssi) */
+@keyframes winnerPulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, .6); }
+  70% { box-shadow: 0 0 0 12px rgba(255, 215, 0, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+.player-card.winner {
+  outline: 3px solid gold;
+  animation: winnerPulse 1.8s ease-out infinite;
+}
+
+/* ------------------ TOAST ------------------ */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  background: var(--card);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+  max-width: 90vw;
+  text-align: center;
+  font-weight: 700;
+  z-index: 1000;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ------------------ MUUT ------------------ */
+.hidden { display: none !important; }
+
+button:focus-visible, .btn:focus-visible, input:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--primary), white 25%);
+  outline-offset: 2px;
+}
+
+@media (orientation: landscape) and (max-height: 480px) {
+  .turn-card { top: 4px; padding: 8px; }
 }
