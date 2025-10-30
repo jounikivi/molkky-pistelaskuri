@@ -3,60 +3,71 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky – Dev-testi (Vaihe 1)</title>
+  <title>Mölkky – Dev-testi (Vaihe 2)</title>
 </head>
 <body>
-  <h1>Mölkky – Sääntömoottorin dev-testi</h1>
-  <p>Avaa konsoli (F12 → Console) ja katso tulokset. Kun ok, siirrymme UI:hin seuraavassa vaiheessa.</p>
+  <h1>Mölkky – Pelitila & vuorotus (dev)</h1>
+  <p>Avaa konsoli (F12 → Console). Alla käyttöohjeet:</p>
+  <pre>
+import { ThrowType } from "./js/rules.js";
+import {
+  loadOrInit, hasSavedGame, getState,
+  addPlayer, startGameShuffleOrder, getCurrentPlayer,
+  applyThrowToCurrentPlayer, resetAll
+} from "./js/gameState.js";
+
+loadOrInit();              // lataa tallennettu peli tai aloita tyhjä
+hasSavedGame();            // true/false
+
+addPlayer("Matti");
+addPlayer("Maija");
+addPlayer("Pekka");
+
+startGameShuffleOrder();   // arpoo vuorojärjestyksen, palauttaa aloittajan
+getCurrentPlayer();        // tarkista vuorossa oleva
+
+// Heittoesimerkkejä:
+//  - huti:  MISS, 0
+//  - yksi keila (numero): SINGLE_PIN, 12
+//  - useita (määrä):      MULTI_PINS, 5
+applyThrowToCurrentPlayer(ThrowType.MISS, 0);
+applyThrowToCurrentPlayer(ThrowType.SINGLE_PIN, 12);
+applyThrowToCurrentPlayer(ThrowType.MULTI_PINS, 5);
+
+getState();                // katso koko tila
+// Päivitä sivu ja tee loadOrInit(); → jatkaa siitä mihin jäit
+
+resetAll();                // aloita alusta
+  </pre>
 
   <script type="module">
+    import { ThrowType } from "./js/rules.js";
     import {
-      ThrowType, createPlayerState, applyThrow, throwFromRawInput
-    } from "./js/rules.js";
+      loadOrInit, hasSavedGame, getState,
+      addPlayer, startGameShuffleOrder, getCurrentPlayer,
+      applyThrowToCurrentPlayer, resetAll
+    } from "./js/gameState.js";
 
-    const p = createPlayerState("Testi");
+    // Automaattinen init käynnistyksessä
+    const loaded = loadOrInit();
+    console.log(loaded ? "🔄 Jatketaan tallennettua peliä" : "🆕 Uusi peli käynnistetty");
+    console.log("Onko tallennettu peli olemassa? ", hasSavedGame());
+    console.log("Nykytila:", getState());
 
-    const log = (label, state, events) => {
-      console.log(label, { score: state.score, misses: state.misses, active: state.active, events });
-    };
+    // Pieni demo (kommentoi pois, jos haluat käsin kokeilla riviltä-riville):
+    if (!loaded) {
+      addPlayer("Matti");
+      addPlayer("Maija");
+      addPlayer("Pekka");
+      const first = startGameShuffleOrder();
+      console.log("Aloittaja:", first);
 
-    // Huti, huti, huti -> pudotus
-    let r1 = applyThrow(p, ThrowType.MISS, 0);
-    log("MISS #1", r1.player, r1.events);
-    let r2 = applyThrow(r1.player, ThrowType.MISS, 0);
-    log("MISS #2", r2.player, r2.events);
-    let r3 = applyThrow(r2.player, ThrowType.MISS, 0);
-    log("MISS #3", r3.player, r3.events);
-
-    // Uusi pelaaja
-    let a = createPlayerState("A");
-    // S12 (yksi keila numero 12) → 12 pistettä
-    let t1 = applyThrow(a, ThrowType.SINGLE_PIN, 12);
-    log("SINGLE 12", t1.player, t1.events);
-
-    // M5 (useita, määrä 5) → +5 = 17
-    let t2 = applyThrow(t1.player, ThrowType.MULTI_PINS, 5);
-    log("MULTI 5", t2.player, t2.events);
-
-    // nosta yli 50 → pomppu 25:een
-    let pre = { ...t2.player };
-    pre.score = 49;
-    let bounce = applyThrow(pre, ThrowType.SINGLE_PIN, 2); // 49+2 -> 25
-    log("BOUNCE to 25", bounce.player, bounce.events);
-
-    // tarkistus: 50 täsmälleen → voitto
-    let winPre = createPlayerState("Winny");
-    winPre.score = 47;
-    let win = applyThrow(winPre, ThrowType.MULTI_PINS, 3); // 47+3 == 50
-    log("WIN 50", win.player, win.events);
-
-    // raakasyötteestä (0, S#, M#)
-    const ex = ["0", "S7", "M10"];
-    ex.forEach(k => {
-      const { type, value } = throwFromRawInput(k);
-      const s = applyThrow(createPlayerState("Raw"), type, value);
-      log(`RAW ${k}`, s.player, s.events);
-    });
+      // kolme testiheittoa
+      console.log("Heitto 1:", applyThrowToCurrentPlayer(ThrowType.MISS, 0));
+      console.log("Heitto 2:", applyThrowToCurrentPlayer(ThrowType.SINGLE_PIN, 12));
+      console.log("Heitto 3:", applyThrowToCurrentPlayer(ThrowType.MULTI_PINS, 5));
+      console.log("Tila heittojen jälkeen:", getState());
+    }
   </script>
 </body>
 </html>

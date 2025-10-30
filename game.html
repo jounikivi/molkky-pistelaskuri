@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mölkky – Yksilöpeli</title>
+
+  <!-- Peruskuvaus + väriteema selaimelle -->
+  <meta name="description" content="Mölkky-pistelaskuri: mobile-first UI, pikanapit, selkeä vuorotus, Mölkyn säännöt." />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121417" />
+
+  <!-- Yhtenäinen fontti -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app-card">
+    <header class="app-header">
+      <h1>Mölkky</h1>
+      <nav class="topnav">
+        <a href="./index.html">Dev</a>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Vuorossa + heittosyöte -->
+      <section class="turn-card" id="turnCard">
+        <div class="turn-title" id="turnTitle">Vuorossa: –</div>
+
+        <fieldset class="throw-mode" aria-label="Heittotapa">
+          <label>
+            <input type="radio" name="throwMode" id="mode-single" checked>
+            Yksi keila (S1–S12)
+          </label>
+          <label>
+            <input type="radio" name="throwMode" id="mode-multi">
+            Useita keiloja (M2–M12)
+          </label>
+        </fieldset>
+
+        <div class="quick-row">
+          <button type="button" class="quick-btn miss" data-score="MISS-0" aria-label="Huti, 0 pistettä">Huti (0)</button>
+        </div>
+
+        <div class="quick-grid" id="grid-single" aria-label="Keilan numero (1–12)">
+          <!-- S1..S12 -->
+          <button class="quick-btn" data-score="S1">1</button>
+          <button class="quick-btn" data-score="S2">2</button>
+          <button class="quick-btn" data-score="S3">3</button>
+          <button class="quick-btn" data-score="S4">4</button>
+          <button class="quick-btn" data-score="S5">5</button>
+          <button class="quick-btn" data-score="S6">6</button>
+          <button class="quick-btn" data-score="S7">7</button>
+          <button class="quick-btn" data-score="S8">8</button>
+          <button class="quick-btn" data-score="S9">9</button>
+          <button class="quick-btn" data-score="S10">10</button>
+          <button class="quick-btn" data-score="S11">11</button>
+          <button class="quick-btn" data-score="S12">12</button>
+        </div>
+
+        <div class="quick-grid hidden" id="grid-multi" aria-label="Kaadettujen määrä (2–12)">
+          <!-- M2..M12 -->
+          <button class="quick-btn" data-score="M2">2</button>
+          <button class="quick-btn" data-score="M3">3</button>
+          <button class="quick-btn" data-score="M4">4</button>
+          <button class="quick-btn" data-score="M5">5</button>
+          <button class="quick-btn" data-score="M6">6</button>
+          <button class="quick-btn" data-score="M7">7</button>
+          <button class="quick-btn" data-score="M8">8</button>
+          <button class="quick-btn" data-score="M9">9</button>
+          <button class="quick-btn" data-score="M10">10</button>
+          <button class="quick-btn" data-score="M11">11</button>
+          <button class="quick-btn" data-score="M12">12</button>
+        </div>
+
+        <div class="inline-input">
+          <input id="freeInput" type="text" inputmode="text" placeholder="0, S1..S12 tai M2..M12" aria-label="Vapaa syöte (esim. 0, S7, M5)">
+          <button type="button" id="submitFree" class="btn blue">Lisää</button>
+        </div>
+        <p class="help">
+          Säännöt: 0 = huti. S# = yksi keila (pisteet = keilan numero). M# = useita (pisteet = määrä). Yli 50 → 25, täsmälleen 50 → voitto, 3 hutia → tippuu.
+        </p>
+      </section>
+
+      <!-- Pelaajalista -->
+      <section>
+        <div id="playerGrid" class="player-grid" aria-live="polite"></div>
+      </section>
+
+      <!-- Pelaajien lisääminen & hallinta -->
+      <section class="controls">
+        <label for="playerName">Pelaajan nimi</label>
+        <input id="playerName" type="text" placeholder="Pelaajan nimi" autocomplete="name" enterkeyhint="done" />
+        <button type="button" id="addPlayer" class="btn blue">Lisää</button>
+        <div class="split">
+          <button type="button" id="shuffle" class="btn">Arvo aloittaja</button>
+          <button type="button" id="reset" class="btn danger">Nollaa peli</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
