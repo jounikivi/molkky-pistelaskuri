@@ -3,71 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky – Dev-testi (Vaihe 2)</title>
+  <title>Mölkky – Etusivu</title>
+  <meta name="color-scheme" content="light dark" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <h1>Mölkky – Pelitila & vuorotus (dev)</h1>
-  <p>Avaa konsoli (F12 → Console). Alla käyttöohjeet:</p>
-  <pre>
-import { ThrowType } from "./js/rules.js";
-import {
-  loadOrInit, hasSavedGame, getState,
-  addPlayer, startGameShuffleOrder, getCurrentPlayer,
-  applyThrowToCurrentPlayer, resetAll
-} from "./js/gameState.js";
+  <!-- Yhteinen navigaatio -->
+  <header class="site-header">
+    <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
+    <h1 class="brand">Mölkky</h1>
+    <nav id="siteNav" class="nav-drawer" aria-label="Päävalikko">
+      <a href="./index.html" data-nav>Etusivu</a>
+      <a href="./game.html" data-nav>Yksilöpeli</a>
+      <a href="./team-game.html" data-nav>Joukkuepeli</a>
+      <a href="#rules" data-nav>Peliohjeet</a>
+      <hr>
+      <button id="themeQuick" class="btn ghost small">Vaihda teema</button>
+    </nav>
+  </header>
 
-loadOrInit();              // lataa tallennettu peli tai aloita tyhjä
-hasSavedGame();            // true/false
+  <main class="home">
+    <section class="hero">
+      <h2>Mölkky-pistelaskuri</h2>
+      <p>Nopea ja helppo pisteiden lasku – toimii erinomaisesti puhelimella.</p>
+      <div class="hero-actions">
+        <a class="btn blue" href="./game.html">Aloita yksilöpeli</a>
+        <a class="btn" href="./team-game.html">Aloita joukkuepeli</a>
+      </div>
+    </section>
 
-addPlayer("Matti");
-addPlayer("Maija");
-addPlayer("Pekka");
+    <section id="rules" class="card">
+      <h3>Peliohjeet (tiivis)</h3>
+      <ul class="bullets">
+        <li>Huti = 0 pistettä. Kolme hutia → pelaaja tippuu.</li>
+        <li>1–12 → lisätään sama pistemäärä. Halutessa käy myös S# / M# -syöte.</li>
+        <li>Yli 50 → palautus 25 pisteeseen. Tasan 50 → voitto.</li>
+        <li>Joukkuepelissä pisteet kertyvät tiimille, hutit pelaajalle.</li>
+      </ul>
+      <a class="link" href="./game.html">Katso esimerkki yksilöpelistä →</a>
+    </section>
+  </main>
 
-startGameShuffleOrder();   // arpoo vuorojärjestyksen, palauttaa aloittajan
-getCurrentPlayer();        // tarkista vuorossa oleva
-
-// Heittoesimerkkejä:
-//  - huti:  MISS, 0
-//  - yksi keila (numero): SINGLE_PIN, 12
-//  - useita (määrä):      MULTI_PINS, 5
-applyThrowToCurrentPlayer(ThrowType.MISS, 0);
-applyThrowToCurrentPlayer(ThrowType.SINGLE_PIN, 12);
-applyThrowToCurrentPlayer(ThrowType.MULTI_PINS, 5);
-
-getState();                // katso koko tila
-// Päivitä sivu ja tee loadOrInit(); → jatkaa siitä mihin jäit
-
-resetAll();                // aloita alusta
-  </pre>
-
-  <script type="module">
-    import { ThrowType } from "./js/rules.js";
-    import {
-      loadOrInit, hasSavedGame, getState,
-      addPlayer, startGameShuffleOrder, getCurrentPlayer,
-      applyThrowToCurrentPlayer, resetAll
-    } from "./js/gameState.js";
-
-    // Automaattinen init käynnistyksessä
-    const loaded = loadOrInit();
-    console.log(loaded ? "🔄 Jatketaan tallennettua peliä" : "🆕 Uusi peli käynnistetty");
-    console.log("Onko tallennettu peli olemassa? ", hasSavedGame());
-    console.log("Nykytila:", getState());
-
-    // Pieni demo (kommentoi pois, jos haluat käsin kokeilla riviltä-riville):
-    if (!loaded) {
-      addPlayer("Matti");
-      addPlayer("Maija");
-      addPlayer("Pekka");
-      const first = startGameShuffleOrder();
-      console.log("Aloittaja:", first);
-
-      // kolme testiheittoa
-      console.log("Heitto 1:", applyThrowToCurrentPlayer(ThrowType.MISS, 0));
-      console.log("Heitto 2:", applyThrowToCurrentPlayer(ThrowType.SINGLE_PIN, 12));
-      console.log("Heitto 3:", applyThrowToCurrentPlayer(ThrowType.MULTI_PINS, 5));
-      console.log("Tila heittojen jälkeen:", getState());
-    }
-  </script>
+  <script type="module" src="./js/nav.js"></script>
 </body>
 </html>

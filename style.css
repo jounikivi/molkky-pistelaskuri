@@ -276,6 +276,7 @@ body {
 }
 
 
+
 /* ------------------ TOAST ------------------ */
 .toast {
   position: fixed;
@@ -311,3 +312,56 @@ button:focus-visible, .btn:focus-visible, input:focus-visible {
 @media (orientation: landscape) and (max-height: 480px) {
   .turn-card { top: 4px; padding: 8px; }
 }
+
+/* ======= Yhteinen yläpalkki + valikko ======= */
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: var(--card); color: var(--text);
+  box-shadow: var(--shadow);
+  border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+}
+.brand { margin: 0; font-weight: 800; font-size: 1.4rem; }
+
+.hamburger {
+  border: 2px solid transparent; border-radius: 12px;
+  background: #e5e7eb; color: #111827; padding: 8px 10px;
+}
+@media (prefers-color-scheme: dark) {
+  .hamburger { background: #1f2430; color: #e5e7eb; }
+}
+
+.nav-drawer {
+  position: fixed; inset: 56px 0 auto auto; /* top spacing under header */
+  right: 12px; width: min(320px, 92vw);
+  background: var(--card); color: var(--text);
+  box-shadow: var(--shadow); border-radius: 14px;
+  padding: 10px; display: none; flex-direction: column; gap: 6px;
+}
+.nav-drawer.open { display: flex; }
+.nav-drawer a {
+  text-decoration: none; padding: 10px 12px; border-radius: 10px;
+  color: var(--text); font-weight: 600; background: transparent;
+}
+.nav-drawer a.active { background: color-mix(in oklab, var(--primary), white 85%); }
+.nav-drawer hr { border: none; border-top: 1px solid rgba(0,0,0,.08); margin: 8px 0; }
+.btn.small { padding: .5rem .75rem; min-height: 36px; font-weight: 700; }
+
+/* Etusivun hero */
+.home .hero {
+  margin: 14px auto 12px;
+  padding: 16px;
+  background: var(--card);
+  border-radius: 20px; box-shadow: var(--shadow);
+}
+.home .hero h2 { margin: 0 0 4px; font-weight: 800; }
+.hero-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.home .card {
+  background: var(--card); border-radius: 20px; box-shadow: var(--shadow);
+  padding: 16px; margin-top: 12px;
+}
+.bullets { margin: 0; padding-left: 18px; }
+.link { display: inline-block; margin-top: 8px; color: var(--secondary); text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
