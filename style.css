@@ -255,6 +255,27 @@ body {
   animation: winnerPulse 1.8s ease-out infinite;
 }
 
+/* --- Tiimikortin sisäinen pelaajan lisäys --- */
+.player-card { position: relative; overflow: hidden; }
+
+.player-card .inline-input{
+  display: grid;
+  grid-template-columns: 1fr;   /* mobiilissa pinottu */
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.player-card .inline-input input{ width: 100%; }
+.player-card .inline-input .btn{ width: 100%; }
+
+/* leveämmillä näytöillä vierekkäin */
+@media (min-width: 460px){
+  .player-card .inline-input{
+    grid-template-columns: 1fr 132px; /* syöte | nappi */
+  }
+}
+
+
 /* ------------------ TOAST ------------------ */
 .toast {
   position: fixed;

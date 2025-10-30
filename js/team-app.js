@@ -70,37 +70,31 @@ function render(){
           return `<div class="meta">${activeMark} ${p.name}${miss}</div>`;
         }).join("");
 
-    // kortin sisäinen syöte + nappi
+    // kortin sisäinen syöte + nappi (täysleveä mobiilissa, vierekkäin leveämmällä)
     card.innerHTML = `
       <h3>${team.name}</h3>
       <div class="score">${team.score}</div>
       ${playersHtml}
-      <div class="inline-input" style="margin-top:8px">
+      <div class="inline-input">
         <input type="text" placeholder="Pelaajan nimi" id="pn-${tIdx}" />
         <button type="button" class="btn blue add-player-btn" data-team="${tIdx}">Lisää pelaaja</button>
       </div>
     `;
 
-    wrap.appendChild(card);
-  });
-
-  // delegoitu kuuntelija: lisää pelaaja oikeaan tiimiin
-  // (poistetaan vanha kuuntelija ensin)
-  wrap.replaceWith(wrap.cloneNode(true));
-  const newWrap = $("#teamsGrid");
-  $$("#teamsGrid .add-player-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const teamIdx = parseInt(btn.dataset.team, 10);
-      const input = document.getElementById(`pn-${teamIdx}`);
-      const name = (input?.value || "").trim();
+    // kiinnitä kortin sisäisen napin toiminta
+    const addBtn  = card.querySelector(".add-player-btn");
+    const inputEl = card.querySelector(`#pn-${tIdx}`);
+    addBtn.addEventListener("click", () => {
+      const name = (inputEl?.value || "").trim();
       if (!name){ toast("Anna pelaajan nimi."); return; }
-      // käytetään olemassa olevaa APIa: valitse tiimi -> lisää siihen
-      setSelectedTeam(teamIdx);
+      setSelectedTeam(tIdx);
       const res = addPlayerToSelectedTeam(name);
       if (!res.ok){ toast(res.error); return; }
-      input.value = "";
+      inputEl.value = "";
       render();
     });
+
+    wrap.appendChild(card);
   });
 
   updateControlsState();
