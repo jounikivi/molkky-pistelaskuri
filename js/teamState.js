@@ -23,7 +23,7 @@ let history = [];
 let nextId  = 1;
 const newId = () => nextId++;
 
-// ---------- Storage ----------
+// --- Storage ---
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function loadState(){
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -41,11 +41,23 @@ function loadHistory(){
 function pushHistory(){ history.push(deepCopy(state)); saveHistory(); }
 function popHistory(){ const p = history.pop() || null; saveHistory(); return p; }
 
-// ---------- Public API ----------
+// --- teamOrder varmistus (korjaa vanhat tallennukset & pitää listan synkassa) ---
+function ensureTeamOrderSync(){
+  const should = state.teams.map((_, i) => i);
+  if (
+    state.teamOrder.length !== should.length ||
+    !should.every(i => state.teamOrder.includes(i))
+  ){
+    state.teamOrder = should;
+  }
+}
+
+// --- Public API ---
 export function loadOrInit(){
   const loaded = loadState();
   state = loaded ?? createEmptyState();
   history = loadHistory();
+  ensureTeamOrderSync();           // << tärkeä lisäys
   saveState();
   return !!loaded;
 }
@@ -65,26 +77,38 @@ export function newGameSameRoster(){
     t.score = 0; t.active = true;
     t.players.forEach(p => { p.score = 0; p.misses = 0; p.active = true; });
   });
-  // Arvonta jätetään käyttäjälle (painike), mutta nollataan osoittimet
   state.teamTurn = 0;
   state.playerTurns = {};
   state.ended = false;
   saveState();
 }
 
-// TIIMIT & PELAAJAT
+// --- TIIMIT & PELAAJAT ---
 export function addTeam(name){
   const nm = String(name||"").trim();
   if (!nm) return false;
   if (state.teams.some(t => t.name.toLowerCase() === nm.toLowerCase())) return false;
 
   pushHistory();
+
+  // 1) Lisää tiimi
   state.teams.push({ id: newId(), name: nm, score: 0, active: true, players: [] });
-  state.selectedTeam = state.teams.length - 1;
-  if (!state.teamOrder.length){
+
+  // 2) Päivitä teamOrder JOKA KERTA
+  const newIdx = state.teams.length - 1;
+  if (!state.teamOrder.length) {
     state.teamOrder = state.teams.map((_, i) => i);
-    state.teamTurn = 0;
+  } else if (!state.teamOrder.includes(newIdx)) {
+    state.teamOrder.push(newIdx);
   }
+
+  // 3) Valitaan uusin tiimi helpoksi kohteeksi lisäyksille
+  state.selectedTeam = newIdx;
+
+  // 4) Alusta tiimin sisäinen pelaajavuoro-osoitin
+  if (state.playerTurns[newIdx] == null) state.playerTurns[newIdx] = 0;
+
+  state.ended = false;
   saveState();
   return true;
 }
@@ -111,7 +135,7 @@ export function addPlayerToSelectedTeam(name){
   return { ok:true };
 }
 
-// ARVONTA
+// --- ARVONTA ---
 export function shuffleOrder(){
   if (state.teams.length < 2) throw new Error("Lisää vähintään kaksi tiimiä.");
   if (state.teams.some(t => t.players.length === 0)) throw new Error("Jokaisessa tiimissä oltava vähintään 1 pelaaja.");
@@ -130,7 +154,7 @@ export function shuffleOrder(){
   return getCurrent();
 }
 
-// KUKA HEITTÄÄ?
+// --- KUKA HEITTÄÄ? ---
 export function getCurrent(){
   if (!state.teamOrder.length) return null;
   const teamIdx = state.teamOrder[state.teamTurn] ?? 0;
@@ -143,7 +167,7 @@ export function getCurrent(){
   return { teamIdx, team, playerIdx: pIdx, player };
 }
 
-// SEURAAVA
+// --- SEURAAVA ---
 function nextTurn(){
   if (state.teams.every(t => !t.active || t.players.every(p => !p.active))){
     state.ended = true; saveState(); return null;
@@ -169,7 +193,7 @@ function nextTurn(){
   return getCurrent();
 }
 
-// HEITTO (pisteet tiimille, hutit pelaajalle)
+// --- HEITTO (pisteet tiimille, hudit pelaajalle) ---
 export function applyThrowToCurrent(throwType, value){
   if (state.ended) return { error:"Peli on jo päättynyt." };
   const cur = getCurrent();
@@ -183,10 +207,8 @@ export function applyThrowToCurrent(throwType, value){
   const { player: updatedPlayer, events } = applyThrow(player, throwType, value);
   team.players[playerIdx] = updatedPlayer;
 
-  let gained = 0;
   if (throwType !== ThrowType.MISS){
-    // pisteet = value (1..12 tai 2..12); Mölkyn erikoissäännöt tiimin kokonaissaldoon
-    gained = value;
+    const gained = value; // 1..12 (tai 2..12)
     const { score, win, bounced } = applyScoreRules(team.score, gained);
     team.score = score;
     if (bounced && !events.includes("BOUNCE_TO_25")) events.push("BOUNCE_TO_25");

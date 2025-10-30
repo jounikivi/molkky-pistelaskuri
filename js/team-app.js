@@ -1,4 +1,4 @@
-// team-app.js — UI joukkuepelille
+// team-app.js — Joukkue-UI: pelaajan lisäys kortin sisällä
 import { ThrowType, throwFromRawInput } from "./rules.js";
 import {
   loadOrInit, getState, resetAll, canUndo, undoLastAction,
@@ -21,6 +21,27 @@ function colorFor(i){
   return palette[i % palette.length];
 }
 
+// ----------- Gating -----------
+function canShuffle(st){
+  return st.teams.length >= 2 && st.teams.every(t => t.players.length >= 1);
+}
+function canThrowNow(){
+  return !!getCurrent(); // current löytyy vasta arvonnan jälkeen
+}
+function updateControlsState(){
+  const st = getState();
+
+  $("#emptyState").style.display = st.teams.length === 0 ? "block" : "none";
+  $("#shuffle").toggleAttribute("disabled", !canShuffle(st));
+
+  const throwing = canThrowNow();
+  $$(".quick-btn").forEach(b => b.toggleAttribute("disabled", !throwing));
+  $("#freeInput").toggleAttribute("disabled", !throwing);
+  $("#submitFree").toggleAttribute("disabled", !throwing);
+
+  $("#undo")?.toggleAttribute("disabled", !canUndo());
+}
+
 function render(){
   const st = getState();
   const cur = getCurrent();
@@ -32,8 +53,8 @@ function render(){
   const wrap = $("#teamsGrid");
   wrap.innerHTML = "";
 
-  // Näytä kortit teamOrderin mukaan (väripaletti sidottu järjestykseen)
-  st.teamOrder.forEach((tIdx, iInOrder) => {
+  const order = st.teamOrder.length ? st.teamOrder : st.teams.map((_, i)=>i);
+  order.forEach((tIdx, iInOrder) => {
     const team = st.teams[tIdx];
     const card = document.createElement("div");
     card.className = "player-card";
@@ -42,44 +63,53 @@ function render(){
     if (team.score === 50) card.classList.add("winner");
 
     const playersHtml = (team.players.length === 0)
-      ? `<div class="meta">Lisää pelaajia tähän tiimiin</div>`
+      ? `<div class="meta">Ei pelaajia</div>`
       : team.players.map((p, pi) => {
           const activeMark = (cur && cur.teamIdx===tIdx && cur.playerIdx===pi) ? "🔵" : (p.active ? "🟢" : "⚫");
           const miss = p.active ? ` · Hutit: ${p.misses}/3` : " · Poistunut";
           return `<div class="meta">${activeMark} ${p.name}${miss}</div>`;
         }).join("");
 
+    // kortin sisäinen syöte + nappi
     card.innerHTML = `
       <h3>${team.name}</h3>
       <div class="score">${team.score}</div>
       ${playersHtml}
+      <div class="inline-input" style="margin-top:8px">
+        <input type="text" placeholder="Pelaajan nimi" id="pn-${tIdx}" />
+        <button type="button" class="btn blue add-player-btn" data-team="${tIdx}">Lisää pelaaja</button>
+      </div>
     `;
-    card.tabIndex = 0;
-    card.addEventListener("click", () => { setSelectedTeam(tIdx); highlightSelectedTeam(); });
+
     wrap.appendChild(card);
   });
 
-  $("#undo")?.toggleAttribute("disabled", !canUndo());
-  highlightSelectedTeam();
-}
-
-function highlightSelectedTeam(){
-  const st = getState();
-  const selected = st.selectedTeam;
-  const cards = $$("#teamsGrid .player-card");
-  // cards[] vastaa st.teamOrder -järjestystä
-  cards.forEach((el, idx) => {
-    const teamIdxAtPosition = st.teamOrder[idx];
-    el.style.outline = (teamIdxAtPosition === selected) ? "3px solid #fff" : "";
+  // delegoitu kuuntelija: lisää pelaaja oikeaan tiimiin
+  // (poistetaan vanha kuuntelija ensin)
+  wrap.replaceWith(wrap.cloneNode(true));
+  const newWrap = $("#teamsGrid");
+  $$("#teamsGrid .add-player-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const teamIdx = parseInt(btn.dataset.team, 10);
+      const input = document.getElementById(`pn-${teamIdx}`);
+      const name = (input?.value || "").trim();
+      if (!name){ toast("Anna pelaajan nimi."); return; }
+      // käytetään olemassa olevaa APIa: valitse tiimi -> lisää siihen
+      setSelectedTeam(teamIdx);
+      const res = addPlayerToSelectedTeam(name);
+      if (!res.ok){ toast(res.error); return; }
+      input.value = "";
+      render();
+    });
   });
+
+  updateControlsState();
 }
 
-// Heitot
+// ----------- Heitot -----------
 function onQuick(value){
-  // Estä “hiljainen epäonnistuminen”: ohjaa käyttäjä arpomaan ensin
-  const cur = getCurrent();
-  if (!cur){
-    toast("Lisää vähintään 2 tiimiä ja 1 pelaaja/tiimi, sitten 'Arvo aloitusjärjestys'.");
+  if (!canThrowNow()){
+    toast("Heitto ei ole käytössä vielä. Lisää tiimit & pelaajat ja arvo aloitusjärjestys.");
     return;
   }
   try{
@@ -89,7 +119,7 @@ function onQuick(value){
       t = n === 0 ? { type: ThrowType.MISS, value: 0 }
                   : { type: ThrowType.SINGLE_PIN, value: n };
     } else {
-      t = throwFromRawInput(value); // tukee S#/M#
+      t = throwFromRawInput(value); // S# / M#
     }
     const res = applyThrowToCurrent(t.type, t.value);
     if (res?.error) toast(res.error);
@@ -109,7 +139,7 @@ function onFreeSubmit(){
   onQuick(raw);
 }
 
-// Hallinta
+// ----------- Hallinta -----------
 function onAddTeam(){
   const name = $("#teamName").value.trim();
   if (!name){ toast("Anna tiimin nimi."); return; }
@@ -118,14 +148,9 @@ function onAddTeam(){
   $("#teamName").value = "";
   render();
 }
-function onAddPlayer(){
-  const name = $("#playerName").value.trim();
-  const res = addPlayerToSelectedTeam(name);
-  if (!res.ok){ toast(res.error); return; }
-  $("#playerName").value = "";
-  render();
-}
 function onShuffle(){
+  const st = getState();
+  if (!canShuffle(st)){ toast("Tarvitset vähintään 2 tiimiä ja 1 pelaajan per tiimi."); return; }
   try{
     const first = shuffleOrder();
     toast(`Aloittaa: ${first.team.name} – ${first.player.name}`);
@@ -139,7 +164,6 @@ function onUndo(){
   const ok = undoLastAction();
   if (ok){ toast("Peruttu viimeisin."); render(); }
 }
-
 function onNewSame(){
   newGameSameRoster();
   toast("Uusi peli – kokoonpano säilytettiin. Arvo aloitusjärjestys.");
@@ -151,16 +175,17 @@ function onNewFresh(){
   render();
 }
 
-// Init
+// ----------- Init -----------
 document.addEventListener("DOMContentLoaded", () => {
   loadOrInit();
 
+  // Heittonapit
   $$(".quick-btn").forEach(btn => btn.addEventListener("click", () => onQuick(btn.dataset.score)));
   $("#submitFree")?.addEventListener("click", onFreeSubmit);
   $("#freeInput")?.addEventListener("keydown", (e) => { if (e.key==="Enter"){ e.preventDefault(); onFreeSubmit(); } });
 
+  // Hallinta
   $("#addTeam")?.addEventListener("click", onAddTeam);
-  $("#addPlayer")?.addEventListener("click", onAddPlayer);
   $("#shuffle")?.addEventListener("click", onShuffle);
   $("#undo")?.addEventListener("click", onUndo);
   $("#newSame")?.addEventListener("click", onNewSame);
