@@ -1,8 +1,17 @@
+// =========================================================
+// MÖLKKY – YKSILÖPELI script.js  (päivitetty: 30.10.2025)
+// Sisältää: pikanapit (0–12), heittotapa-kytkin (yksi keila / useita),
+// tiukempi syötteen validointi ja nykyinen sääntölogiikka.
+// =========================================================
+
 let players = [];
 let vuoroIndex = 0;
 let vuorojarjestys = [];
 let peliPaattynyt = false;
 
+/* -----------------------------
+   Ilmoitukset
+------------------------------*/
 function showNotification(message, duration = 3000) {
   const note = document.getElementById("notification");
   if (!note) return;
@@ -13,6 +22,9 @@ function showNotification(message, duration = 3000) {
   }, duration);
 }
 
+/* -----------------------------
+   Pelaajien hallinta
+------------------------------*/
 function addPlayer() {
   const nameInput = document.getElementById("playerName");
   const name = nameInput.value.trim();
@@ -29,11 +41,12 @@ function addPlayer() {
   // Näytetään viimeksi lisätty pelaaja ennen aloittajaa
   if (vuorojarjestys.length > 0) {
     const viimeisin = vuorojarjestys[vuorojarjestys.length - 1];
-    document.getElementById("vuoroNaytto").textContent = "Lisätty: " + viimeisin.name;
-    document.getElementById("vuorossaPisteet").textContent = viimeisin.score;
+    const vuoroN = document.getElementById("vuoroNaytto");
+    const piste = document.getElementById("vuorossaPisteet");
+    if (vuoroN) vuoroN.textContent = "Lisätty: " + viimeisin.name;
+    if (piste) piste.textContent = viimeisin.score;
   }
 }
-
 
 function arvoAloittaja() {
   if (players.length < 2) {
@@ -42,6 +55,7 @@ function arvoAloittaja() {
   }
 
   vuorojarjestys = [...players];
+  // Fisher–Yates
   for (let i = vuorojarjestys.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [vuorojarjestys[i], vuorojarjestys[j]] = [vuorojarjestys[j], vuorojarjestys[i]];
@@ -53,25 +67,33 @@ function arvoAloittaja() {
   paivitaVuoroNaytto();
 }
 
+/* -----------------------------
+   Heiton käsittely
+------------------------------*/
 function lisaaPisteetVuorossa() {
   if (peliPaattynyt) {
     showNotification("Peli on jo päättynyt.");
     return;
   }
 
-  const input = document.getElementById("vuorossaInput");
-  const pisteetStr = input.value.trim();
-  input.value = "";
+  const inputEl = document.getElementById("vuorossaInput");
+  const raw = (inputEl?.value ?? "").trim();
+  if (inputEl) inputEl.value = "";
 
-  if (!/^([0-9]|1[0-2])$/.test(pisteetStr)) {
+  const pisteet = Number(raw);
+  if (!Number.isInteger(pisteet) || pisteet < 0 || pisteet > 12) {
     showNotification("Syötä pisteet väliltä 0–12 (0 = huti).");
     return;
   }
 
-  const pisteet = parseInt(pisteetStr);
   const pelaaja = vuorojarjestys[vuoroIndex];
+  if (!pelaaja) {
+    showNotification("Lisää pelaajat ja arvo aloittaja.");
+    return;
+  }
 
   if (pisteet === 0) {
+    // Huti
     pelaaja.misses += 1;
 
     if (pelaaja.misses >= 3) {
@@ -95,6 +117,7 @@ function lisaaPisteetVuorossa() {
       showNotification(`${pelaaja.name} heitti ohi (${pelaaja.misses}/3)`);
     }
   } else {
+    // Osuma
     pelaaja.score += pisteet;
     pelaaja.misses = 0;
 
@@ -104,9 +127,9 @@ function lisaaPisteetVuorossa() {
     } else if (pelaaja.score === 50) {
       showNotification(`${pelaaja.name} voitti pelin! 🎉`);
       peliPaattynyt = true;
+      renderPlayers();
+      paivitaVuoroNaytto();
       return;
-    } else {
-      // Pelaaja sai pisteitä, mutta ei näytetä siitä erillistä ilmoitusta
     }
   }
 
@@ -114,19 +137,31 @@ function lisaaPisteetVuorossa() {
 }
 
 function seuraavaVuoro() {
+  if (!vuorojarjestys.length) return;
   vuoroIndex = (vuoroIndex + 1) % vuorojarjestys.length;
   renderPlayers();
   paivitaVuoroNaytto();
 }
 
+/* -----------------------------
+   UI-päivitykset
+------------------------------*/
 function paivitaVuoroNaytto() {
   const vuorossa = vuorojarjestys[vuoroIndex];
-  document.getElementById("vuoroNaytto").textContent = "Vuorossa: " + vuorossa.name;
-  document.getElementById("vuorossaPisteet").textContent = vuorossa.score;
+  const naytto = document.getElementById("vuoroNaytto");
+  const piste = document.getElementById("vuorossaPisteet");
+  if (!vuorossa) {
+    if (naytto) naytto.textContent = "Vuorossa: -";
+    if (piste) piste.textContent = "0";
+    return;
+  }
+  if (naytto) naytto.textContent = "Vuorossa: " + vuorossa.name;
+  if (piste) piste.textContent = vuorossa.score;
 }
 
 function renderPlayers() {
   const container = document.getElementById("playerCards");
+  if (!container) return;
   container.innerHTML = "";
 
   vuorojarjestys.forEach((player, index) => {
@@ -145,7 +180,8 @@ function renderPlayers() {
 
   if (vuorojarjestys.length > 0) {
     const vuorossa = vuorojarjestys[vuoroIndex];
-    document.getElementById("vuorossaPisteet").textContent = vuorossa.score;
+    const piste = document.getElementById("vuorossaPisteet");
+    if (piste) piste.textContent = vuorossa.score;
     scrollaaVuorossaKortti();
   }
 }
@@ -160,7 +196,7 @@ function scrollaaVuorossaKortti() {
   if (!cards.length) return;
   const vuorossa = vuorojarjestys[vuoroIndex];
   cards.forEach(card => {
-    if (card.dataset.name === vuorossa.name) {
+    if (card.dataset.name === vuorossa?.name) {
       card.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   });
@@ -171,20 +207,66 @@ function resetGame() {
   vuorojarjestys = [];
   vuoroIndex = 0;
   peliPaattynyt = false;
-  document.getElementById("playerCards").innerHTML = "";
-  document.getElementById("vuoroNaytto").textContent = "Vuorossa: -";
-  document.getElementById("vuorossaPisteet").textContent = "0";
-  document.getElementById("vuorossaInput").value = "";
+
+  const pc = document.getElementById("playerCards");
+  if (pc) pc.innerHTML = "";
+
+  const vn = document.getElementById("vuoroNaytto");
+  const vp = document.getElementById("vuorossaPisteet");
+  const vi = document.getElementById("vuorossaInput");
+  if (vn) vn.textContent = "Vuorossa: -";
+  if (vp) vp.textContent = "0";
+  if (vi) vi.value = "";
+
   showNotification("Peli on nollattu.");
 }
 
+/* -----------------------------
+   Pikanapit ja heittotapa
+------------------------------*/
+function setScoreAndSubmit(value) {
+  const input = document.getElementById("vuorossaInput");
+  if (!input) return;
+  input.value = String(value);
+  lisaaPisteetVuorossa();
+}
+
+function toggleThrowMode(isSingle) {
+  const gridSingle = document.getElementById("grid-single");
+  const gridMulti = document.getElementById("grid-multi");
+  if (gridSingle && gridMulti) {
+    gridSingle.classList.toggle("hidden", !isSingle);
+    gridMulti.classList.toggle("hidden", isSingle);
+  }
+}
+
+/* -----------------------------
+   Tapahtumankuuntelijat
+------------------------------*/
 document.addEventListener("DOMContentLoaded", () => {
+  // Päänapit
   const nappi = document.getElementById("vuorossaNappi");
-  if (nappi) {
-    nappi.addEventListener("click", lisaaPisteetVuorossa);
-  }
+  if (nappi) nappi.addEventListener("click", lisaaPisteetVuorossa);
   const addBtn = document.getElementById("addPlayerBtn");
-  if (addBtn) {
-    addBtn.addEventListener("click", addPlayer);
+  if (addBtn) addBtn.addEventListener("click", addPlayer);
+
+  // Heittotavan kytkin (radio)
+  const modeSingle = document.getElementById("mode-single");
+  const modeMulti  = document.getElementById("mode-multi");
+  if (modeSingle && modeMulti) {
+    modeSingle.addEventListener("change", () => toggleThrowMode(true));
+    modeMulti.addEventListener("change", () => toggleThrowMode(false));
+    // aloitusarvo
+    toggleThrowMode(true);
   }
+
+  // Pikanapit (0–12)
+  document.querySelectorAll(".quick-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const val = parseInt(e.currentTarget.dataset.score, 10);
+      if (Number.isInteger(val) && val >= 0 && val <= 12) {
+        setScoreAndSubmit(val);
+      }
+    });
+  });
 });

@@ -20,26 +20,71 @@
         <main>
             <!-- Vuorossa oleva pelaaja -->
             <section class="vuorossa-kortti" id="vuoroBox">
-                <div class="vuorossa-nimi" id="vuoroNaytto">Vuorossa: -</div>
-                <div class="vuorossa-pisteet">
-                    <div class="pisteet-iso" id="vuorossaPisteet">0</div>
-                    <label for="vuorossaInput">Pisteet (1–12)</label>
-                    <input type="number" id="vuorossaInput" placeholder="1–12" min="0" max="12" />
-                    <button id="vuorossaNappi">Pisteet</button>
-                </div>
-            </section>
+  <div class="vuorossa-nimi" id="vuoroNaytto">Vuorossa: -</div>
 
-            <!-- Pelaajakortit -->
-            <div class="pelaajakortit" id="playerCards"></div>
+  <!-- Heittotapa: yksi keila vs useita keiloja -->
+  <fieldset class="throw-mode" aria-label="Heittotapa">
+    <label>
+      <input type="radio" name="throwMode" id="mode-single" checked>
+      Yksi keila (numero 1–12)
+    </label>
+    <label>
+      <input type="radio" name="throwMode" id="mode-multi">
+      Useita keiloja (määrä 2–12)
+    </label>
+  </fieldset>
 
-            <!-- Pelaajien lisääminen ja pelin hallinta -->
-            <section class="toiminnot">
-                <label for="playerName">Pelaajan nimi</label>
-                <input type="text" id="playerName" placeholder="Pelaajan nimi"/>
-                <button id="addPlayerBtn">Lisää</button>
-                <button onclick="arvoAloittaja()">Arvo aloittaja</button>
-                <button onclick="resetGame()">Nollaa peli</button>
-            </section>
+  <div class="vuorossa-pisteet">
+    <div class="pisteet-iso" id="vuorossaPisteet">0</div>
+
+    <!-- Pikanapit -->
+    <div class="quick-row">
+      <button class="quick-btn miss" data-score="0" aria-label="Huti, 0 pistettä">Huti (0)</button>
+    </div>
+
+    <!-- Yksi keila: keilan NUMERO 1–12 -->
+    <div class="quick-grid" id="grid-single" aria-label="Keilan numero">
+      <!-- 1..12 -->
+      <button class="quick-btn" data-score="1">1</button>
+      <button class="quick-btn" data-score="2">2</button>
+      <button class="quick-btn" data-score="3">3</button>
+      <button class="quick-btn" data-score="4">4</button>
+      <button class="quick-btn" data-score="5">5</button>
+      <button class="quick-btn" data-score="6">6</button>
+      <button class="quick-btn" data-score="7">7</button>
+      <button class="quick-btn" data-score="8">8</button>
+      <button class="quick-btn" data-score="9">9</button>
+      <button class="quick-btn" data-score="10">10</button>
+      <button class="quick-btn" data-score="11">11</button>
+      <button class="quick-btn" data-score="12">12</button>
+    </div>
+
+    <!-- Useita keiloja: KAADETTUJEN MÄÄRÄ 2–12 -->
+    <div class="quick-grid hidden" id="grid-multi" aria-label="Kaadettujen määrä">
+      <!-- 2..12 -->
+      <button class="quick-btn" data-score="2">2</button>
+      <button class="quick-btn" data-score="3">3</button>
+      <button class="quick-btn" data-score="4">4</button>
+      <button class="quick-btn" data-score="5">5</button>
+      <button class="quick-btn" data-score="6">6</button>
+      <button class="quick-btn" data-score="7">7</button>
+      <button class="quick-btn" data-score="8">8</button>
+      <button class="quick-btn" data-score="9">9</button>
+      <button class="quick-btn" data-score="10">10</button>
+      <button class="quick-btn" data-score="11">11</button>
+      <button class="quick-btn" data-score="12">12</button>
+    </div>
+
+    <!-- Vapaa syöte varalle -->
+    <label for="vuorossaInput" class="assistive">Syötä pisteet (0–12, 0 = huti)</label>
+    <div class="inline-input">
+      <input type="number" id="vuorossaInput" placeholder="0–12" min="0" max="12" inputmode="numeric" />
+      <button id="vuorossaNappi" class="btn blue">Lisää pisteet</button>
+    </div>
+    <p class="help">Vinkki: valitse <strong>Yksi keila</strong> jos kaadit vain yhden keilan (pisteet = keilan numero). Valitse <strong>Useita keiloja</strong> jos kaadit useita (pisteet = kaadettujen määrä). Yli 50 → takaisin 25. 3 hutia → poistuminen/ohitus.</p>
+  </div>
+</section>
+
         </main>
     </div>
 
