@@ -363,5 +363,34 @@ button:focus-visible, .btn:focus-visible, input:focus-visible {
 }
 .bullets { margin: 0; padding-left: 18px; }
 .link { display: inline-block; margin-top: 8px; color: var(--secondary); text-decoration: none; }
-.link:hover { text-decoration: underline; }
+.link:hover { text-decoration: underline; 
+}
+
+/* --- Ikonipainikkeet & kortin yläreuna --- */
+.card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.icon-btn {
+  background: rgba(255,255,255,.18);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.icon-btn:hover { filter: brightness(1.05); }
+.icon-btn.danger { background: rgba(231, 76, 60, .85); }
+.player-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.player-row .icon-btn { flex-shrink: 0; }
+
+
+
 

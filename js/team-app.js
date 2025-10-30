@@ -1,10 +1,10 @@
-// team-app.js — Joukkue-UI: pelaajan lisäys kortin sisällä
+// team-app.js — Joukkue-UI: pelaajan lisäys kortin sisällä + poista-toiminnot
 import { ThrowType, throwFromRawInput } from "./rules.js";
 import {
   loadOrInit, getState, resetAll, canUndo, undoLastAction,
   addTeam, setSelectedTeam, addPlayerToSelectedTeam,
   shuffleOrder, getCurrent, applyThrowToCurrent,
-  newGameSameRoster
+  newGameSameRoster, removeTeam, removePlayer
 } from "./teamState.js";
 
 const $  = (s)=>document.querySelector(s);
@@ -21,12 +21,11 @@ function colorFor(i){
   return palette[i % palette.length];
 }
 
-// ----------- Gating -----------
 function canShuffle(st){
   return st.teams.length >= 2 && st.teams.every(t => t.players.length >= 1);
 }
 function canThrowNow(){
-  return !!getCurrent(); // current löytyy vasta arvonnan jälkeen
+  return !!getCurrent();
 }
 function updateControlsState(){
   const st = getState();
@@ -62,17 +61,25 @@ function render(){
     if (!team.active) card.classList.add("inactive");
     if (team.score === 50) card.classList.add("winner");
 
+    // Pelaajalista (sis. poistot)
     const playersHtml = (team.players.length === 0)
       ? `<div class="meta">Ei pelaajia</div>`
       : team.players.map((p, pi) => {
           const activeMark = (cur && cur.teamIdx===tIdx && cur.playerIdx===pi) ? "🔵" : (p.active ? "🟢" : "⚫");
           const miss = p.active ? ` · Hutit: ${p.misses}/3` : " · Poistunut";
-          return `<div class="meta">${activeMark} ${p.name}${miss}</div>`;
+          return `
+            <div class="meta player-row">
+              <span>${activeMark} ${p.name}${miss}</span>
+              <button class="icon-btn danger" aria-label="Poista pelaaja" data-del-player="${pi}" data-team="${tIdx}">🗑</button>
+            </div>`;
         }).join("");
 
-    // kortin sisäinen syöte + nappi (täysleveä mobiilissa, vierekkäin leveämmällä)
+    // Kortin sisältö: otsikko + poista-tiimi, pisteet, pelaajat, lisäys
     card.innerHTML = `
-      <h3>${team.name}</h3>
+      <div class="card-top">
+        <h3>${team.name}</h3>
+        <button class="icon-btn" aria-label="Poista tiimi" data-del-team="${tIdx}">🗑</button>
+      </div>
       <div class="score">${team.score}</div>
       ${playersHtml}
       <div class="inline-input">
@@ -81,7 +88,7 @@ function render(){
       </div>
     `;
 
-    // kiinnitä kortin sisäisen napin toiminta
+    // Lisäys + Enter
     const addBtn  = card.querySelector(".add-player-btn");
     const inputEl = card.querySelector(`#pn-${tIdx}`);
     addBtn.addEventListener("click", () => {
@@ -93,6 +100,33 @@ function render(){
       inputEl.value = "";
       render();
     });
+    inputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){ e.preventDefault(); addBtn.click(); }
+    });
+
+    // Poista pelaaja
+    card.querySelectorAll('[data-del-player]').forEach(btn => {
+      btn.addEventListener("click", () => {
+        const pi   = parseInt(btn.getAttribute("data-del-player"), 10);
+        const tIdx2 = parseInt(btn.getAttribute("data-team"), 10);
+        const pName = team.players[pi]?.name || "pelaaja";
+        if (!confirm(`Poistetaanko ${pName} tiimistä ${team.name}?`)) return;
+        const ok = removePlayer(tIdx2, pi);
+        if (!ok) { toast("Poisto epäonnistui."); return; }
+        toast(`Pelaaja poistettu.`);
+        render();
+      });
+    });
+
+    // Poista tiimi
+    const delTeamBtn = card.querySelector('[data-del-team]');
+    delTeamBtn.addEventListener("click", () => {
+      if (!confirm(`Poistetaanko tiimi ${team.name}?`)) return;
+      const ok = removeTeam(tIdx);
+      if (!ok) { toast("Poisto epäonnistui."); return; }
+      toast(`Tiimi poistettu.`);
+      render();
+    });
 
     wrap.appendChild(card);
   });
@@ -100,7 +134,7 @@ function render(){
   updateControlsState();
 }
 
-// ----------- Heitot -----------
+/* ----------- Heitot ----------- */
 function onQuick(value){
   if (!canThrowNow()){
     toast("Heitto ei ole käytössä vielä. Lisää tiimit & pelaajat ja arvo aloitusjärjestys.");
@@ -133,7 +167,7 @@ function onFreeSubmit(){
   onQuick(raw);
 }
 
-// ----------- Hallinta -----------
+/* ----------- Hallinta ----------- */
 function onAddTeam(){
   const name = $("#teamName").value.trim();
   if (!name){ toast("Anna tiimin nimi."); return; }
@@ -169,7 +203,7 @@ function onNewFresh(){
   render();
 }
 
-// ----------- Init -----------
+/* ----------- Init ----------- */
 document.addEventListener("DOMContentLoaded", () => {
   loadOrInit();
 

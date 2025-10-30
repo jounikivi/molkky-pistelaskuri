@@ -1,4 +1,4 @@
-// teamState.js — JOUKKUEPELIN tila, vuorotus ja pysyvyys + UNDO + reset-tilat
+// teamState.js — JOUKKUEPELIN tila, vuorotus ja pysyvyys + UNDO + reset + remove
 import { ThrowType, applyThrow, createPlayerState, applyScoreRules } from "./rules.js";
 
 const STORAGE_KEY   = "molkky:team:state:v1";
@@ -23,7 +23,17 @@ let history = [];
 let nextId  = 1;
 const newId = () => nextId++;
 
-// --- Storage ---
+/* ---------- Sanitointi & duplikaattien kanonisointi ---------- */
+function sanitizeName(raw) {
+  return String(raw || "")
+    .replace(/[<>"]/g, "")   // karkeat XSS-merkinnät pois
+    .replace(/\s+/g, " ")    // monivälit -> yksi väli
+    .trim()
+    .slice(0, 40);           // pituusraja
+}
+const canon = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
+
+/* ---------- Storage ---------- */
 function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function loadState(){
   const raw = localStorage.getItem(STORAGE_KEY);
@@ -41,23 +51,20 @@ function loadHistory(){
 function pushHistory(){ history.push(deepCopy(state)); saveHistory(); }
 function popHistory(){ const p = history.pop() || null; saveHistory(); return p; }
 
-// --- teamOrder varmistus (korjaa vanhat tallennukset & pitää listan synkassa) ---
+/* ---------- teamOrder-synkka ---------- */
 function ensureTeamOrderSync(){
   const should = state.teams.map((_, i) => i);
-  if (
-    state.teamOrder.length !== should.length ||
-    !should.every(i => state.teamOrder.includes(i))
-  ){
+  if (state.teamOrder.length !== should.length || !should.every(i => state.teamOrder.includes(i))){
     state.teamOrder = should;
   }
 }
 
-// --- Public API ---
+/* ---------- Public API ---------- */
 export function loadOrInit(){
   const loaded = loadState();
   state = loaded ?? createEmptyState();
   history = loadHistory();
-  ensureTeamOrderSync();           // << tärkeä lisäys
+  ensureTeamOrderSync();
   saveState();
   return !!loaded;
 }
@@ -70,7 +77,6 @@ export function undoLastAction(){
 }
 export function resetAll(){ pushHistory(); state = createEmptyState(); saveState(); }
 
-// UUSI: resetoi pisteet & hutiputket, mutta säilytä kokoonpano
 export function newGameSameRoster(){
   pushHistory();
   state.teams.forEach(t => {
@@ -83,18 +89,16 @@ export function newGameSameRoster(){
   saveState();
 }
 
-// --- TIIMIT & PELAAJAT ---
+/* ---------- TIIMIT & PELAAJAT ---------- */
 export function addTeam(name){
-  const nm = String(name||"").trim();
+  const nm = sanitizeName(name);
   if (!nm) return false;
-  if (state.teams.some(t => t.name.toLowerCase() === nm.toLowerCase())) return false;
+  if (state.teams.some(t => canon(t.name) === canon(nm))) return false;
 
   pushHistory();
 
-  // 1) Lisää tiimi
   state.teams.push({ id: newId(), name: nm, score: 0, active: true, players: [] });
 
-  // 2) Päivitä teamOrder JOKA KERTA
   const newIdx = state.teams.length - 1;
   if (!state.teamOrder.length) {
     state.teamOrder = state.teams.map((_, i) => i);
@@ -102,10 +106,7 @@ export function addTeam(name){
     state.teamOrder.push(newIdx);
   }
 
-  // 3) Valitaan uusin tiimi helpoksi kohteeksi lisäyksille
   state.selectedTeam = newIdx;
-
-  // 4) Alusta tiimin sisäinen pelaajavuoro-osoitin
   if (state.playerTurns[newIdx] == null) state.playerTurns[newIdx] = 0;
 
   state.ended = false;
@@ -119,13 +120,13 @@ export function setSelectedTeam(idx){
 }
 
 export function addPlayerToSelectedTeam(name){
-  const nm = String(name||"").trim();
+  const nm = sanitizeName(name);
   if (!nm) return { ok:false, error:"Anna pelaajan nimi." };
   const tIdx = state.selectedTeam;
   if (tIdx == null) return { ok:false, error:"Valitse ensin tiimi." };
   const team = state.teams[tIdx];
   if (!team) return { ok:false, error:"Virheellinen tiimi." };
-  if (team.players.some(p => p.name.toLowerCase() === nm.toLowerCase()))
+  if (team.players.some(p => canon(p.name) === canon(nm)))
     return { ok:false, error:"Nimi jo käytössä tässä tiimissä." };
 
   pushHistory();
@@ -135,7 +136,108 @@ export function addPlayerToSelectedTeam(name){
   return { ok:true };
 }
 
-// --- ARVONTA ---
+/* ---------- Poista-toiminnot ---------- */
+export function removePlayer(teamIdx, playerIdx){
+  if (teamIdx == null || playerIdx == null) return false;
+  const team = state.teams[teamIdx]; if (!team) return false;
+  if (!team.players[playerIdx]) return false;
+
+  pushHistory();
+
+  // Jos poistetaan nykyinen heittäjä, siirretään vuoro eteenpäin
+  const isCurrentTeam = state.teamOrder[state.teamTurn] === teamIdx;
+  const curP = state.playerTurns[teamIdx] ?? 0;
+  const removingCurrent = isCurrentTeam && curP === playerIdx;
+
+  team.players.splice(playerIdx, 1);
+
+  // Säädä playerTurn indeksiä
+  if (!team.players.length){
+    team.active = false;
+    delete state.playerTurns[teamIdx];
+  } else {
+    let pt = state.playerTurns[teamIdx] ?? 0;
+    if (playerIdx < pt) pt = Math.max(0, pt - 1);
+    if (pt >= team.players.length) pt = 0;
+    state.playerTurns[teamIdx] = pt;
+  }
+
+  // Jos poistettiin juuri vuorossa ollut pelaaja, koita löytää uusi current
+  if (removingCurrent){
+    // Jos tiimissä on vielä aktiivisia, pysy tässä tiimissä, muuten siirry seuraavaan turniin
+    const hasActive = team.players.some(p => p.active);
+    if (!hasActive) team.active = false;
+  }
+
+  // Jos kaikki tiimit kuolleet -> peli päättyy
+  if (state.teams.every(t => !t.active || t.players.every(p => !p.active))){
+    state.ended = true;
+  }
+
+  // Jos poistettiin viimeinen tiimin pelaaja ja current osoitti tähän tiimiin, siirretään seuraavaan tiimiin
+  if ((!team.players.length || !team.active) && state.teamOrder[state.teamTurn] === teamIdx){
+    // stepataan seuraavaan tiimiin, kunnes löytyy aktiivinen
+    const len = state.teamOrder.length;
+    for (let step=0; step<len; step++){
+      state.teamTurn = (state.teamTurn + 1) % len;
+      const tIdx2 = state.teamOrder[state.teamTurn];
+      const t2 = state.teams[tIdx2];
+      if (t2 && t2.active && t2.players.some(p=>p.active)) break;
+    }
+  }
+
+  saveState();
+  return true;
+}
+
+export function removeTeam(teamIdx){
+  if (teamIdx == null) return false;
+  if (!state.teams[teamIdx]) return false;
+
+  pushHistory();
+
+  // Poista tiimi
+  state.teams.splice(teamIdx, 1);
+
+  // Päivitä teamOrder indeksit
+  state.teamOrder = state.teamOrder
+    .filter(i => i !== teamIdx)
+    .map(i => i > teamIdx ? i - 1 : i);
+
+  // Päivitä playerTurns indeksit
+  const newPT = {};
+  Object.keys(state.playerTurns).forEach(k => {
+    const idx = parseInt(k, 10);
+    if (idx === teamIdx) return;
+    const newIdx = idx > teamIdx ? idx - 1 : idx;
+    newPT[newIdx] = state.playerTurns[idx];
+  });
+  state.playerTurns = newPT;
+
+  // Säädä teamTurn
+  if (state.teamTurn >= state.teamOrder.length) state.teamTurn = 0;
+
+  // Korjaa selectedTeam
+  if (state.selectedTeam != null){
+    if (state.selectedTeam === teamIdx) state.selectedTeam = null;
+    else if (state.selectedTeam > teamIdx) state.selectedTeam -= 1;
+  }
+
+  ensureTeamOrderSync();
+
+  // Jos ei yhtään tiimiä -> resetoi perusosoittimet
+  if (!state.teams.length){
+    state.teamOrder = [];
+    state.teamTurn = 0;
+    state.playerTurns = {};
+    state.ended = false;
+  }
+
+  saveState();
+  return true;
+}
+
+/* ---------- ARVONTA ---------- */
 export function shuffleOrder(){
   if (state.teams.length < 2) throw new Error("Lisää vähintään kaksi tiimiä.");
   if (state.teams.some(t => t.players.length === 0)) throw new Error("Jokaisessa tiimissä oltava vähintään 1 pelaaja.");
@@ -154,7 +256,7 @@ export function shuffleOrder(){
   return getCurrent();
 }
 
-// --- KUKA HEITTÄÄ? ---
+/* ---------- KUKA HEITTÄÄ? ---------- */
 export function getCurrent(){
   if (!state.teamOrder.length) return null;
   const teamIdx = state.teamOrder[state.teamTurn] ?? 0;
@@ -167,7 +269,7 @@ export function getCurrent(){
   return { teamIdx, team, playerIdx: pIdx, player };
 }
 
-// --- SEURAAVA ---
+/* ---------- SEURAAVA ---------- */
 function nextTurn(){
   if (state.teams.every(t => !t.active || t.players.every(p => !p.active))){
     state.ended = true; saveState(); return null;
@@ -193,7 +295,7 @@ function nextTurn(){
   return getCurrent();
 }
 
-// --- HEITTO (pisteet tiimille, hudit pelaajalle) ---
+/* ---------- HEITTO (pisteet tiimille, hudit pelaajalle) ---------- */
 export function applyThrowToCurrent(throwType, value){
   if (state.ended) return { error:"Peli on jo päättynyt." };
   const cur = getCurrent();
