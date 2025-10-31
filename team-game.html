@@ -4,30 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Mölkky – Joukkuepeli</title>
-  <meta name="description" content="Mölkky-pistelaskuri: joukkuepeli, vuorotus tiimeittäin, mobile-first." />
   <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121417" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <div class="app-card">
-    <header class="app-header">
-      <h1>Mölkky – Joukkuepeli</h1>
-      <nav class="topnav">
-        <a href="./game.html" class="devlink">Yksilöpeli</a>
-      </nav>
-    </header>
+  <header class="site-header">
+    <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
+    <h1 class="brand">Mölkky</h1>
+    <nav id="siteNav" class="nav-drawer" aria-label="Päävalikko">
+      <a href="./index.html" data-nav>Etusivu</a>
+      <a href="./game.html" data-nav>Yksilöpeli</a>
+      <a href="./team-game.html" data-nav>Joukkuepeli</a>
+      <a href="./index.html#rules" data-nav>Peliohjeet</a>
+      <hr>
+      <button id="themeQuick" class="btn ghost small">Vaihda teema</button>
+    </nav>
+  </header>
 
+  <div class="app-card">
     <main>
-      <!-- Vuorossa -->
+      <!-- Vuorossa + heittonapit -->
       <section class="turn-card" id="turnCard">
         <div class="turn-title" id="turnTitle">Vuorossa: –</div>
 
-        <!-- Heittonapit (aktivoituu arvonnan jälkeen) -->
         <div class="quick-row">
           <button type="button" class="quick-btn miss" data-score="0" aria-label="Huti, 0 pistettä">Huti (0)</button>
         </div>
@@ -50,19 +52,24 @@
           <input id="freeInput" type="text" inputmode="numeric" placeholder="0–12 (riittää)" aria-label="Vapaa syöte: 0–12">
           <button type="button" id="submitFree" class="btn blue">Lisää</button>
         </div>
-        <p class="help" id="flowHelp">
-          Vaihe 1: lisää vähintään 2 tiimiä. Vaihe 2: lisää pelaajat suoraan tiimikorteista.
-          Vaihe 3: **Arvo aloitusjärjestys** → heittonapit aktivoituvat.
+        <p class="help">
+          Lisää vähintään 2 tiimiä ja pelaajat. Arvo aloitusjärjestys, jonka jälkeen heitot aktivoituvat.
         </p>
       </section>
 
-      <!-- Tiimit & pelaajat (kortin sisäinen pelaajan lisäys) -->
+      <!-- Heittoloki -->
+      <section class="card">
+        <h3>Viimeisimmät heitot</h3>
+        <div id="throwLog" class="log-list" aria-live="polite"></div>
+      </section>
+
+      <!-- Tiimit & pelaajat -->
       <section>
         <div id="emptyState" class="help">Ei vielä tiimejä. Lisää ensimmäinen tiimi alla.</div>
         <div id="teamsGrid" class="player-grid" aria-live="polite"></div>
       </section>
 
-      <!-- Hallinta: vain tiimin lisäys + pelinhallinta -->
+      <!-- Hallinta -->
       <section class="controls">
         <h3>Lisää tiimit</h3>
         <label for="teamName">Tiimin nimi</label>
@@ -79,8 +86,22 @@
     </main>
   </div>
 
+  <!-- Voitto-modal -->
+  <div id="winModal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+      <h3 id="winTitle">Voitto!</h3>
+      <p id="winText" class="muted">—</p>
+      <div class="modal-actions">
+        <button id="winSame"  class="btn blue">Aloita uusi peli samoilla</button>
+        <button id="winFresh" class="btn danger">Aloita uusi peli uusilla</button>
+        <button id="winClose" class="btn ghost">Sulje</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <script type="module" src="./js/nav.js"></script>
   <script type="module" src="./js/team-app.js"></script>
 </body>
 </html>

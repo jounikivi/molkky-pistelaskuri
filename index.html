@@ -1,14 +1,30 @@
 <!doctype html>
 <html lang="fi">
 <head>
+  <!-- Perus -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky – Etusivu</title>
+  <title>Mölkky – Pistelaskuri</title>
+  <meta name="description" content="Kevyt ja mobiiliystävällinen Mölkky-pistelaskuri. Yksilö- ja joukkuepelit, undo, heittoloki, tilastot ja tumma/vaalea teema." />
   <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+  <!-- Sosiaalinen esikatselu -->
+  <meta property="og:title" content="Mölkky – Pistelaskuri" />
+  <meta property="og:description" content="Mobiiliystävällinen Mölkky-pistelaskuri: yksilö & joukkue, undo, loki, tilastot." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./assets/og-cover.png" />
+
+  <!-- Fontti & tyyli -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
+
+  <!-- (Valinnainen PWA-tuki) -->
+  <!-- <link rel="manifest" href="./manifest.webmanifest"> -->
+  <!-- <link rel="icon" href="./assets/icon-192.png" sizes="192x192"> -->
 </head>
 <body>
   <!-- Yhteinen navigaatio -->
@@ -25,28 +41,87 @@
     </nav>
   </header>
 
-  <main class="home">
-    <section class="hero">
-      <h2>Mölkky-pistelaskuri</h2>
-      <p>Nopea ja helppo pisteiden lasku – toimii erinomaisesti puhelimella.</p>
-      <div class="hero-actions">
-        <a class="btn blue" href="./game.html">Aloita yksilöpeli</a>
-        <a class="btn" href="./team-game.html">Aloita joukkuepeli</a>
-      </div>
-    </section>
+  <div class="app-card">
+    <main class="home" id="top">
+      <!-- Hero -->
+      <section class="hero">
+        <h2>Mölkky-pistelaskuri</h2>
+        <p>Nopea ja selkeä laskuri puhelimeen. Yksilö- ja joukkuepelit, heittoloki ja tilastot – kaikki ilman kirjautumista.</p>
+        <div class="hero-actions">
+          <a class="btn blue" href="./game.html" aria-label="Aloita yksilöpeli">Aloita yksilöpeli</a>
+          <a class="btn" href="./team-game.html" aria-label="Aloita joukkuepeli">Aloita joukkuepeli</a>
+        </div>
+      </section>
 
-    <section id="rules" class="card">
-      <h3>Peliohjeet (tiivis)</h3>
-      <ul class="bullets">
-        <li>Huti = 0 pistettä. Kolme hutia → pelaaja tippuu.</li>
-        <li>1–12 → lisätään sama pistemäärä. Halutessa käy myös S# / M# -syöte.</li>
-        <li>Yli 50 → palautus 25 pisteeseen. Tasan 50 → voitto.</li>
-        <li>Joukkuepelissä pisteet kertyvät tiimille, hutit pelaajalle.</li>
-      </ul>
-      <a class="link" href="./game.html">Katso esimerkki yksilöpelistä →</a>
-    </section>
-  </main>
+      <!-- Pelimuodot / pikakortit -->
+      <section class="grid2">
+        <article class="card">
+          <h3>🧍 Yksilöpeli</h3>
+          <ul class="bullets">
+            <li>Lisää 2+ pelaajaa ja arvo aloitus.</li>
+            <li>Heitto 0–12. 3 hutia → tippuu.</li>
+            <li>Yli 50 → 25, tasan 50 → voitto.</li>
+            <li>Undo, heittoloki ja minitilastot.</li>
+          </ul>
+          <a class="btn linklike" href="./game.html">Siirry yksilöpeliin →</a>
+        </article>
+
+        <article class="card">
+          <h3>👥 Joukkuepeli</h3>
+          <ul class="bullets">
+            <li>Lisää 2+ tiimiä ja pelaajat kortteihin.</li>
+            <li>Vuoro kiertää tiimien pelaajien välillä.</li>
+            <li>Tiimille pisteet, pelaajalle hutit.</li>
+            <li>Undo, loki ja mini-tilastot.</li>
+          </ul>
+          <a class="btn linklike" href="./team-game.html">Siirry joukkuepeliin →</a>
+        </article>
+      </section>
+
+      <!-- Säännöt -->
+      <section id="rules" class="card">
+        <h3>Peliohjeet (tiivistetysti)</h3>
+        <ul class="bullets">
+          <li><strong>Heitto:</strong> 0 = huti. 1–12 = pisteet.</li>
+          <li><strong>Yli 50:</strong> pisteet palautuvat <strong>25</strong>:een.</li>
+          <li><strong>Tasan 50:</strong> välitön voitto.</li>
+          <li><strong>Hutit:</strong> 3 peräkkäistä hutia → pelaaja tippuu.</li>
+          <li><strong>Syöte:</strong> Riittää napit 0–12. (Myös S# / M# -muoto tuettu.)</li>
+        </ul>
+        <p class="muted">Vinkki: Undo peruu viimeisimmän heiton. Peli jatkuu automaattisesti sivun päivityksen jälkeen.</p>
+      </section>
+
+      <!-- Pikakäyttöohje -->
+      <section class="card">
+        <h3>Näin aloitat 15 sekunnissa</h3>
+        <ol class="bullets">
+          <li>Avaa <em>Yksilöpeli</em> tai <em>Joukkuepeli</em>.</li>
+          <li>Lisää pelaajat / tiimit ja arvo aloitusjärjestys.</li>
+          <li>Napauta pistettä (1–12) tai huti (0).</li>
+        </ol>
+        <div class="hero-actions">
+          <a class="btn" href="./game.html">Aloita yksilöpeli</a>
+          <a class="btn" href="./team-game.html">Aloita joukkuepeli</a>
+        </div>
+      </section>
+
+      <!-- (Valinnainen) Tietosuoja / offline -->
+      <section class="card">
+        <h3>Tietosuoja</h3>
+        <p class="muted">Kaikki pelit tallennetaan vain laitteellesi (localStorage). Voit tyhjentää tiedot aloittamalla uuden pelin uusilla kokoonpanoilla.</p>
+      </section>
+    </main>
+  </div>
+
+  <footer class="app-footer">
+    <a href="#top" class="link">Takaisin ylös ↑</a>
+    <span class="muted">© <span id="year"></span> Mölkky-laskuri</span>
+  </footer>
 
   <script type="module" src="./js/nav.js"></script>
+  <script>
+    // Pieni vuosipäivitys footeriin
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

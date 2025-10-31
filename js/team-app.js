@@ -1,4 +1,4 @@
-// team-app.js — Joukkue-UI: pelaajan lisäys kortin sisällä + poista-toiminnot
+// team-app.js — Joukkue-UI: heittoloki + minitilastot + poistot + Voitto-modal
 import { ThrowType, throwFromRawInput } from "./rules.js";
 import {
   loadOrInit, getState, resetAll, canUndo, undoLastAction,
@@ -24,12 +24,10 @@ function colorFor(i){
 function canShuffle(st){
   return st.teams.length >= 2 && st.teams.every(t => t.players.length >= 1);
 }
-function canThrowNow(){
-  return !!getCurrent();
-}
+function canThrowNow(){ return !!getCurrent(); }
+
 function updateControlsState(){
   const st = getState();
-
   $("#emptyState").style.display = st.teams.length === 0 ? "block" : "none";
   $("#shuffle").toggleAttribute("disabled", !canShuffle(st));
 
@@ -39,6 +37,89 @@ function updateControlsState(){
   $("#submitFree").toggleAttribute("disabled", !throwing);
 
   $("#undo")?.toggleAttribute("disabled", !canUndo());
+}
+
+/* ---- tilastot apurit ---- */
+function statsForPlayer(logs, playerId){
+  const rows = logs.filter(l => l.playerId === playerId);
+  const throws = rows.length;
+  const misses = rows.filter(l => l.type === ThrowType.MISS).length;
+  const points = rows.reduce((s, r) => s + Math.max(0, r.points || 0), 0);
+  const avg = throws ? (points / throws) : 0;
+  const missPct = throws ? (misses / throws * 100) : 0;
+  return { throws, misses, avg, missPct };
+}
+
+function renderLog(){
+  const st = getState();
+  const box = $("#throwLog");
+  if (!box) return;
+  const last = st.logs.slice(-10).reverse();
+  if (!last.length){
+    box.innerHTML = `<div class="muted">Ei heittoja vielä.</div>`;
+    return;
+  }
+  box.innerHTML = last.map(e => {
+    const v = (e.type === ThrowType.MISS) ? "huti" : `+${e.value}`;
+    const ev = (e.events||[]).includes("WIN_50") ? " 🏆"
+              : (e.events||[]).includes("BOUNCE_TO_25") ? " ↩︎25"
+              : "";
+    const t = new Date(e.ts).toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+    return `
+      <div class="log-row">
+        <div class="log-main"><strong>${e.teamName}</strong> – ${e.playerName}</div>
+        <div class="log-val">${v}${ev}</div>
+      </div>
+      <div class="log-sub">klo ${t} • tiimin pisteet: ${e.teamScoreAfter}</div>
+    `;
+  }).join("");
+}
+
+/* ---- Voitto-modal (team) ---- */
+let winShown = false;
+
+function openWinModalTeam(winnerTeamName){
+  const bd = document.getElementById("winModal");
+  const txt = document.getElementById("winText");
+  const same = document.getElementById("winSame");
+  const fresh= document.getElementById("winFresh");
+  const close= document.getElementById("winClose");
+
+  txt.textContent = `${winnerTeamName} saavutti 50 pistettä. Onneksi olkoon!`;
+  same.textContent = "Aloita uusi peli samalla kokoonpanolla";
+
+  bd.hidden = false;
+
+  same.replaceWith(same.cloneNode(true));
+  fresh.replaceWith(fresh.cloneNode(true));
+  close.replaceWith(close.cloneNode(true));
+
+  document.getElementById("winSame").addEventListener("click", () => {
+    newGameSameRoster();
+    bd.hidden = true;
+    winShown = false;
+    render();
+  });
+  document.getElementById("winFresh").addEventListener("click", () => {
+    resetAll();
+    bd.hidden = true;
+    winShown = false;
+    render();
+  });
+  document.getElementById("winClose").addEventListener("click", () => {
+    bd.hidden = true;
+  });
+}
+
+function maybeShowWinTeam(){
+  if (winShown) return;
+  const st = getState();
+  if (!st.ended) return;
+  const winner = st.teams.find(t => t.score === 50);
+  if (winner){
+    winShown = true;
+    openWinModalTeam(winner.name);
+  }
 }
 
 function render(){
@@ -61,20 +142,24 @@ function render(){
     if (!team.active) card.classList.add("inactive");
     if (team.score === 50) card.classList.add("winner");
 
-    // Pelaajalista (sis. poistot)
     const playersHtml = (team.players.length === 0)
       ? `<div class="meta">Ei pelaajia</div>`
       : team.players.map((p, pi) => {
           const activeMark = (cur && cur.teamIdx===tIdx && cur.playerIdx===pi) ? "🔵" : (p.active ? "🟢" : "⚫");
           const miss = p.active ? ` · Hutit: ${p.misses}/3` : " · Poistunut";
+          const stp = statsForPlayer(st.logs, p.id);
           return `
             <div class="meta player-row">
               <span>${activeMark} ${p.name}${miss}</span>
+              <span class="stat-chips">
+                <span class="chip" title="Heittoja">${stp.throws}</span>
+                <span class="chip" title="Ka. pisteet/heitto">${stp.avg.toFixed(1)}</span>
+                <span class="chip" title="Huti-%">${Math.round(stp.missPct)}%</span>
+              </span>
               <button class="icon-btn danger" aria-label="Poista pelaaja" data-del-player="${pi}" data-team="${tIdx}">🗑</button>
             </div>`;
         }).join("");
 
-    // Kortin sisältö: otsikko + poista-tiimi, pisteet, pelaajat, lisäys
     card.innerHTML = `
       <div class="card-top">
         <h3>${team.name}</h3>
@@ -88,7 +173,6 @@ function render(){
       </div>
     `;
 
-    // Lisäys + Enter
     const addBtn  = card.querySelector(".add-player-btn");
     const inputEl = card.querySelector(`#pn-${tIdx}`);
     addBtn.addEventListener("click", () => {
@@ -100,11 +184,8 @@ function render(){
       inputEl.value = "";
       render();
     });
-    inputEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){ e.preventDefault(); addBtn.click(); }
-    });
+    inputEl.addEventListener("keydown", (e) => { if (e.key === "Enter"){ e.preventDefault(); addBtn.click(); } });
 
-    // Poista pelaaja
     card.querySelectorAll('[data-del-player]').forEach(btn => {
       btn.addEventListener("click", () => {
         const pi   = parseInt(btn.getAttribute("data-del-player"), 10);
@@ -118,7 +199,6 @@ function render(){
       });
     });
 
-    // Poista tiimi
     const delTeamBtn = card.querySelector('[data-del-team]');
     delTeamBtn.addEventListener("click", () => {
       if (!confirm(`Poistetaanko tiimi ${team.name}?`)) return;
@@ -131,10 +211,12 @@ function render(){
     wrap.appendChild(card);
   });
 
+  renderLog();
   updateControlsState();
+  maybeShowWinTeam();
 }
 
-/* ----------- Heitot ----------- */
+/* ---- heitot ---- */
 function onQuick(value){
   if (!canThrowNow()){
     toast("Heitto ei ole käytössä vielä. Lisää tiimit & pelaajat ja arvo aloitusjärjestys.");
@@ -147,12 +229,17 @@ function onQuick(value){
       t = n === 0 ? { type: ThrowType.MISS, value: 0 }
                   : { type: ThrowType.SINGLE_PIN, value: n };
     } else {
-      t = throwFromRawInput(value); // S# / M#
+      t = throwFromRawInput(value);
     }
     const res = applyThrowToCurrent(t.type, t.value);
     if (res?.error) toast(res.error);
     if (res?.events?.includes("BOUNCE_TO_25")) toast("Yli 50 → palautus 25:een (tiimi)");
-    if (res?.events?.includes("WIN_50")) toast("Tiimi voitti 50! 🎉");
+    if (res?.events?.includes("WIN_50")) {
+      toast("Tiimi voitti 50! 🎉");
+      const stNow = getState();
+      const w = stNow.teams.find(tt => tt.score === 50);
+      if (w) { winShown = true; openWinModalTeam(w.name); }
+    }
     if (res?.events?.some(e => e.startsWith("MISS_"))) toast("Huti.");
     if (res?.events?.includes("ELIMINATED_3_MISSES")) toast("Pelaaja tippui (3 hutia).");
     render();
@@ -167,7 +254,7 @@ function onFreeSubmit(){
   onQuick(raw);
 }
 
-/* ----------- Hallinta ----------- */
+/* ---- hallinta ---- */
 function onAddTeam(){
   const name = $("#teamName").value.trim();
   if (!name){ toast("Anna tiimin nimi."); return; }
@@ -203,16 +290,13 @@ function onNewFresh(){
   render();
 }
 
-/* ----------- Init ----------- */
+/* ---- init ---- */
 document.addEventListener("DOMContentLoaded", () => {
   loadOrInit();
-
-  // Heittonapit
   $$(".quick-btn").forEach(btn => btn.addEventListener("click", () => onQuick(btn.dataset.score)));
   $("#submitFree")?.addEventListener("click", onFreeSubmit);
   $("#freeInput")?.addEventListener("keydown", (e) => { if (e.key==="Enter"){ e.preventDefault(); onFreeSubmit(); } });
 
-  // Hallinta
   $("#addTeam")?.addEventListener("click", onAddTeam);
   $("#shuffle")?.addEventListener("click", onShuffle);
   $("#undo")?.addEventListener("click", onUndo);

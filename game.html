@@ -4,36 +4,36 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Mölkky – Yksilöpeli</title>
-  <meta name="description" content="Mölkky-pistelaskuri: mobile-first UI, pikanapit, selkeä vuorotus, Mölkyn säännöt." />
   <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#121417" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <div class="app-card">
-    <header class="app-header">
-      <h1>Mölkky</h1>
-      <nav class="topnav">
-        <button id="themeToggle" class="btn ghost" aria-pressed="false" aria-label="Vaihda teemaa">Tumma teema</button>
-        <a href="./index.html" class="devlink">Dev</a>
-      </nav>
-    </header>
+  <!-- Yhteinen header + valikko -->
+  <header class="site-header">
+    <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
+    <h1 class="brand">Mölkky</h1>
+    <nav id="siteNav" class="nav-drawer" aria-label="Päävalikko">
+      <a href="./index.html" data-nav>Etusivu</a>
+      <a href="./game.html" data-nav>Yksilöpeli</a>
+      <a href="./team-game.html" data-nav>Joukkuepeli</a>
+      <a href="./index.html#rules" data-nav>Peliohjeet</a>
+      <hr>
+      <button id="themeQuick" class="btn ghost small">Vaihda teema</button>
+    </nav>
+  </header>
 
+  <div class="app-card">
     <main>
-      <!-- Vuorossa + heittosyöte -->
+      <!-- Vuoro + heittonapit -->
       <section class="turn-card" id="turnCard">
         <div class="turn-title" id="turnTitle">Vuorossa: –</div>
 
         <div class="quick-row">
           <button type="button" class="quick-btn miss" data-score="0" aria-label="Huti, 0 pistettä">Huti (0)</button>
         </div>
-
-        <!-- Pikanapit 1–12 -->
         <div class="quick-grid" id="grid-main" aria-label="Pisteet (1–12)">
           <button class="quick-btn" data-score="1">1</button>
           <button class="quick-btn" data-score="2">2</button>
@@ -50,38 +50,61 @@
         </div>
 
         <div class="inline-input">
-          <input id="freeInput" type="text" inputmode="numeric"
-                 placeholder="0–12 (riittää)"
-                 aria-label="Vapaa syöte: 0–12">
+          <input id="freeInput" type="text" inputmode="numeric" placeholder="0–12 (riittää)" aria-label="Vapaa syöte: 0–12">
           <button type="button" id="submitFree" class="btn blue">Lisää</button>
         </div>
         <p class="help">
-          0 = huti. Numerot 1–12 lisäävät saman pistemäärän. (Halutessasi käy myös S# / M#.)  
-          Yli 50 → 25, täsmälleen 50 → voitto, 3 hutia → tippuu.
+          Lisää vähintään 2 pelaajaa. Paina <strong>Arvo aloitusjärjestys</strong>, sen jälkeen heitot aktivoituvat.
         </p>
       </section>
 
-      <!-- Pelaajalista -->
-      <section>
-        <div id="playerGrid" class="player-grid" aria-live="polite"></div>
+      <!-- Heittoloki -->
+      <section class="card">
+        <h3>Viimeisimmät heitot</h3>
+        <div id="throwLog" class="log-list" aria-live="polite"></div>
       </section>
 
-      <!-- Pelaajien lisääminen & hallinta -->
+      <!-- Pelaajat -->
+      <section>
+        <div id="emptyState" class="help">Ei vielä pelaajia. Lisää ensimmäinen pelaaja alla.</div>
+        <div id="playersGrid" class="player-grid" aria-live="polite"></div>
+      </section>
+
+      <!-- Hallinta -->
       <section class="controls">
+        <h3>Lisää pelaajia</h3>
         <label for="playerName">Pelaajan nimi</label>
-        <input id="playerName" type="text" placeholder="Pelaajan nimi" autocomplete="name" enterkeyhint="done" />
-        <button type="button" id="addPlayer" class="btn blue">Lisää</button>
+        <div class="inline-input">
+          <input id="playerName" type="text" placeholder="Pelaajan nimi" />
+          <button type="button" id="addPlayer" class="btn blue">Lisää pelaaja</button>
+        </div>
+
         <div class="split">
-          <button type="button" id="shuffle" class="btn">Arvo aloittaja</button>
+          <button type="button" id="shuffle" class="btn" disabled>Arvo aloitusjärjestys</button>
           <button type="button" id="undo" class="btn purple" disabled>Peru viimeisin</button>
-          <button type="button" id="reset" class="btn danger">Nollaa peli</button>
+          <button type="button" id="newSame" class="btn">Uusi peli – sama kokoonpano</button>
+          <button type="button" id="newFresh" class="btn danger">Uusi peli – uudet pelaajat</button>
         </div>
       </section>
     </main>
   </div>
 
+  <!-- Voitto-modal -->
+  <div id="winModal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+      <h3 id="winTitle">Voitto!</h3>
+      <p id="winText" class="muted">—</p>
+      <div class="modal-actions">
+        <button id="winSame"  class="btn blue">Aloita uusi peli samoilla</button>
+        <button id="winFresh" class="btn danger">Aloita uusi peli uusilla</button>
+        <button id="winClose" class="btn ghost">Sulje</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <script type="module" src="./js/nav.js"></script>
   <script type="module" src="./js/app.js"></script>
 </body>
 </html>
