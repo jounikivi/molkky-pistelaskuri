@@ -1,53 +1,113 @@
-<!DOCTYPE html>
-<html lang="fi">
+<!doctype html>
+<html lang="fi" data-theme="">
 <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Mölkky Pistelaskuri</title>
-    <link rel="stylesheet" href="style.css"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Mölkky – Yksilöpeli</title>
+  <meta name="color-scheme" content="light dark" />
+  <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff"  media="(prefers-color-scheme: light)">
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <!-- Font & CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-    <div class="app-card">
-        <header>
-            <nav class="pelinav">
-                <a href="index.html">Etusivu</a> |
-                <a href="rules.html">Säännöt</a>
-            </nav>
-            <h1>Mölkky<br/>Pisteidenlaskuri</h1>
-            <button id="themeToggle" class="theme-toggle">Tumma tila</button>
-        </header>
+  <header class="site-header">
+    <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
+    <h1 class="brand">Mölkky</h1>
+    <button id="themeToggle" class="btn ghost small theme-toggle" aria-pressed="false" aria-label="Vaihda teema">
+      <span class="theme-ico" aria-hidden="true">🌙</span>
+      <span class="theme-text">Tumma</span>
+    </button>
+    <nav id="siteNav" class="nav-drawer" aria-label="Päävalikko">
+      <a href="./index.html" data-nav>Etusivu</a>
+      <a href="./game.html" data-nav>Yksilöpeli</a>
+      <a href="./team-game.html" data-nav>Joukkuepeli</a>
+      <a href="./index.html#rules" data-nav>Peliohjeet</a>
+      <hr>
+      <button id="themeToggleDrawer" class="btn ghost small" aria-pressed="false">Vaihda teema</button>
+    </nav>
+  </header>
 
-        <main>
-            <!-- Vuorossa oleva pelaaja -->
-            <section class="vuorossa-kortti" id="vuoroBox">
-                <div class="vuorossa-nimi" id="vuoroNaytto">Vuorossa: -</div>
-                <div class="vuorossa-pisteet">
-                    <div class="pisteet-iso" id="vuorossaPisteet">0</div>
-                    <label for="vuorossaInput">Pisteet (1–12)</label>
-                    <input type="number" id="vuorossaInput" placeholder="1–12" min="0" max="12" />
-                    <button id="vuorossaNappi">Pisteet</button>
-                </div>
-            </section>
+  <div class="app-card">
+    <main>
+      <section class="turn-card" id="turnCard">
+        <div class="turn-title" id="turnTitle">Vuorossa: –</div>
 
-            <!-- Pelaajakortit -->
-            <div class="pelaajakortit" id="playerCards"></div>
+        <div class="quick-row">
+          <button type="button" class="quick-btn miss" data-score="0" aria-label="Huti, 0 pistettä">Huti (0)</button>
+        </div>
+        <div class="quick-grid" id="grid-main" aria-label="Pisteet (1–12)">
+          <button class="quick-btn" data-score="1">1</button><button class="quick-btn" data-score="2">2</button>
+          <button class="quick-btn" data-score="3">3</button><button class="quick-btn" data-score="4">4</button>
+          <button class="quick-btn" data-score="5">5</button><button class="quick-btn" data-score="6">6</button>
+          <button class="quick-btn" data-score="7">7</button><button class="quick-btn" data-score="8">8</button>
+          <button class="quick-btn" data-score="9">9</button><button class="quick-btn" data-score="10">10</button>
+          <button class="quick-btn" data-score="11">11</button><button class="quick-btn" data-score="12">12</button>
+        </div>
 
-            <!-- Pelaajien lisääminen ja pelin hallinta -->
-            <section class="toiminnot">
-                <label for="playerName">Pelaajan nimi</label>
-                <input type="text" id="playerName" placeholder="Pelaajan nimi"/>
-                <button id="addPlayerBtn">Lisää</button>
-                <button onclick="arvoAloittaja()">Arvo aloittaja</button>
-                <button onclick="resetGame()">Nollaa peli</button>
-            </section>
-        </main>
+        <div class="inline-input">
+          <input id="freeInput" type="text" inputmode="numeric" placeholder="0–12 (riittää)" aria-label="Vapaa syöte: 0–12">
+          <button type="button" id="submitFree" class="btn blue">Lisää</button>
+        </div>
+        <p class="help">Lisää vähintään 2 pelaajaa. Arvo aloitusjärjestys, jonka jälkeen heitot aktivoituvat.</p>
+      </section>
+
+      <section class="card">
+        <h3>Viimeisimmät heitot</h3>
+        <div id="throwLog" class="log-list" aria-live="polite"></div>
+      </section>
+
+      <section>
+        <div id="emptyState" class="help">Ei vielä pelaajia. Lisää ensimmäinen pelaaja alla.</div>
+        <div id="playersGrid" class="player-grid" aria-live="polite"></div>
+      </section>
+
+      <section class="controls">
+        <h3>Lisää pelaajia</h3>
+        <label for="playerName">Pelaajan nimi</label>
+        <div class="inline-input">
+          <input id="playerName" type="text" placeholder="Pelaajan nimi" />
+          <button type="button" id="addPlayer" class="btn blue">Lisää pelaaja</button>
+        </div>
+
+        <div class="split">
+          <button type="button" id="shuffle" class="btn" disabled>Arvo aloitusjärjestys</button>
+          <button type="button" id="undo" class="btn purple" disabled>Peru viimeisin</button>
+          <button type="button" id="newSame" class="btn">Uusi peli – sama kokoonpano</button>
+          <button type="button" id="newFresh" class="btn danger">Uusi peli – uudet pelaajat</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Voitto-modal -->
+  <div id="winModal" class="modal-backdrop" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+      <h3 id="winTitle">Voitto!</h3>
+      <p id="winText" class="muted">—</p>
+      <div class="modal-actions">
+        <button id="winSame"  class="btn blue">Aloita uusi peli samoilla</button>
+        <button id="winFresh" class="btn danger">Aloita uusi peli uusilla</button>
+        <button id="winClose" class="btn ghost">Sulje</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Ilmoitusviesti -->
-    <div id="notification" class="hidden"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
-    <script src="theme.js"></script>
+  <script type="module" src="./js/nav.js"></script>
+  <script type="module" src="./js/app.js"></script>
+  <script type="module" src="./js/sw-register.js"></script>
 </body>
 </html>

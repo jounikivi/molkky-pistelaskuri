@@ -1,472 +1,323 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+/* ============================================================
+   Mölkky Pistelaskuri — style.css (mobile-first)
+   ============================================================ */
 
-/* Home page styles moved from newstyle.css */
-body.home {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #e9f8f1;
-  color: #1a1a1a;
-  display: block;
+/* ---------- Värit & teema ---------- */
+:root {
+  --bg: #f7f7fb;
+  --card: #ffffff;
+  --text: #111827;
+  --muted: #6b7280;
+
+  --primary: #2563eb;   /* sininen */
+  --secondary: #7c3aed; /* violetti */
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  --shadow: 0 6px 18px rgba(17, 24, 39, .08);
+  --radius: 16px;
+
+  --btn-radius: 14px;
+  --input-bg: #f3f4f6;
+  --input-border: #e5e7eb;
+
+  --focus: #3b82f6;
 }
 
-body.home header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #006d5b;
-  padding: 1rem 2rem;
-  color: white;
-  border-radius: 0;
-}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f141c;
+    --card: #151b25;
+    --text: #e5e7eb;
+    --muted: #9aa3b2;
 
-body.home nav ul {
-  list-style: none;
-  display: flex;
-  gap: 1rem;
-  margin: 0;
-  padding: 0;
-}
+    --input-bg: #1a2130;
+    --input-border: #334155;
 
-body.home nav ul li a {
-  color: white;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-body.home main {
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
-}
-
-body.home .intro-card {
-  background: white;
-  border-radius: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
-  max-width: 700px;
-  text-align: center;
-}
-
-body.home .intro-card h2 {
-  background-color: #006d5b;
-  color: white;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  margin-top: 0;
-}
-
-body.home .button-group {
-  margin-top: 1.5rem;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-body.home .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
-  text-decoration: none;
-  font-weight: 600;
-  color: white;
-}
-
-body.home .btn.red { background-color: #e74c3c; }
-body.home .btn.purple { background-color: #8e44ad; }
-body.home .btn.blue { background-color: #3498db; }
-
-body.home .btn:hover {
-  opacity: 0.85;
-}
-
-@media (max-width: 600px) {
-  body.home header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  body.home nav ul {
-    flex-direction: column;
-    gap: 0.5rem;
-    width: 100%;
-    margin-top: 1rem;
-  }
-
-  body.home nav ul li {
-    width: 100%;
-  }
-
-  body.home nav ul li a {
-    display: block;
-    padding: 0.5rem 0;
-  }
-
-  body.home .button-group {
-    flex-direction: column;
-    align-items: stretch;
+    --shadow: 0 8px 24px rgba(0, 0, 0, .35);
   }
 }
 
+/* manuaalinen teema override: <html data-theme="dark"> */
+html[data-theme="dark"] {
+  --bg: #0f141c;
+  --card: #151b25;
+  --text: #e5e7eb;
+  --muted: #9aa3b2;
+
+  --input-bg: #1a2130;
+  --input-border: #334155;
+
+  --shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+
+/* ---------- Perustypografia ---------- */
+* { box-sizing: border-box; }
+html, body { height: 100%; }
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #e9fef7, #f0fdfb);
   margin: 0;
-  padding: 0;
-  color: #222;
-  display: flex;
-  justify-content: center;
+  font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3 { margin: 0 0 8px; }
+h1.brand { font-size: 1.4rem; font-weight: 800; }
+h2 { font-size: 1.4rem; font-weight: 800; }
+h3 { font-size: 1.05rem; font-weight: 800; }
+p { margin: 0.25rem 0 0.75rem; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.muted { color: var(--muted); }
+
+/* ---------- Kortit & layout ---------- */
+.app-card { max-width: 960px; margin: 12px auto 24px; padding: 0 12px; }
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+.home .hero {
+  margin: 14px auto 12px;
+  padding: 16px;
+  background: var(--card);
+  border-radius: 20px; box-shadow: var(--shadow);
+}
+.hero-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+
+.grid2 { display: grid; gap: 10px; grid-template-columns: 1fr; }
+@media (min-width: 700px){ .grid2 { grid-template-columns: 1fr 1fr; } }
+
+.bullets { margin: 0; padding-left: 18px; }
+
+/* ---------- Header + hamburger-nav ---------- */
+.site-header {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: var(--card); color: var(--text);
+  box-shadow: var(--shadow);
+  border-bottom-left-radius: 14px; border-bottom-right-radius: 14px;
+}
+.hamburger {
+  border: 2px solid transparent; border-radius: 12px;
+  background: #e5e7eb; color: #111827; padding: 8px 10px; cursor: pointer;
+}
+@media (prefers-color-scheme: dark) {
+  .hamburger { background: #1f2430; color: #e5e7eb; }
 }
 
-.app-card {
-  max-width: 420px;
-  width: 100%;
-  background: white;
-  border-radius: 28px;
-  box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-  padding: 1rem;
-  margin: 1rem;
+.nav-drawer {
+  position: fixed; inset: 56px 0 auto auto;
+  right: 12px; width: min(320px, 92vw);
+  background: var(--card); color: var(--text);
+  box-shadow: var(--shadow); border-radius: 14px;
+  padding: 10px; display: none; flex-direction: column; gap: 6px;
 }
+.nav-drawer.open { display: flex; }
+.nav-drawer a {
+  text-decoration: none; padding: 10px 12px; border-radius: 10px;
+  color: var(--text); font-weight: 600; background: transparent;
+}
+.nav-drawer a.active { background: color-mix(in oklab, var(--primary), white 85%); }
+.nav-drawer hr { border: none; border-top: 1px solid rgba(0,0,0,.08); margin: 8px 0; }
 
-header h1 {
-  text-align: center;
-  margin: 0.5rem 0;
-  font-size: 1.8rem;
-  font-weight: 700;
-  line-height: 1.2;
-  color: white;
+/* ---------- Lomake-elementit ---------- */
+input[type="text"], input[type="number"] {
+  width: 100%; border-radius: 12px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg); color: var(--text);
+  padding: 10px 12px; outline: none;
 }
+input::placeholder { color: color-mix(in oklab, var(--text), transparent 55%); }
 
-header {
-  background-color: #00695c;
-  border-radius: 20px;
-  padding: 1rem;
-}
+.inline-input { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
 
-.vuorossa-kortti {
-  background: #e0f2f1;
-  border: 2px solid #00695c;
-  border-radius: 14px;
-  padding: 1rem;
-  margin: 1.2rem 0;
-  text-align: center;
+/* ---------- Painikkeet ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+  min-height: 42px; padding: 10px 14px;
+  border-radius: var(--btn-radius);
+  border: 1px solid transparent;
+  background: #e5e7eb; color: #111827;
+  font-weight: 700; cursor: pointer; text-decoration: none;
 }
+.btn:hover { filter: brightness(1.02); }
+.btn.blue   { background: var(--primary); color: #fff; }
+.btn.purple { background: var(--secondary); color: #fff; }
+.btn.danger { background: var(--danger); color: #fff; }
+.btn.ghost  { background: transparent; border-color: var(--input-border); color: var(--text); }
+.btn.small  { padding: .5rem .75rem; min-height: 36px; font-weight: 700; }
+.btn[disabled] { opacity: .55; cursor: not-allowed; }
 
-.vuorossa-nimi {
-  font-weight: bold;
-  font-size: 1.2rem;
-  margin-bottom: 0.8rem;
-}
+/* Linkin näköinen nappi */
+.linklike { background: transparent; color: var(--primary); border-color: transparent; padding-left: 0; }
 
-.vuorossa-pisteet {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  gap: 0.5rem;
+/* ---------- Turn-kortti & heittonapit ---------- */
+.turn-card { margin-bottom: 12px; }
+.turn-title { font-weight: 800; margin-bottom: 6px; }
+.quick-row { display: flex; gap: 8px; margin-bottom: 8px; }
+.quick-grid {
+  display: grid; grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: 8px; margin-bottom: 8px;
 }
+.quick-btn {
+  min-height: 44px; border-radius: 12px;
+  background: var(--card); color: var(--text);
+  border: 1px solid var(--input-border);
+  box-shadow: var(--shadow); cursor: pointer; font-weight: 800;
+}
+.quick-btn.miss { background: #0ea5e9; color: #fff; border-color: transparent; }
+.quick-btn[disabled] { opacity: .55; cursor: not-allowed; }
 
-.pisteet-iso {
-  font-size: 2.5rem;
-  font-weight: bold;
-  min-width: 40px;
-}
-
-.vuorossa-pisteet input {
-  width: 50px;
-  padding: 0.4rem;
-  font-size: 1rem;
-  text-align: center;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-.vuorossa-pisteet button {
-  padding: 0.5rem 0.8rem;
-  background-color: #00796b;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.vuorossa-pisteet button:hover {
-  background-color: #004d40;
-}
-
-.pelaajakortit {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.8rem;
-}
+/* ---------- Pelaajakortit / tiimikortit ---------- */
+.player-grid { display: grid; gap: 10px; grid-template-columns: 1fr; }
+@media (min-width: 720px){ .player-grid { grid-template-columns: 1fr 1fr; } }
 
 .player-card {
-  border-radius: 18px;
-  padding: 1rem 0.5rem;
-  color: white;
-  text-align: center;
-  font-weight: bold;
-  font-size: 1rem;
+  background: var(--card); color: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 12px; position: relative;
+}
+.player-card .score {
+  font-size: 2.4rem; font-weight: 800; line-height: 1; margin-bottom: 6px; color: #fff;
+}
+.player-card.inactive { opacity: .6; filter: grayscale(.15); }
+.player-card.winner  { outline: 3px solid #ffd54f; box-shadow: 0 0 0 4px rgba(255,213,79,.2), var(--shadow); }
+
+.meta { color: #fff; opacity: .95; font-size: .95rem; }
+@media (prefers-color-scheme: light){
+  .player-card { color: #111; }
+  .player-card .score, .meta { color: #111; }
 }
 
-.player-card p {
-  font-size: 2rem;
-  margin: 0.2rem 0 0.6rem;
+/* kortin header + roskis */
+.card-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.icon-btn {
+  background: rgba(255,255,255,.18); color: #fff;
+  border: none; border-radius: 10px; padding: 6px 8px; cursor: pointer;
+}
+.icon-btn:hover { filter: brightness(1.05); }
+.icon-btn.danger { background: rgba(231, 76, 60, .85); }
+.player-row { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.player-row .icon-btn { flex-shrink: 0; }
+
+/* ---------- Heittoloki & stat-chips ---------- */
+.log-list { display: flex; flex-direction: column; gap: 6px; }
+.log-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--card); border-radius: 12px; padding: 8px 10px; box-shadow: var(--shadow);
+}
+.log-main { font-weight: 600; }
+.log-val { font-weight: 800; }
+.log-sub { font-size: .9rem; opacity: .8; margin: -4px 4px 0 4px; }
+
+.stat-chips { display: inline-flex; gap: 4px; margin-right: 6px; }
+.chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 28px; padding: 2px 6px; border-radius: 999px;
+  background: rgba(255,255,255,.22); color:#fff; font-weight:700; font-size:.85rem;
+}
+@media (prefers-color-scheme: light){
+  .chip { background: rgba(0,0,0,.06); color:#111; }
 }
 
-.player-card button {
-  background-color: rgba(0,0,0,0.1);
-  border: none;
-  padding: 0.4rem;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  color: white;
-  font-size: 1rem;
-  width: 100%;
+/* ---------- Controls ---------- */
+.controls { margin-top: 12px; }
+.controls .split { display: grid; gap: 8px; grid-template-columns: 1fr; margin-top: 8px; }
+@media (min-width: 680px){ .controls .split { grid-template-columns: repeat(4, 1fr); } }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
+  background: #111827; color: #fff; padding: 10px 14px; border-radius: 12px;
+  box-shadow: var(--shadow); opacity: 0; pointer-events: none; transition: opacity .18s ease;
+  z-index: 60;
+}
+@media (prefers-color-scheme: light){
+  .toast { background: #111; color: #fff; }
+}
+.toast.show { opacity: 1; }
+
+/* ---------- Voitto-modal ---------- */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.5);
+  display: grid; place-items: center;
+  padding: 16px;
+  z-index: 50;
+}
+.modal {
+  width: min(520px, 100%);
+  background: var(--card);
+  color: var(--text);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.modal h3 { margin: 0 0 4px; font-weight: 800; }
+.modal .muted { opacity: .85; margin-top: 4px; }
+.modal-actions {
+  display: grid; gap: 8px; margin-top: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 460px){
+  .modal-actions { grid-template-columns: 1fr 1fr 1fr; }
 }
 
-.toiminnot {
-  margin-top: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+/* ---------- Footer ---------- */
+.app-footer {
+  display: flex; gap: 12px; justify-content: center; align-items: center;
+  padding: 18px 10px; opacity: .85;
 }
 
-.toiminnot input {
-  padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-}
-
-.toiminnot button {
-  background-color: #00695c;
-  color: white;
-  border: none;
-  padding: 0.6rem;
-  border-radius: 10px;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.toiminnot button:hover {
-  background-color: #004d40;
-}
-
-#playerCards {
-  max-height: 60vh;
-  overflow-y: auto;
-  padding-right: 0.5rem;
-  scroll-behavior: smooth;
-}
-
-#notification {
-  position: fixed;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #00796b;
-  color: #fff;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
-  font-weight: bold;
-  font-size: 1rem;
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  max-width: 90vw;
-}
-
-#notification.visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateX(-50%) scale(1.02);
-}
-
-#notification.center {
-  top: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Responsiivisuus */
-
-@media screen and (max-width: 500px) {
-  .app-card { margin: 0.5rem; padding: 0.5rem; border-radius: 16px; }
-  header h1 { font-size: 1.4rem; }
-  .vuorossa-pisteet { flex-direction: column; gap: 0.5rem; }
-  .pisteet-iso { font-size: 2rem; }
-  .vuorossa-pisteet input, .vuorossa-pisteet button { width: 100%; }
-  .pelaajakortit { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; }
-}
-
-@media screen and (min-width: 601px) and (max-width: 1024px) {
-  .app-card { max-width: 700px; }
-  .vuorossa-pisteet { gap: 1rem; }
-  .pelaajakortit {
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-  }
-}
-
-@media screen and (min-width: 1025px) {
-  .app-card { max-width: 900px; }
-  .vuorossa-pisteet { gap: 1.2rem; }
-  .pelaajakortit {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.2rem;
-  }
-}
-
-/* Navigaatiovalikko */
-
-.navbar {
-  position: relative;
-  width: 100%;
-  background-color: #00695c;
-  padding: 0.5rem 1rem;
-  border-radius: 0 0 15px 15px;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.navbar .logo {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.navbar #navLinks a {
-  color: white;
-  text-decoration: none;
-  padding: 0.5rem;
-  font-weight: 500;
-}
-
-.navbar #navLinks a:hover {
-  background-color: #004d40;
+/* ---------- Saavutettavuus ---------- */
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
   border-radius: 10px;
 }
 
-.navbar .hamburger {
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 2rem;
-  cursor: pointer;
+/* ---------- Pieniä helper-luokkia ---------- */
+.help { font-size: .92rem; color: var(--muted); }
+.link { color: var(--secondary); text-decoration: none; }
+.link:hover { text-decoration: underline; }
+
+/* Modal piiloon varmasti kun hidden-attribuutti käytössä */
+.modal-backdrop[hidden] { display: none !important; }
+
+/* ===== Hero-animointi ===== */
+@keyframes heroFloatIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero.hero-anim { animation: heroFloatIn .35s ease-out both; }
+
+/* Napit: pieni pop-efekti ja hover-liike */
+.btn { transition: transform .08s ease, filter .2s ease, background-color .2s ease, color .2s ease; }
+.btn:active { transform: scale(.98); }
+.btn-pop { will-change: transform; }
+.btn-pop:hover { transform: translateY(-1px); }
+
+/* Teemanvaihto headerissa: ikonille pieni elävöitys */
+.theme-toggle .theme-ico { display:inline-block; width:1.2em; text-align:center; transition: transform .2s ease; }
+.theme-toggle:hover .theme-ico { transform: rotate(-12deg) scale(1.05); }
+
+/* Motion-reduce: poista animaatiot tarvittaessa */
+@media (prefers-reduced-motion: reduce){
+  .hero.hero-anim { animation: none; }
+  .btn, .btn-pop, .theme-toggle .theme-ico { transition: none; }
 }
 
-/* Responsiivinen mobiilivalikko */
-@media (max-width: 600px) {
-  .navbar .hamburger {
-    display: block;
-  }
+/* Nav: parannettu drawerin painikejärjestys (pieni väljyys) */
+.nav-drawer .btn.small { justify-content: center; }
 
-  .navbar #navLinks {
-    position: absolute;
-    top: 60px;
-    right: 10px;
-    background-color: #00695c;
-    width: 200px;
-    flex-direction: column;
-    padding: 1rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    display: none;
-  }
-
-  .navbar #navLinks a {
-    display: block;
-    padding: 0.8rem;
-    border-radius: 8px;
-  }
-}
-
-
-
-
-
-/* Yksinkertainen pelinavigaatio */
-.pelinav {
-  background-color: #00695c;
-  padding: 0.75rem 1rem;
-  text-align: center;
-  border-radius: 0 0 16px 16px;
-  margin-bottom: 1rem;
-}
-
-.pelinav a {
-  color: white;
-  text-decoration: none;
-  margin: 0 0.5rem;
-  font-weight: bold;
-}
-
-.pelinav a:hover {
-  text-decoration: underline;
-}
-
-/* Footer */
-footer {
-  margin-top: 2rem;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #666;
-}
-
-/* Tumma teema toggle (esimerkkiluokka, ei JS-toiminnallisuutta mukana) */
-.dark-mode {
-  background: #121212;
-  color: #f0f0f0;
-}
-
-.dark-mode .app-card {
-  background: #1e1e1e;
-  color: #f0f0f0;
-}
-
-.dark-mode .vuorossa-kortti {
-  background: #2a2a2a;
-  border-color: #4caf50;
-}
-
-.dark-mode .toiminnot button,
-.dark-mode .vuorossa-pisteet button {
-  background-color: #4caf50;
-}
-
-.dark-mode .toiminnot button:hover,
-.dark-mode .vuorossa-pisteet button:hover {
-  background-color: #388e3c;
-}
-
-.dark-mode .pelinav {
-  background-color: #333;
-}
-
-.dark-mode .pelinav a {
-  color: #f0f0f0;
-}
-
-/* Dark mode toggle button */
-.theme-toggle {
-  margin-top: 0.5rem;
-  background-color: #00695c;
-  color: #fff;
-  border: none;
-  padding: 0.4rem 0.7rem;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.dark-mode .theme-toggle {
-  background-color: #4caf50;
-}
+/* (varmistus) hidden modal */
+.modal-backdrop[hidden] { display: none !important; }
