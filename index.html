@@ -1,59 +1,59 @@
 <!doctype html>
-<html lang="fi">
+<html lang="fi" data-theme="">
 <head>
-  <!-- Perus -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Mölkky – Pistelaskuri</title>
-  <meta name="description" content="Kevyt ja mobiiliystävällinen Mölkky-pistelaskuri. Yksilö- ja joukkuepelit, undo, heittoloki, tilastot ja tumma/vaalea teema." />
+
+  <!-- SEO & värit -->
+  <meta name="description" content="Kevyt ja mobiiliystävällinen Mölkky-pistelaskuri. Yksilö- ja joukkuepelit, undo, loki ja tilastot." />
   <meta name="color-scheme" content="light dark" />
   <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#ffffff"  media="(prefers-color-scheme: light)">
 
-  <!-- Sosiaalinen esikatselu -->
-  <meta property="og:title" content="Mölkky – Pistelaskuri" />
-  <meta property="og:description" content="Mobiiliystävällinen Mölkky-pistelaskuri: yksilö & joukkue, undo, loki, tilastot." />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="./assets/og-cover.png" />
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Fontti & tyyli -->
+  <!-- Font & CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
-
-  <!-- (Valinnainen PWA-tuki) -->
-  <!-- <link rel="manifest" href="./manifest.webmanifest"> -->
-  <!-- <link rel="icon" href="./assets/icon-192.png" sizes="192x192"> -->
 </head>
 <body>
-  <!-- Yhteinen navigaatio -->
+  <!-- Header + nav -->
   <header class="site-header">
     <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
     <h1 class="brand">Mölkky</h1>
+    <button id="themeToggle" class="btn ghost small theme-toggle" aria-pressed="false" aria-label="Vaihda teema">
+      <span class="theme-ico" aria-hidden="true">🌙</span>
+      <span class="theme-text">Tumma</span>
+    </button>
     <nav id="siteNav" class="nav-drawer" aria-label="Päävalikko">
       <a href="./index.html" data-nav>Etusivu</a>
       <a href="./game.html" data-nav>Yksilöpeli</a>
       <a href="./team-game.html" data-nav>Joukkuepeli</a>
       <a href="#rules" data-nav>Peliohjeet</a>
       <hr>
-      <button id="themeQuick" class="btn ghost small">Vaihda teema</button>
+      <button id="themeToggleDrawer" class="btn ghost small" aria-pressed="false">Vaihda teema</button>
     </nav>
   </header>
 
   <div class="app-card">
     <main class="home" id="top">
-      <!-- Hero -->
-      <section class="hero">
+      <section class="hero hero-anim">
         <h2>Mölkky-pistelaskuri</h2>
         <p>Nopea ja selkeä laskuri puhelimeen. Yksilö- ja joukkuepelit, heittoloki ja tilastot – kaikki ilman kirjautumista.</p>
         <div class="hero-actions">
-          <a class="btn blue" href="./game.html" aria-label="Aloita yksilöpeli">Aloita yksilöpeli</a>
-          <a class="btn" href="./team-game.html" aria-label="Aloita joukkuepeli">Aloita joukkuepeli</a>
+          <a class="btn blue btn-pop" href="./game.html">Aloita yksilöpeli</a>
+          <a class="btn btn-pop" href="./team-game.html">Aloita joukkuepeli</a>
         </div>
       </section>
 
-      <!-- Pelimuodot / pikakortit -->
       <section class="grid2">
         <article class="card">
           <h3>🧍 Yksilöpeli</h3>
@@ -72,13 +72,12 @@
             <li>Lisää 2+ tiimiä ja pelaajat kortteihin.</li>
             <li>Vuoro kiertää tiimien pelaajien välillä.</li>
             <li>Tiimille pisteet, pelaajalle hutit.</li>
-            <li>Undo, loki ja mini-tilastot.</li>
+            <li>Undo, loki ja minitilastot.</li>
           </ul>
           <a class="btn linklike" href="./team-game.html">Siirry joukkuepeliin →</a>
         </article>
       </section>
 
-      <!-- Säännöt -->
       <section id="rules" class="card">
         <h3>Peliohjeet (tiivistetysti)</h3>
         <ul class="bullets">
@@ -86,29 +85,14 @@
           <li><strong>Yli 50:</strong> pisteet palautuvat <strong>25</strong>:een.</li>
           <li><strong>Tasan 50:</strong> välitön voitto.</li>
           <li><strong>Hutit:</strong> 3 peräkkäistä hutia → pelaaja tippuu.</li>
-          <li><strong>Syöte:</strong> Riittää napit 0–12. (Myös S# / M# -muoto tuettu.)</li>
+          <li><strong>Syöte:</strong> Riittää napit 0–12. (Myös S#/M# tuettu.)</li>
         </ul>
-        <p class="muted">Vinkki: Undo peruu viimeisimmän heiton. Peli jatkuu automaattisesti sivun päivityksen jälkeen.</p>
+        <p class="muted">Vinkki: Undo peruu viimeisimmän heiton. Peli jatkuu sivun päivityksen jälkeen.</p>
       </section>
 
-      <!-- Pikakäyttöohje -->
-      <section class="card">
-        <h3>Näin aloitat 15 sekunnissa</h3>
-        <ol class="bullets">
-          <li>Avaa <em>Yksilöpeli</em> tai <em>Joukkuepeli</em>.</li>
-          <li>Lisää pelaajat / tiimit ja arvo aloitusjärjestys.</li>
-          <li>Napauta pistettä (1–12) tai huti (0).</li>
-        </ol>
-        <div class="hero-actions">
-          <a class="btn" href="./game.html">Aloita yksilöpeli</a>
-          <a class="btn" href="./team-game.html">Aloita joukkuepeli</a>
-        </div>
-      </section>
-
-      <!-- (Valinnainen) Tietosuoja / offline -->
       <section class="card">
         <h3>Tietosuoja</h3>
-        <p class="muted">Kaikki pelit tallennetaan vain laitteellesi (localStorage). Voit tyhjentää tiedot aloittamalla uuden pelin uusilla kokoonpanoilla.</p>
+        <p class="muted">Pelisi tallentuvat vain laitteellesi (localStorage). Tyhjennä aloittamalla “uudet pelaajat/tiimit”.</p>
       </section>
     </main>
   </div>
@@ -119,9 +103,7 @@
   </footer>
 
   <script type="module" src="./js/nav.js"></script>
-  <script>
-    // Pieni vuosipäivitys footeriin
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <script type="module" src="./js/sw-register.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

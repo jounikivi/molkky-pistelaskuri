@@ -293,3 +293,31 @@ input::placeholder { color: color-mix(in oklab, var(--text), transparent 55%); }
 /* Modal piiloon varmasti kun hidden-attribuutti käytössä */
 .modal-backdrop[hidden] { display: none !important; }
 
+/* ===== Hero-animointi ===== */
+@keyframes heroFloatIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero.hero-anim { animation: heroFloatIn .35s ease-out both; }
+
+/* Napit: pieni pop-efekti ja hover-liike */
+.btn { transition: transform .08s ease, filter .2s ease, background-color .2s ease, color .2s ease; }
+.btn:active { transform: scale(.98); }
+.btn-pop { will-change: transform; }
+.btn-pop:hover { transform: translateY(-1px); }
+
+/* Teemanvaihto headerissa: ikonille pieni elävöitys */
+.theme-toggle .theme-ico { display:inline-block; width:1.2em; text-align:center; transition: transform .2s ease; }
+.theme-toggle:hover .theme-ico { transform: rotate(-12deg) scale(1.05); }
+
+/* Motion-reduce: poista animaatiot tarvittaessa */
+@media (prefers-reduced-motion: reduce){
+  .hero.hero-anim { animation: none; }
+  .btn, .btn-pop, .theme-toggle .theme-ico { transition: none; }
+}
+
+/* Nav: parannettu drawerin painikejärjestys (pieni väljyys) */
+.nav-drawer .btn.small { justify-content: center; }
+
+/* (varmistus) hidden modal */
+.modal-backdrop[hidden] { display: none !important; }

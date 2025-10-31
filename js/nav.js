@@ -1,49 +1,84 @@
-// nav.js — hamburger-valikko + aktiivinen linkki + pikateema
-const $ = (s) => document.querySelector(s);
-const $$ = (s) => Array.from(document.querySelectorAll(s));
+// nav.js — hamburger + aktiivinen linkki + pysyvä tumma/vaalea teema
+const $  = (s)=>document.querySelector(s);
+const $$ = (s)=>Array.from(document.querySelectorAll(s));
 
-function toggleNav(open) {
-  const nav = $("#siteNav");
+const THEME_KEY = "molkky:theme"; // "light" | "dark" | "" (järjestelmä)
+
+function applyTheme(theme){
+  // theme: "light" | "dark" | ""
+  const html = document.documentElement;
+  if (theme === "dark") {
+    html.setAttribute("data-theme", "dark");
+  } else if (theme === "light") {
+    html.setAttribute("data-theme", "light"); // (valinnaista jos halutaan pakottaa)
+    // jos haluat käyttää aina preferenssejä kun light, voit poistaa tämän rivin
+  } else {
+    html.removeAttribute("data-theme"); // käytä prefers-color-scheme
+  }
+
+  // Päivitä napin teksti + aria
+  const isDark = (html.getAttribute("data-theme") === "dark")
+    || (theme === "" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+  const headerBtn = $("#themeToggle");
+  const drawerBtn = $("#themeToggleDrawer");
+
+  if (headerBtn){
+    headerBtn.setAttribute("aria-pressed", String(isDark));
+    headerBtn.querySelector(".theme-ico").textContent = isDark ? "☀️" : "🌙";
+    headerBtn.querySelector(".theme-text").textContent = isDark ? "Vaalea" : "Tumma";
+  }
+  if (drawerBtn){
+    drawerBtn.setAttribute("aria-pressed", String(isDark));
+    drawerBtn.textContent = isDark ? "Vaihda vaaleaan" : "Vaihda tummaan";
+  }
+}
+
+function cycleTheme(){
+  const cur = localStorage.getItem(THEME_KEY) ?? "";
+  const next = (cur === "dark") ? "light" : (cur === "light" ? "" : "dark");
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+
+function initTheme(){
+  const saved = localStorage.getItem(THEME_KEY) ?? "";
+  applyTheme(saved);
+
+  // Jos käyttäjä vaihtaa järjestelmäteemaa ja meillä on "", päivitä UI
+  if (saved === "" && window.matchMedia){
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    mq.addEventListener?.("change", () => applyTheme(""));
+  }
+}
+
+function initNav(){
+  // hamburger
   const btn = $("#navToggle");
-  const willOpen = open ?? !nav.classList.contains("open");
-  nav.classList.toggle("open", willOpen);
-  btn.setAttribute("aria-expanded", String(willOpen));
-}
+  const drawer = $("#siteNav");
+  btn?.addEventListener("click", () => {
+    const open = drawer.classList.toggle("open");
+    btn.setAttribute("aria-expanded", String(open));
+  });
+  // sulje kun klikataan navigaatio-linkkiä
+  $$("#siteNav [data-nav]").forEach(a => {
+    a.addEventListener("click", () => {
+      drawer.classList.remove("open");
+      btn.setAttribute("aria-expanded", "false");
+    });
+  });
 
-function markActive() {
+  // aktiivinen linkki
   const here = location.pathname.split("/").pop() || "index.html";
-  $$('nav a[data-nav]').forEach(a => {
-    const href = a.getAttribute("href");
-    a.classList.toggle("active", href.endsWith(here));
+  $$("#siteNav a[href]").forEach(a => {
+    const target = a.getAttribute("href") || "";
+    if (target.endsWith(here)) a.classList.add("active");
   });
+
+  // teema
+  $("#themeToggle")?.addEventListener("click", cycleTheme);
+  $("#themeToggleDrawer")?.addEventListener("click", cycleTheme);
+  initTheme();
 }
 
-function initThemeQuick() {
-  const root = document.documentElement;
-  const key = "molkky:theme";
-  const saved = localStorage.getItem(key) || "system";
-  if (saved === "dark") root.setAttribute("data-theme", "dark");
-  else if (saved === "light") root.setAttribute("data-theme", "light");
-  else root.removeAttribute("data-theme");
-
-  $("#themeQuick")?.addEventListener("click", () => {
-    const cur = root.getAttribute("data-theme");
-    const next = cur === "dark" ? "light" : "dark";
-    if (cur == null) {
-      // system -> dark
-      root.setAttribute("data-theme", "dark");
-      localStorage.setItem(key, "dark");
-      return;
-    }
-    root.setAttribute("data-theme", next);
-    localStorage.setItem(key, next);
-  });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  $("#navToggle")?.addEventListener("click", () => toggleNav());
-  // sulje kun painetaan linkkiä (mobiilissa)
-  $$('nav a[data-nav]').forEach(a => a.addEventListener("click", () => toggleNav(false)));
-  markActive();
-  initThemeQuick();
-});
+document.addEventListener("DOMContentLoaded", initNav);
