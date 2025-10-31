@@ -289,3 +289,7 @@ input::placeholder { color: color-mix(in oklab, var(--text), transparent 55%); }
 .help { font-size: .92rem; color: var(--muted); }
 .link { color: var(--secondary); text-decoration: none; }
 .link:hover { text-decoration: underline; }
+
+/* Modal piiloon varmasti kun hidden-attribuutti käytössä */
+.modal-backdrop[hidden] { display: none !important; }
+

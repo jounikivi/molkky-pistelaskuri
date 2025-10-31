@@ -1,4 +1,4 @@
-// team-app.js — Joukkue-UI: heittoloki + minitilastot + poistot + Voitto-modal
+// team-app.js — Joukkue-UI: heittoloki + minitilastot + poistot + Voitto-modal (korjattu)
 import { ThrowType, throwFromRawInput } from "./rules.js";
 import {
   loadOrInit, getState, resetAll, canUndo, undoLastAction,
@@ -78,48 +78,40 @@ function renderLog(){
 /* ---- Voitto-modal (team) ---- */
 let winShown = false;
 
+function replaceAndBind(id, handler){
+  const oldEl = document.getElementById(id);
+  const newEl = oldEl.cloneNode(true);
+  oldEl.replaceWith(newEl);
+  newEl.addEventListener("click", handler);
+  return newEl;
+}
+
 function openWinModalTeam(winnerTeamName){
-  const bd = document.getElementById("winModal");
+  const bd  = document.getElementById("winModal");
   const txt = document.getElementById("winText");
-  const same = document.getElementById("winSame");
-  const fresh= document.getElementById("winFresh");
-  const close= document.getElementById("winClose");
 
   txt.textContent = `${winnerTeamName} saavutti 50 pistettä. Onneksi olkoon!`;
-  same.textContent = "Aloita uusi peli samalla kokoonpanolla";
+  document.getElementById("winSame").textContent = "Aloita uusi peli samalla kokoonpanolla";
 
   bd.hidden = false;
 
-  same.replaceWith(same.cloneNode(true));
-  fresh.replaceWith(fresh.cloneNode(true));
-  close.replaceWith(close.cloneNode(true));
+  replaceAndBind("winSame",  () => { newGameSameRoster(); bd.hidden = true; winShown = false; render(); });
+  replaceAndBind("winFresh", () => { resetAll();          bd.hidden = true; winShown = false; render(); });
+  replaceAndBind("winClose", () => { bd.hidden = true; });
 
-  document.getElementById("winSame").addEventListener("click", () => {
-    newGameSameRoster();
-    bd.hidden = true;
-    winShown = false;
-    render();
-  });
-  document.getElementById("winFresh").addEventListener("click", () => {
-    resetAll();
-    bd.hidden = true;
-    winShown = false;
-    render();
-  });
-  document.getElementById("winClose").addEventListener("click", () => {
-    bd.hidden = true;
-  });
+  document.getElementById("winSame").focus();
 }
 
 function maybeShowWinTeam(){
   if (winShown) return;
   const st = getState();
+
   if (!st.ended) return;
   const winner = st.teams.find(t => t.score === 50);
-  if (winner){
-    winShown = true;
-    openWinModalTeam(winner.name);
-  }
+  if (!winner) return;
+
+  winShown = true;
+  openWinModalTeam(winner.name);
 }
 
 function render(){

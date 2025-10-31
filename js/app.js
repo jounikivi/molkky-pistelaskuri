@@ -1,4 +1,4 @@
-// app.js — Yksilö-UI: heittoloki + minitilastot + poistot + Voitto-modal
+// app.js — Yksilö-UI: heittoloki + minitilastot + poistot + Voitto-modal (korjattu)
 import { ThrowType, throwFromRawInput } from "./rules.js";
 import {
   loadOrInit, getState, canUndo, undoLastAction,
@@ -70,48 +70,41 @@ function renderLog(){
 /* ---- Voitto-modal (solo) ---- */
 let winShown = false;
 
+function replaceAndBind(id, handler){
+  const oldEl = document.getElementById(id);
+  const newEl = oldEl.cloneNode(true);  // säilyttää id:n ja tekstin
+  oldEl.replaceWith(newEl);
+  newEl.addEventListener("click", handler);
+  return newEl;
+}
+
 function openWinModalSolo(winnerName){
-  const bd = document.getElementById("winModal");
+  const bd  = document.getElementById("winModal");
   const txt = document.getElementById("winText");
-  const same = document.getElementById("winSame");
-  const fresh= document.getElementById("winFresh");
-  const close= document.getElementById("winClose");
 
   txt.textContent = `${winnerName} saavutti 50 pistettä. Onneksi olkoon!`;
-  same.textContent = "Aloita uusi peli samoilla pelaajilla";
+  document.getElementById("winSame").textContent = "Aloita uusi peli samoilla pelaajilla";
 
   bd.hidden = false;
 
-  same.replaceWith(same.cloneNode(true));
-  fresh.replaceWith(fresh.cloneNode(true));
-  close.replaceWith(close.cloneNode(true));
+  replaceAndBind("winSame",  () => { newGameSameRoster(); bd.hidden = true; winShown = false; render(); });
+  replaceAndBind("winFresh", () => { resetAll();          bd.hidden = true; winShown = false; render(); });
+  replaceAndBind("winClose", () => { bd.hidden = true; });
 
-  document.getElementById("winSame").addEventListener("click", () => {
-    newGameSameRoster();
-    bd.hidden = true;
-    winShown = false;
-    render();
-  });
-  document.getElementById("winFresh").addEventListener("click", () => {
-    resetAll();
-    bd.hidden = true;
-    winShown = false;
-    render();
-  });
-  document.getElementById("winClose").addEventListener("click", () => {
-    bd.hidden = true;
-  });
+  document.getElementById("winSame").focus();
 }
 
 function maybeShowWinSolo(){
   if (winShown) return;
   const st = getState();
+
+  // Näytä modal vain jos peli on päättynyt JA voittaja löytyy
   if (!st.ended) return;
   const winner = st.players.find(p => p.score === 50);
-  if (winner){
-    winShown = true;
-    openWinModalSolo(winner.name);
-  }
+  if (!winner) return;
+
+  winShown = true;
+  openWinModalSolo(winner.name);
 }
 
 function render(){

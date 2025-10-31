@@ -62,15 +62,24 @@ export function loadOrInit(){
   const loaded = loadState();
   state = loaded ?? createEmptyState();
   history = loadHistory();
-  // pieni eheys: jos order ei matchaa pelaajiin, korjataan
+
+  // eheys: order vastaa pelaajalistaa
   const should = state.players.map((_, i)=>i);
   if (state.order.length !== should.length || !should.every(i => state.order.includes(i))) {
     state.order = should;
     state.turn = 0;
   }
+
+  // AUTOKORJAUS: jos ei pelaajia, peli ei voi olla päättynyt
+  if (state.players.length === 0) {
+    state.ended = false;
+    state.logs = [];
+  }
+
   saveState();
   return !!loaded;
 }
+
 export function getState(){ return deepCopy(state); }
 export function canUndo(){ return history.length > 0; }
 export function undoLastAction(){
