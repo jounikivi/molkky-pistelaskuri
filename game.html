@@ -1,94 +1,69 @@
 <!doctype html>
 <html lang="fi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky – Yksinpeli</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Mölkky – Yksilöpeli</title>
+  <link rel="stylesheet" href="style.css?v=reset1">
 </head>
 <body>
-  <header class="topbar">
-    <h1>Mölkky</h1>
-    <nav class="tabs">
-      <a class="tab active" aria-current="page" href="game.html">Yksilö</a>
-      <a class="tab" href="team-game.html">Joukkue</a>
-      <a class="tab" href="index.html">Etusivu</a>
-    </nav>
-  </header>
+<header class="site-header">
+  <a class="btn" href="index.html">← Etusivu</a>
+  <h1 class="brand">Mölkky – Yksilöpeli</h1>
+</header>
 
-  <main class="container">
-    <!-- Setup -->
-    <section class="card" id="setup">
-      <div class="row">
-        <label for="name-input" class="label">Lisää pelaaja</label>
-        <div class="add-inline">
-          <input id="name-input" class="input" type="text" placeholder="Pelaajan nimi" autocomplete="off" />
-          <button id="add-btn" class="btn">Lisää</button>
-        </div>
-        <small class="hint">Lisää vähintään 2 pelaajaa ja arvo järjestys.</small>
-      </div>
-
-      <div class="chips" id="players-chips" aria-live="polite"></div>
-
-      <div class="row actions">
-        <button id="shuffle-btn" class="btn ghost">Arvo aloitusjärjestys</button>
-        <button id="reset-all-btn" class="btn danger ghost">Tyhjennä kaikki</button>
-      </div>
-    </section>
-
-    <!-- Game -->
-    <section class="scoreboard" id="game">
-      <div class="card now-playing">
-        <div class="now-title">Vuorossa</div>
-        <div class="now-name" id="now-name">–</div>
-        <div class="now-sub">
-          <span id="now-subtext">Aloita arpomalla järjestys</span>
-        </div>
-      </div>
-
-      <div class="list card" id="players-list" aria-live="polite"></div>
-
-      <div class="row actions">
-        <button id="undo-btn" class="btn ghost" disabled>Kumoa</button>
-        <button id="newgame-btn" class="btn">Uusi peli (samalla porukalla)</button>
-      </div>
-    </section>
-  </main>
-
-  <!-- Sticky keypad -->
-  <nav class="keypad" id="keypad" aria-label="Pisteiden syöttö">
-    <div class="pad-group">
-      <div class="pad-title">Täsmälleen yksi keila</div>
-      <div class="grid" id="exact-grid"></div>
+<main class="app-card">
+  <section class="turn-card card">
+    <div id="turnTitle" class="turn-title">Vuorossa: –</div>
+    <div class="inline-input">
+      <input id="freeInput" type="number" inputmode="numeric" min="0" max="12" placeholder="0–12 (riittää)">
+      <button id="submitFree" class="btn">Lisää</button>
     </div>
-    <div class="pad-group">
-      <div class="pad-title">Useita keiloja (pisteet = määrä)</div>
-      <div class="grid" id="multi-grid"></div>
-    </div>
-    <div class="pad-bottom">
-      <button class="btn wide ghost" data-type="MISS" data-value="0">Ohi (0)</button>
-    </div>
-  </nav>
+  </section>
 
-  <template id="chip-tpl">
-    <div class="chip">
-      <span class="chip-name"></span>
-      <button class="chip-del" title="Poista" aria-label="Poista">×</button>
+  <section class="card">
+    <h3>Lisää pelaaja</h3>
+    <div class="inline-input">
+      <input id="playerName" type="text" placeholder="Pelaajan nimi">
+      <button id="addPlayer" class="btn blue">Lisää</button>
     </div>
-  </template>
-
-  <template id="row-tpl">
-    <div class="row-item">
-      <div class="row-main">
-        <div class="row-name"></div>
-        <div class="row-score"></div>
-      </div>
-      <div class="row-meta">
-        <span class="badge miss"></span>
+    <div class="controls">
+      <div class="split">
+        <button id="shuffle" class="btn">Arvo aloitusjärjestys</button>
+        <button id="undo" class="btn">Peru viimeisin</button>
       </div>
     </div>
-  </template>
+  </section>
 
-  <script type="module" src="js/app.js"></script>
+  <p id="emptyState" class="muted">Ei vielä pelaajia. Lisää ensin pelaajat.</p>
+  <section id="playersGrid" class="player-grid"></section>
+</main>
+
+<!-- Heittopaneeli -->
+<div class="throwbar">
+  <button class="btn danger tb-key" data-score="0">Huti (0)</button>
+  <div class="pad" id="throwPad">
+    <button class="btn key tb-key" data-score="1">1</button>
+    <button class="btn key tb-key" data-score="2">2</button>
+    <button class="btn key tb-key" data-score="3">3</button>
+    <button class="btn key tb-key" data-score="4">4</button>
+    <button class="btn key tb-key" data-score="5">5</button>
+    <button class="btn key tb-key" data-score="6">6</button>
+    <button class="btn key tb-key" data-score="7">7</button>
+    <button class="btn key tb-key" data-score="8">8</button>
+    <button class="btn key tb-key" data-score="9">9</button>
+    <button class="btn key tb-key" data-score="10">10</button>
+    <button class="btn key tb-key" data-score="11">11</button>
+    <button class="btn key tb-key" data-score="12">12</button>
+  </div>
+  <div class="side">
+    <button class="btn small" id="undoAlt">Peru</button>
+    <button class="btn small" id="shuffleAlt">Arvo</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module" src="js/app.js?v=reset1"></script>
 </body>
 </html>

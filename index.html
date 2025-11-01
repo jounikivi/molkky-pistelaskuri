@@ -1,35 +1,28 @@
 <!doctype html>
 <html lang="fi">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Mölkky – Etusivu</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=reset1">
 </head>
 <body>
-  <header class="topbar">
-    <h1>Mölkky</h1>
-  </header>
+<header class="site-header">
+  <h1 class="brand">Mölkky</h1>
+  <nav class="nav">
+    <a class="btn blue" href="game.html">Yksilöpeli</a>
+    <a class="btn" href="team-game.html">Joukkuepeli</a>
+  </nav>
+</header>
 
-  <main class="container">
-    <section class="card">
-      <h2 style="margin:0 0 8px 0;">Tervetuloa</h2>
-      <p class="hint">Valitse pelimuoto. Molemmat ovat täysin mobiili-ystävällisiä.</p>
-      <div class="row actions" style="margin-top:12px">
-        <a class="btn wide" href="game.html">Yksinpeli</a>
-        <a class="btn wide ghost" href="team-game.html">Joukkuepeli</a>
-      </div>
-    </section>
+<main class="app-card">
+  <section class="card">
+    <h2>Tervetuloa!</h2>
+    <p>Valitse pelimuoto ylhäältä. Tämä on pelkistetty “rescue”-versio,
+       jotta tyylit ja toiminnallisuus varmasti toimivat.</p>
+  </section>
+</main>
 
-    <section class="card">
-      <h3 style="margin:0 0 8px 0;">Säännöt (tiivistetty)</h3>
-      <ul style="margin:0; padding-left:18px; color:#cfe2ff">
-        <li>1 keila → pisteet = keilan numero</li>
-        <li>&gt;1 keilaa → pisteet = kaadettujen määrä</li>
-        <li>Ohi = 0; 3× peräkkäin ohi → pelaaja pois</li>
-        <li>Tasan 50 = voitto; yli 50 → pisteet putoaa 25:een</li>
-      </ul>
-    </section>
-  </main>
+<footer class="site-footer">Mölkky Pistelaskuri v2 (rescue)</footer>
 </body>
 </html>

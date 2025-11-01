@@ -1,359 +1,94 @@
-/* Mölkky – Yksinpeli (v2.0.1)
-   - Pisteet kirjataan vain vuorossa olevalle pelaajalle
-   - 3 hutia -> pelaaja passivoidaan
-   - 50 ylitys -> 25
-   - Tarkka undo (viimeinen heitto)
-   - Tallennus localStorageen
-*/
+// app.js (solo, rescue)
 
-(() => {
-  const STORAGE_KEY = "molkky_solo_state";
-  const LINEUP_KEY  = "molkky_solo_lineup";
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]))}
+const LS="molkky_solo_rescue";
+const def=()=>({players:[],order:[],turnIndex:0,ended:false});
+let S=load(); function load(){try{const r=localStorage.getItem(LS);return r?JSON.parse(r):def()}catch{ return def()}}
+function save(){localStorage.setItem(LS,JSON.stringify(S))}
+const $=id=>document.getElementById(id);
+const els={grid:$("playersGrid"),empty:$("emptyState"),name:$("playerName"),add:$("addPlayer"),shuffle:$("shuffle"),undo:$("undo"),
+  shuffleAlt:$("shuffleAlt"),undoAlt:$("undoAlt"),free:$("freeInput"),go:$("submitFree"),title:$("turnTitle"),toast:$("toast")};
 
-  /** ---------- State ---------- */
-  let players = [];     // [{ id, name, score, throws, missCount, active, winner, history:[] }]
-  let currentIndex = 0; // vuorossa olevan pelaajan indeksi
-  let turn = 1;         // vuoronumero (näytetään vain tiedoksi)
+function uid(){return Math.random().toString(36).slice(2,9)}
+function getP(id){return S.players.find(p=>p.id===id)}
+function curr(){
+  if(S.ended||!S.players.length) return null;
+  let i=S.turnIndex%S.order.length;
+  for(let k=0;k<S.order.length;k++){
+    const p=getP(S.order[(i+k)%S.order.length]); if(p?.active!==false){ S.turnIndex=(i+k)%S.order.length; return p; }
+  } return null;
+}
+function next(){ if(!S.order.length) return; let c=0; do{ S.turnIndex=(S.turnIndex+1)%S.order.length; c++; if(getP(S.order[S.turnIndex])?.active!==false) break; } while(c<=S.order.length); }
 
-  /** ---------- DOM ---------- */
-  const $ = (sel, root = document) => root.querySelector(sel);
-  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+function applyRules(old,v){const n=(old||0)+(v||0); if(n===50) return {score:50,win:true,over:false}; if(n>50) return {score:25,win:false,over:true}; return {score:n,win:false,over:false};}
 
-  const turnEl = $("#turnIndicator");
-  const currentNameEl = $("#currentPlayerName");
-  const playersContainer = $("#playersContainer");
-  const manualInput = $("#manualInput");
-  const toastEl = $("#toast");
+function render(){
+  // title
+  const p=curr(); $("turnTitle").textContent = S.ended? "Peli päättynyt" : ("Vuorossa: " + (p?.name||"–"));
+  // players
+  els.grid.innerHTML="";
+  if(!S.players.length){ els.empty?.classList.remove("hidden"); } else { els.empty?.classList.add("hidden"); }
+  S.players.forEach(p=>{
+    const a=document.createElement("article"); a.className="player-card";
+    a.innerHTML=`<div class="card__header"><div class="card__title">${escapeHtml(p.name)}</div>
+      <div class="chips"><span class="chip">🥇 ${p.score||0}</span></div></div>
+      <div class="card__body"><div class="card__score">Pisteet: ${p.score||0}</div></div>`;
+    els.grid.appendChild(a);
+  });
+  // buttons
+  const canSh=S.players.length>=2, canUn=S.players.some(p=>p.hist?.length);
+  [els.shuffle,els.shuffleAlt].forEach(b=>b&&(b.disabled=!canSh));
+  [els.undo,els.undoAlt].forEach(b=>b&&(b.disabled=!canUn));
+  save();
+}
 
-  /** ---------- Utils ---------- */
-  const uid = () => Math.random().toString(36).slice(2, 9);
-  const clamp01 = (n) => Math.max(0, Math.min(1, n));
-
-  function showToast(msg) {
-    if (!toastEl) return;
-    toastEl.textContent = msg;
-    toastEl.hidden = false;
-    clearTimeout(showToast._t);
-    showToast._t = setTimeout(() => (toastEl.hidden = true), 2200);
+function addPlayer(){
+  const n=(els.name.value||"").trim(); if(!n) return toast("Anna nimi");
+  S.players.push({id:uid(),name:n,score:0,hist:[],active:true});
+  S.order=S.players.map(p=>p.id); els.name.value=""; render();
+}
+function shuffle(){
+  if(S.players.length<2) return;
+  const a=[...S.players.map(p=>p.id)];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];}
+  S.order=a; S.turnIndex=0; render();
+}
+function throwV(v){
+  if(S.ended) return;
+  const p=curr(); if(!p) return;
+  v=Number(v)||0;
+  p.hist=p.hist||[]; p.hist.push(v);
+  if(v===0){ p.miss=(p.miss||0)+1; if(p.miss>=3){ p.active=false; toast(`${p.name} tippui`) } }
+  else { p.miss=0; const r=applyRules(p.score||0,v); p.score=r.score; if(r.win){ S.ended=true; toast(`${p.name} voitti!`) } if(r.over){ toast(`Yli 50 → 25`) } }
+  if(S.players.every(x=>x.active===false)){ S.ended=true; toast("Kaikki tippuivat") }
+  next(); render();
+}
+function undo(){
+  const last=[...S.players].reverse().find(p=>p.hist?.length);
+  if(!last) return;
+  const v=last.hist.pop();
+  if(v===0){ last.miss=Math.max(0,(last.miss||0)-1); last.active=true; }
+  else{
+    last.score=0;
+    (last.hist||[]).forEach(s=>{ const r=applyRules(last.score,s); last.score=r.score; });
   }
+  S.ended=false; toast("Peruttu"); render();
+}
+function toast(t){ if(!els.toast) return; els.toast.textContent=t; els.toast.classList.add("show"); setTimeout(()=>els.toast.classList.remove("show"),1200); }
 
-  function saveState() {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ players, currentIndex, turn })
-    );
-  }
+// events
+els.add?.addEventListener("click",addPlayer);
+els.shuffle?.addEventListener("click",shuffle);
+els.shuffleAlt?.addEventListener("click",shuffle);
+els.undo?.addEventListener("click",undo);
+els.undoAlt?.addEventListener("click",undo);
+els.go?.addEventListener("click",()=>{ const val=(els.free.value||"").trim(); if(val==="") return; const n=Number(val); if(n<0||n>12||Number.isNaN(n)) return toast("0–12"); throwV(n); els.free.value="";});
 
-  function loadState() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return false;
-    try {
-      const s = JSON.parse(raw);
-      players = s.players || [];
-      currentIndex = s.currentIndex ?? 0;
-      turn = s.turn ?? 1;
-      // pientä saneerausta
-      players.forEach(p => {
-        p.history = p.history || [];
-        if (typeof p.active === "undefined") p.active = true;
-        if (typeof p.missCount !== "number") p.missCount = 0;
-        if (typeof p.throws !== "number") p.throws = 0;
-        if (typeof p.score !== "number") p.score = 0;
-      });
-      return true;
-    } catch {
-      return false;
-    }
-  }
+// delegoitu heittoruudukko (EI tuplia)
+const pad=document.getElementById("throwPad");
+if(pad && !pad.dataset.bound){
+  pad.addEventListener("click",(e)=>{ const b=e.target.closest("[data-score]"); if(!b) return; throwV(Number(b.dataset.score||0)); });
+  pad.dataset.bound="1";
+}
 
-  function saveLineup() {
-    const names = players.map(p => p.name);
-    localStorage.setItem(LINEUP_KEY, JSON.stringify(names));
-  }
-
-  function loadLineup() {
-    const raw = localStorage.getItem(LINEUP_KEY);
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw) || [];
-    } catch {
-      return [];
-    }
-  }
-
-  /** ---------- Core game ---------- */
-  function addPlayer(name) {
-    const n = (name || "").trim();
-    if (!n) return;
-    players.push({
-      id: uid(),
-      name: n,
-      score: 0,
-      throws: 0,
-      missCount: 0,
-      active: true,
-      winner: false,
-      history: []
-    });
-    if (players.length === 1) currentIndex = 0;
-    saveLineup();
-    saveState();
-    render();
-  }
-
-  function resetPlayers(names = []) {
-    players = names.map(n => ({
-      id: uid(),
-      name: n,
-      score: 0,
-      throws: 0,
-      missCount: 0,
-      active: true,
-      winner: false,
-      history: []
-    }));
-    currentIndex = 0;
-    turn = 1;
-    saveLineup();
-    saveState();
-    render();
-  }
-
-  function randomizeOrder() {
-    if (players.length <= 1) return;
-    players = players
-      .map(p => [Math.random(), p])
-      .sort((a, b) => a[0] - b[0])
-      .map(([, p]) => p);
-    currentIndex = 0;
-    turn = 1;
-    saveState();
-    render();
-  }
-
-  function advanceTurn() {
-    if (players.length === 0) return;
-
-    let next = currentIndex;
-    let cycled = 0;
-    do {
-      next = (next + 1) % players.length;
-      cycled++;
-      // jos kaikki passivoitu, jää nykyiseen
-      if (cycled > players.length + 1) {
-        return;
-      }
-    } while (players[next].active === false);
-
-    currentIndex = next;
-    // kasvatetaan vuoroa, kun kierros nollautuu takaisin nollaan
-    if (currentIndex === 0) turn++;
-  }
-
-  function addPointsToCurrentPlayer(points) {
-    const p = players[currentIndex];
-    if (!p) return;
-
-    // talteen undo:lle
-    p.history.push({
-      beforeScore: p.score,
-      beforeMiss: p.missCount,
-      beforeThrows: p.throws,
-      beforeActive: p.active,
-      beforeWinner: p.winner,
-      points
-    });
-
-    p.throws++;
-
-    if (points === 0) {
-      p.missCount++;
-      if (p.missCount >= 3) {
-        p.active = false; // kolmas huti -> ulos
-        showToast(`${p.name} kolmas huti – ulkona`);
-      }
-    } else {
-      p.missCount = 0; // osuma nollaa hutin laskurin
-
-      let s = p.score + points;
-      if (s > 50) {
-        s = 25; // yli -> 25
-        showToast(`${p.name} ylitti 50 → 25`);
-      }
-      p.score = s;
-      if (p.score === 50) {
-        p.active = false;
-        p.winner = true;
-        showToast(`${p.name} voitti!`);
-      }
-    }
-
-    // jos peliä on vielä, vaihda vuoro
-    const stillActive = players.some(pl => pl.active);
-    if (stillActive) {
-      advanceTurn();
-    }
-
-    saveState();
-    render();
-  }
-
-  function undoLast() {
-    if (!players.length) return;
-
-    // etsi edellisestä taaksepäin se pelaaja, jolla on historiaa
-    let idx = (currentIndex - 1 + players.length) % players.length;
-    for (let i = 0; i < players.length; i++) {
-      const p = players[idx];
-      if (p.history && p.history.length) {
-        const last = p.history.pop();
-        p.score = last.beforeScore;
-        p.missCount = last.beforeMiss;
-        p.throws = last.beforeThrows;
-        p.active = last.beforeActive;
-        p.winner = last.beforeWinner;
-
-        // undo palauttaa vuoron tekijälleen
-        currentIndex = idx;
-        saveState();
-        render();
-        return;
-      }
-      idx = (idx - 1 + players.length) % players.length;
-    }
-  }
-
-  /** ---------- Render ---------- */
-  function percent(n, d) {
-    if (!d) return "0%";
-    return `${Math.round((n / d) * 1000) / 10}%`;
-  }
-
-  function render() {
-    // Vuoro-indikaattori
-    turnEl.textContent = turn;
-    const cp = players[currentIndex];
-    currentNameEl.textContent = cp ? cp.name : "–";
-
-    // Pelaajakortit
-    playersContainer.innerHTML = "";
-    players.forEach((p, i) => {
-      const el = document.createElement("article");
-      el.className = "player-card";
-      if (i === currentIndex) el.classList.add("active");
-      if (p.active === false) el.classList.add("inactive");
-      if (p.winner) el.classList.add("winner");
-
-      const missRate = percent(p.missCount, Math.max(1, p.throws));
-      const throwText = `${p.throws} heittoa ${missRate} huti`;
-
-      el.innerHTML = `
-        <div class="row between center">
-          <div class="h5">${escapeHtml(p.name)}</div>
-          <div class="pill ${p.active ? "" : "pill--muted"}">
-            ${p.winner ? "Voittaja" : (p.active ? "Aktiivinen" : "Ulkona")}
-          </div>
-        </div>
-
-        <div class="small muted mt-s">🥇 ${throwText}</div>
-        <div class="h4 mt">Pisteet: ${p.score}</div>
-      `;
-
-      playersContainer.appendChild(el);
-    });
-  }
-
-  function escapeHtml(s) {
-    return String(s)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  /** ---------- Init & Events ---------- */
-  function bindEvents() {
-    // 1–12 napit
-    $$("[data-score]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const v = parseInt(btn.dataset.score, 10);
-        if (Number.isFinite(v)) addPointsToCurrentPlayer(v);
-      });
-    });
-
-    // Huti
-    const missBtn = $("#missBtn");
-    missBtn?.addEventListener("click", () => addPointsToCurrentPlayer(0));
-
-    // Manuaalinen lisää
-    $("#manualAddBtn")?.addEventListener("click", () => {
-      const v = parseInt(manualInput.value, 10);
-      if (!Number.isFinite(v) || v < 0 || v > 12) return;
-      addPointsToCurrentPlayer(v);
-      manualInput.value = "";
-      manualInput.blur();
-    });
-
-    // Alapalkin keypad
-    $$("[data-keypad]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const v = parseInt(btn.dataset.keypad, 10);
-        if (Number.isFinite(v)) addPointsToCurrentPlayer(v);
-      });
-    });
-
-    // Undo
-    $$("[data-action='undo']").forEach(btn => {
-      btn.addEventListener("click", undoLast);
-    });
-
-    // Pelaajien lisääminen
-    $("#addPlayerBtn")?.addEventListener("click", () => {
-      const name = $("#addPlayerName").value;
-      addPlayer(name);
-      $("#addPlayerName").value = "";
-    });
-
-    // Arvo järjestys
-    $("#randomizeBtn")?.addEventListener("click", randomizeOrder);
-
-    // Sama kokoonpano
-    $("#sameLineupBtn")?.addEventListener("click", () => {
-      const names = loadLineup();
-      if (!names.length) {
-        showToast("Ei aiempaa kokoonpanoa");
-        return;
-      }
-      resetPlayers(names);
-      showToast("Sama kokoonpano ladattu");
-    });
-
-    // Uudet pelaajat (tyhjennä)
-    $("#newPlayersBtn")?.addEventListener("click", () => {
-      resetPlayers([]);
-      showToast("Peli nollattu");
-    });
-
-    // Enter lisää pelaajan nimen
-    $("#addPlayerName")?.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        $("#addPlayerBtn").click();
-      }
-    });
-  }
-
-  function boot() {
-    const restored = loadState();
-    if (!restored) {
-      // yritä aloittaa viimeisestä kokoonpanosta
-      const names = loadLineup();
-      resetPlayers(names);
-    }
-    bindEvents();
-    render();
-  }
-
-  // Käynnistä
-  document.addEventListener("DOMContentLoaded", boot);
-})();
+render();
