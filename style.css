@@ -365,3 +365,31 @@ a:hover { text-decoration: underline; }
   /* Lisätila pohjaan */
   .app-card main{ padding-bottom: 5.2rem; }
 }
+
+/* --- Hotfix: varmistetaan ruudukko myös ID:llä --- */
+#playersGrid,
+#teamsGrid{
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 480px){
+  #playersGrid, #teamsGrid{ grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 768px){
+  #playersGrid, #teamsGrid{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --- Hotfix: .hidden todella piilottaa --- */
+.hidden{ display: none !important; }
+
+/* --- Hotfix: kortti ei voi luhistua nollaan --- */
+.player-card,
+.team-card{
+  min-height: 68px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: .75rem .9rem;
+}
