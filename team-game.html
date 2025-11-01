@@ -63,27 +63,23 @@
         <p class="help">Lisää vähintään 2 tiimiä ja pelaajat. Arvo aloitus, sitten heitot aktivoituvat.</p>
       </section>
 
-      <!-- <section class="card">
-        <h3>Viimeisimmät heitot</h3>
-        <div id="throwLog" class="log-list" aria-live="polite"></div>
-      </section> -->
-
       <section>
         <div id="emptyState" class="help">Ei vielä tiimejä. Lisää ensimmäinen tiimi alla.</div>
         <div id="teamsGrid" class="player-grid" aria-live="polite"></div>
       </section>
 
+      <!-- --- Tiivistetyt kontrollit --- -->
       <section class="controls">
         <h3>Lisää tiimit</h3>
         <label for="teamName">Tiimin nimi</label>
         <input id="teamName" type="text" placeholder="Tiimin nimi" />
-        <button type="button" id="addTeam" class="btn blue">Lisää tiimi</button>
+        <button type="button" id="addTeam" class="btn blue">Lisää</button>
 
         <div class="split">
-          <button type="button" id="shuffle" class="btn" disabled>Arvo aloitusjärjestys</button>
-          <button type="button" id="undo" class="btn purple" disabled>Peru viimeisin</button>
-          <button type="button" id="newSame" class="btn">Uusi peli – sama kokoonpano</button>
-          <button type="button" id="newFresh" class="btn danger">Uusi peli – uudet joukkueet</button>
+          <button id="shuffle" class="btn" disabled>Arvo</button>
+          <button id="undo" class="btn purple" disabled>Peru</button>
+          <button id="newSame" class="btn">Sama kokoonpano</button>
+          <button id="newFresh" class="btn danger">Uudet joukkueet</button>
         </div>
       </section>
     </main>

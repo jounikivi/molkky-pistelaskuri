@@ -60,32 +60,28 @@
           <input id="freeInput" type="text" inputmode="numeric" placeholder="0–12 (riittää)" aria-label="Vapaa syöte: 0–12">
           <button type="button" id="submitFree" class="btn blue">Lisää</button>
         </div>
-        <p class="help">Lisää vähintään 2 pelaajaa. Arvo aloitusjärjestys, jonka jälkeen heitot aktivoituvat.</p>
+        <p class="help">Lisää vähintään 2 pelaajaa. Arvo aloitusjärjestys, sitten heitot aktivoituvat.</p>
       </section>
-
-      <!-- <section class="card">
-        <h3>Viimeisimmät heitot</h3>
-        <div id="throwLog" class="log-list" aria-live="polite"></div>
-      </section> -->
 
       <section>
         <div id="emptyState" class="help">Ei vielä pelaajia. Lisää ensimmäinen pelaaja alla.</div>
         <div id="playersGrid" class="player-grid" aria-live="polite"></div>
       </section>
 
+      <!-- --- Tiivistetyt kontrollit --- -->
       <section class="controls">
         <h3>Lisää pelaajia</h3>
         <label for="playerName">Pelaajan nimi</label>
         <div class="inline-input">
           <input id="playerName" type="text" placeholder="Pelaajan nimi" />
-          <button type="button" id="addPlayer" class="btn blue">Lisää pelaaja</button>
+          <button type="button" id="addPlayer" class="btn blue">Lisää</button>
         </div>
 
         <div class="split">
-          <button type="button" id="shuffle" class="btn" disabled>Arvo aloitusjärjestys</button>
-          <button type="button" id="undo" class="btn purple" disabled>Peru viimeisin</button>
-          <button type="button" id="newSame" class="btn">Uusi peli – sama kokoonpano</button>
-          <button type="button" id="newFresh" class="btn danger">Uusi peli – uudet pelaajat</button>
+          <button id="shuffle" class="btn" disabled>Arvo</button>
+          <button id="undo" class="btn purple" disabled>Peru</button>
+          <button id="newSame" class="btn">Sama kokoonpano</button>
+          <button id="newFresh" class="btn danger">Uudet pelaajat</button>
         </div>
       </section>
     </main>
