@@ -249,40 +249,4 @@ a:hover { text-decoration: underline; }
 }
 .site-footer a{ color: var(--muted); text-decoration: underline; }
 
-/* ---------- Hotfixit näkyvyydelle ---------- */
-#playersGrid,
-#teamsGrid {
-  display: grid;
-  gap: .75rem;
-  grid-template-columns: 1fr;
-}
-@media (min-width:480px){ #playersGrid,#teamsGrid{ grid-template-columns:1fr 1fr; } }
-@media (min-width:768px){ #playersGrid,#teamsGrid{ grid-template-columns:repeat(3,1fr); } }
-.hidden { display:none !important; }
 
-/* ---------- MOBILE COMPACT (≤600px) ---------- */
-@media (max-width:600px) {
-
-  .turn-card .quick-row, .turn-card .quick-grid { display:none!important; }
-
-  .site-header { padding:.45rem .6rem; gap:.5rem; }
-  .brand { font-size:.98rem; }
-  .theme-toggle .theme-text{ display:none; }
-
-  .btn { padding:.42rem .6rem; font-size:.85rem; border-radius:10px; }
-  .controls .split .btn{ flex:1 1 48%; padding:.42rem .55rem; font-size:.84rem; }
-
-  .inline-input input{ padding:.48rem .6rem; font-size:.95rem; }
-  .player-card, .team-card, .card, .turn-card, .controls{ padding:.7rem .75rem; border-radius:10px; }
-
-  .throwbar{
-    padding:.5rem .55rem calc(.5rem + env(safe-area-inset-bottom));
-    gap:.5rem;
-  }
-  .throwbar .key{ height:40px; font-size:.9rem; border-radius:.55rem; }
-  .throwbar .btn.miss{ min-width:76px; font-size:.9rem; }
-
-  .fab{ right:.8rem; bottom:calc(4.8rem + env(safe-area-inset-bottom)); width:52px; height:52px; line-height:52px; font-size:1.4rem; }
-  .site-footer{ font-size:.82rem; margin:.6rem auto .7rem; opacity:.8; }
-  .app-card main{ padding-bottom:5.2rem; }
-}
