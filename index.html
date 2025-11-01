@@ -1,71 +1,35 @@
 <!doctype html>
-<html lang="fi" data-theme="">
+<html lang="fi">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Mölkky – Etusivu</title>
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#0b1018" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#ffffff"  media="(prefers-color-scheme: light)">
-  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header class="site-header">
-    <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
-    <h1 class="brand">Mölkky</h1>
-    <button id="themeToggle" class="btn ghost small theme-toggle" aria-pressed="false" aria-label="Vaihda teema">
-      <span class="theme-ico" aria-hidden="true">🌙</span>
-      <span class="theme-text">Tumma</span>
-    </button>
-    <nav id="siteNav" class="nav-drawer" aria-label="Päävalikko">
-      <a href="./index.html" data-nav>Etusivu</a>
-      <a href="./game.html" data-nav>Yksilöpeli</a>
-      <a href="./team-game.html" data-nav>Joukkuepeli</a>
-      <a href="#rules" data-nav>Peliohjeet</a>
-      <hr>
-      <button id="themeToggleDrawer" class="btn ghost small" aria-pressed="false">Vaihda teema</button>
-    </nav>
+  <header class="topbar">
+    <h1>Mölkky</h1>
   </header>
 
-  <div class="app-card">
-    <main>
-      <section class="card">
-        <h2>Tervetuloa</h2>
-        <p class="help">Valitse pelimuoto. Toimii offline-tilassa ja on asennettavissa puhelimeen.</p>
-        <div class="controls">
-          <div class="split">
-            <a class="btn blue" href="./game.html">Yksilöpeli</a>
-            <a class="btn purple" href="./team-game.html">Joukkuepeli</a>
-          </div>
-        </div>
-      </section>
+  <main class="container">
+    <section class="card">
+      <h2 style="margin:0 0 8px 0;">Tervetuloa</h2>
+      <p class="hint">Valitse pelimuoto. Molemmat ovat täysin mobiili-ystävällisiä.</p>
+      <div class="row actions" style="margin-top:12px">
+        <a class="btn wide" href="game.html">Yksinpeli</a>
+        <a class="btn wide ghost" href="team-game.html">Joukkuepeli</a>
+      </div>
+    </section>
 
-      <section id="rules" class="card">
-        <h3>Peliohjeet (tiivistelmä)</h3>
-        <ul>
-          <li>Yksi keila kaatuu → pisteet = keilan numero</li>
-          <li>Useampi keila → pisteet = kaadettujen määrä</li>
-          <li>Huti = 0. 3 peräkkäistä hutia → tippuu</li>
-          <li>Yli 50 → palautus 25 pisteeseen</li>
-          <li>Tasan 50 → voitto</li>
-        </ul>
-      </section>
-    </main>
-  </div>
-
-  <footer class="site-footer">
-    <p>Mölkky Pistelaskuri <span id="appVersion">v2.0.0</span> · <a href="./index.html#rules">Säännöt</a></p>
-  </footer>
-
-  <script type="module" src="./js/nav.js"></script>
-  
+    <section class="card">
+      <h3 style="margin:0 0 8px 0;">Säännöt (tiivistetty)</h3>
+      <ul style="margin:0; padding-left:18px; color:#cfe2ff">
+        <li>1 keila → pisteet = keilan numero</li>
+        <li>&gt;1 keilaa → pisteet = kaadettujen määrä</li>
+        <li>Ohi = 0; 3× peräkkäin ohi → pelaaja pois</li>
+        <li>Tasan 50 = voitto; yli 50 → pisteet putoaa 25:een</li>
+      </ul>
+    </section>
+  </main>
 </body>
 </html>
