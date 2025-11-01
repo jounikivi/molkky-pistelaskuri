@@ -1,177 +1,49 @@
 <!doctype html>
-<html lang="fi" data-theme="">
+<html lang="fi">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky – Yksilöpeli</title>
-  <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#0b1018" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#ffffff"  media="(prefers-color-scheme: light)">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mölkky Pistelaskuri – Yksinpeli</title>
 
-  <link rel="manifest" href="./manifest.webmanifest">
-  <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="stylesheet" href="./style.css" />
+  <meta name="theme-color" content="#0b1018" />
+
+  <!-- iOS PWA perusmetat (jos käytössä) -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+
+  <script defer src="./js/sw-register.js"></script>
+  <script defer src="./js/app.js"></script>
 </head>
-<body>
-  <header class="site-header">
-    <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
-    <h1 class="brand">Mölkky</h1>
-    <button id="themeToggle" class="btn ghost small theme-toggle" aria-pressed="false" aria-label="Vaihda teema">
-      <span class="theme-ico" aria-hidden="true">🌙</span>
-      <span class="theme-text">Tumma</span>
-    </button>
-    <nav id="siteNav" class="nav-drawer" aria-label="Päävalikko">
-      <a href="./index.html" data-nav>Etusivu</a>
-      <a href="./game.html" data-nav>Yksilöpeli</a>
-      <a href="./team-game.html" data-nav>Joukkuepeli</a>
-      <a href="./index.html#rules" data-nav>Peliohjeet</a>
-      <hr>
-      <button id="themeToggleDrawer" class="btn ghost small" aria-pressed="false">Vaihda teema</button>
-    </nav>
+<body class="app app--solo">
+  <header class="container section section--tight">
+    <div class="row between center">
+      <h1 class="h3">Mölkky – Yksinpeli</h1>
+      <span class="badge" id="appVersion">v2.0.1</span>
+    </div>
   </header>
 
-  <div class="app-card">
-    <main>
-      <section class="turn-card" id="turnCard">
-        <div class="turn-title" id="turnTitle">Vuorossa: –</div>
-
-        <div class="quick-row">
-          <button type="button" class="quick-btn miss" data-score="0" aria-label="Huti, 0 pistettä">Huti (0)</button>
-        </div>
-        <div class="quick-grid" id="grid-main" aria-label="Pisteet (1–12)">
-          <button class="quick-btn" data-score="1">1</button><button class="quick-btn" data-score="2">2</button>
-          <button class="quick-btn" data-score="3">3</button><button class="quick-btn" data-score="4">4</button>
-          <button class="quick-btn" data-score="5">5</button><button class="quick-btn" data-score="6">6</button>
-          <button class="quick-btn" data-score="7">7</button><button class="quick-btn" data-score="8">8</button>
-          <button class="quick-btn" data-score="9">9</button><button class="quick-btn" data-score="10">10</button>
-          <button class="quick-btn" data-score="11">11</button><button class="quick-btn" data-score="12">12</button>
+  <main class="container">
+    <!-- Vuoro / ohjaimet -->
+    <section class="card">
+      <div class="row wrap center gap-s">
+        <div class="grow">
+          <div class="muted">Vuorossa:</div>
+          <div class="h4" id="turnIndicator">1</div>
+          <div class="small muted" id="currentPlayerName">–</div>
         </div>
 
-        <div class="inline-input">
-          <input id="freeInput" type="text" inputmode="numeric" placeholder="0–12 (riittää)" aria-label="Vapaa syöte: 0–12">
-          <button type="button" id="submitFree" class="btn blue">Lisää</button>
-        </div>
-
-
-      <section>
-        <div id="emptyState" class="help">Ei vielä pelaajia. Lisää ensimmäinen pelaaja alla.</div>
-        <div id="playersGrid" class="player-grid" aria-live="polite"></div>
-      </section>
-
-      <section class="controls">
-        <h3>Lisää pelaajia</h3>
-        <label for="playerName">Pelaajan nimi</label>
-        <div class="inline-input">
-          <input id="playerName" type="text" placeholder="Pelaajan nimi" />
-          <button type="button" id="addPlayer" class="btn blue">Lisää</button>
-        </div>
-
-        <div class="split">
-          <button id="shuffle" class="btn" disabled>Arvo</button>
-          <button id="undo" class="btn purple" disabled>Peru</button>
-          <button id="newSame" class="btn">Sama kokoonpano</button>
-          <button id="newFresh" class="btn danger">Uudet pelaajat</button>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Sticky heittopaneeli -->
-  <div class="throwbar">
-  <button class="btn miss tb-key" data-score="0">Huti (0)</button>
-
-  <!-- TÄMÄ RIVI: lisää id="throwPad" -->
-  <div class="pad" id="throwPad">
-    <button class="btn key tb-key" data-score="1">1</button>
-    <button class="btn key tb-key" data-score="2">2</button>
-    <button class="btn key tb-key" data-score="3">3</button>
-    <button class="btn key tb-key" data-score="4">4</button>
-    <button class="btn key tb-key" data-score="5">5</button>
-    <button class="btn key tb-key" data-score="6">6</button>
-    <button class="btn key tb-key" data-score="7">7</button>
-    <button class="btn key tb-key" data-score="8">8</button>
-    <button class="btn key tb-key" data-score="9">9</button>
-    <button class="btn key tb-key" data-score="10">10</button>
-    <button class="btn key tb-key" data-score="11">11</button>
-    <button class="btn key tb-key" data-score="12">12</button>
-  </div>
-
-  <div class="side">
-    <button class="btn small" id="undoAlt">Peru</button>
-    <button class="btn small" id="shuffleAlt">Arvo</button>
-  </div>
-</div>
-
-  <!-- Footer -->
-
-  <footer class="site-footer">
-    <p>Mölkky Pistelaskuri <span id="appVersion">v2.0.0</span> · <a href="./index.html#rules">Säännöt</a></p>
-  </footer>
-
-  <!-- Modals & Scripts -->
-  <div id="winModal" class="modal-backdrop" hidden>
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
-      <h3 id="winTitle">Voitto!</h3>
-      <p id="winText" class="muted">—</p>
-      <div class="modal-actions">
-        <button id="winSame"  class="btn blue">Aloita uusi peli samoilla</button>
-        <button id="winFresh" class="btn danger">Aloita uusi peli uusilla</button>
-        <button id="winClose" class="btn ghost">Sulje</button>
+        <button class="btn btn--danger" id="missBtn" aria-label="Huti" data-miss="true">Huti (0)</button>
+        <button class="btn" id="undoBtn" data-action="undo">Peru</button>
+        <button class="btn btn--ghost" id="randomizeBtn">Arvo</button>
       </div>
-    </div>
-  </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <button class="fab" id="fabAdd" aria-label="Lisää">＋</button>
-  <div class="sheet" id="addSheet" hidden>
-    <div class="sheet-body" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
-      <h3 id="sheetTitle">Lisää</h3>
-      <button class="btn" id="sheetAddPlayer">Lisää pelaaja</button>
-      <button class="btn ghost" id="closeSheet">Sulje</button>
-    </div>
-  </div>
-
-  <script type="module" src="./js/nav.js"></script>
-  <script type="module" src="./js/app.js"></script>
-  <script type="module" src="./js/sw-register.js"></script>
-
-  <script type="module">
-    const clickScore = (s) => {
-      const btn = document.querySelector(`.quick-grid .quick-btn[data-score="${s}"]`)
-              || document.querySelector(`.quick-row .quick-btn[data-score="${s}"]`);
-      btn?.click();
-    };
-    document.querySelectorAll('.tb-key').forEach(b => b.addEventListener('click', ()=>clickScore(b.dataset.score)));
-    const mirror = (srcId, targetId) => {
-      const a = document.getElementById(srcId), b = document.getElementById(targetId);
-      if (!a || !b) return;
-      const sync = ()=> a.disabled = b.disabled; sync();
-      new MutationObserver(sync).observe(b, { attributes: true, attributeFilter: ['disabled'] });
-      a.addEventListener('click', ()=> b.click());
-    };
-    mirror('undoAlt','undo'); mirror('shuffleAlt','shuffle');
-
-    // FAB sheet
-    const fab = document.getElementById('fabAdd');
-    const sheet = document.getElementById('addSheet');
-    const closeSheet = document.getElementById('closeSheet');
-    fab?.addEventListener('click', ()=> sheet.hidden = false);
-    closeSheet?.addEventListener('click', ()=> sheet.hidden = true);
-    sheet.addEventListener('click', (e)=>{ if(e.target===sheet) sheet.hidden = true; });
-    document.getElementById('sheetAddPlayer')?.addEventListener('click', ()=>{
-      sheet.hidden = true;
-      const input = document.getElementById('playerName');
-      input?.scrollIntoView({ block: 'center', behavior: 'smooth' });
-      input?.focus();
-    });
-  </script>
-</body>
-</html>
+      <!-- 1–12 napit -->
+      <div class="grid grid-4 mt">
+        <!-- luodaan JS:llä, mutta jätetään fallbackiksi HTML -->
+        <button class="btn btn--grid" data-score="1">1</button>
+        <button class="btn btn--grid" data-score="2">2</button>
+        <button class="btn btn--grid" data-score="3">3</button>
+        <button class="btn btn--grid" data-score="4">4</button>
+        <button class=
