@@ -3,29 +3,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Mölkky – Pistelaskuri</title>
-
-  <!-- SEO & värit -->
-  <meta name="description" content="Kevyt ja mobiiliystävällinen Mölkky-pistelaskuri. Yksilö- ja joukkuepelit, undo, loki ja tilastot." />
+  <title>Mölkky – Etusivu</title>
   <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#0b1018" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#ffffff"  media="(prefers-color-scheme: light)">
 
-  <!-- PWA -->
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
   <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Font & CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
-  <!-- Header + nav -->
   <header class="site-header">
     <button id="navToggle" class="hamburger" aria-label="Avaa valikko" aria-expanded="false">☰</button>
     <h1 class="brand">Mölkky</h1>
@@ -44,66 +38,36 @@
   </header>
 
   <div class="app-card">
-    <main class="home" id="top">
-      <section class="hero hero-anim">
-        <h2>Mölkky-pistelaskuri</h2>
-        <p>Nopea ja selkeä laskuri puhelimeen. Yksilö- ja joukkuepelit, heittoloki ja tilastot – kaikki ilman kirjautumista.</p>
-        <div class="hero-actions">
-          <a class="btn blue btn-pop" href="./game.html">Aloita yksilöpeli</a>
-          <a class="btn btn-pop" href="./team-game.html">Aloita joukkuepeli</a>
+    <main>
+      <section class="card">
+        <h2>Tervetuloa</h2>
+        <p class="help">Valitse pelimuoto. Toimii offline-tilassa ja on asennettavissa puhelimeen.</p>
+        <div class="controls">
+          <div class="split">
+            <a class="btn blue" href="./game.html">Yksilöpeli</a>
+            <a class="btn purple" href="./team-game.html">Joukkuepeli</a>
+          </div>
         </div>
       </section>
 
-      <section class="grid2">
-        <article class="card">
-          <h3>🧍 Yksilöpeli</h3>
-          <ul class="bullets">
-            <li>Lisää 2+ pelaajaa ja arvo aloitus.</li>
-            <li>Heitto 0–12. 3 hutia → tippuu.</li>
-            <li>Yli 50 → 25, tasan 50 → voitto.</li>
-            <li>Undo, heittoloki ja minitilastot.</li>
-          </ul>
-          <a class="btn linklike" href="./game.html">Siirry yksilöpeliin →</a>
-        </article>
-
-        <article class="card">
-          <h3>👥 Joukkuepeli</h3>
-          <ul class="bullets">
-            <li>Lisää 2+ tiimiä ja pelaajat kortteihin.</li>
-            <li>Vuoro kiertää tiimien pelaajien välillä.</li>
-            <li>Tiimille pisteet, pelaajalle hutit.</li>
-            <li>Undo, loki ja minitilastot.</li>
-          </ul>
-          <a class="btn linklike" href="./team-game.html">Siirry joukkuepeliin →</a>
-        </article>
-      </section>
-
       <section id="rules" class="card">
-        <h3>Peliohjeet (tiivistetysti)</h3>
-        <ul class="bullets">
-          <li><strong>Heitto:</strong> 0 = huti. 1–12 = pisteet.</li>
-          <li><strong>Yli 50:</strong> pisteet palautuvat <strong>25</strong>:een.</li>
-          <li><strong>Tasan 50:</strong> välitön voitto.</li>
-          <li><strong>Hutit:</strong> 3 peräkkäistä hutia → pelaaja tippuu.</li>
-          <li><strong>Syöte:</strong> Riittää napit 0–12. (Myös S#/M# tuettu.)</li>
+        <h3>Peliohjeet (tiivistelmä)</h3>
+        <ul>
+          <li>Yksi keila kaatuu → pisteet = keilan numero</li>
+          <li>Useampi keila → pisteet = kaadettujen määrä</li>
+          <li>Huti = 0. 3 peräkkäistä hutia → tippuu</li>
+          <li>Yli 50 → palautus 25 pisteeseen</li>
+          <li>Tasan 50 → voitto</li>
         </ul>
-        <p class="muted">Vinkki: Undo peruu viimeisimmän heiton. Peli jatkuu sivun päivityksen jälkeen.</p>
-      </section>
-
-      <section class="card">
-        <h3>Tietosuoja</h3>
-        <p class="muted">Pelisi tallentuvat vain laitteellesi (localStorage). Tyhjennä aloittamalla “uudet pelaajat/tiimit”.</p>
       </section>
     </main>
   </div>
 
-  <footer class="app-footer">
-    <a href="#top" class="link">Takaisin ylös ↑</a>
-    <span class="muted">© <span id="year"></span> Mölkky-laskuri</span>
+  <footer class="site-footer">
+    <p>Mölkky Pistelaskuri <span id="appVersion">v2.0.0</span> · <a href="./index.html#rules">Säännöt</a></p>
   </footer>
 
   <script type="module" src="./js/nav.js"></script>
   <script type="module" src="./js/sw-register.js"></script>
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

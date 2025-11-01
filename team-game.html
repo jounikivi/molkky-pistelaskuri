@@ -5,17 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Mölkky – Joukkuepeli</title>
   <meta name="color-scheme" content="light dark" />
-  <meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#0b1018" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#ffffff"  media="(prefers-color-scheme: light)">
 
-  <!-- PWA -->
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="192x192" href="./assets/icons/icon-192.png">
   <link rel="apple-touch-icon" href="./assets/icons/icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- Font & CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
@@ -69,7 +67,6 @@
         <div id="teamsGrid" class="player-grid" aria-live="polite"></div>
       </section>
 
-      <!-- --- Tiivistetyt kontrollit --- -->
       <section class="controls">
         <h3>Lisää tiimit</h3>
         <label for="teamName">Tiimin nimi</label>
@@ -86,7 +83,26 @@
     </main>
   </div>
 
-  <!-- Voitto-modal -->
+  <!-- Sticky heittopaneeli -->
+  <div class="throwbar" role="region" aria-label="Heittopaneeli">
+    <button class="btn miss tb-key" data-score="0">Huti (0)</button>
+    <div class="pad" aria-label="Pisteet 1–12">
+      <button class="key tb-key" data-score="1">1</button><button class="key tb-key" data-score="2">2</button><button class="key tb-key" data-score="3">3</button>
+      <button class="key tb-key" data-score="4">4</button><button class="key tb-key" data-score="5">5</button><button class="key tb-key" data-score="6">6</button>
+      <button class="key tb-key" data-score="7">7</button><button class="key tb-key" data-score="8">8</button><button class="key tb-key" data-score="9">9</button>
+      <button class="key tb-key" data-score="10">10</button><button class="key tb-key" data-score="11">11</button><button class="key tb-key" data-score="12">12</button>
+    </div>
+    <div class="side">
+      <button id="undoAlt" class="btn ghost">Peru</button>
+      <button id="shuffleAlt" class="btn" disabled>Arvo</button>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>Mölkky Pistelaskuri <span id="appVersion">v2.0.0</span> · <a href="./index.html#rules">Säännöt</a></p>
+  </footer>
+
+  <!-- Modals & Scripts -->
   <div id="winModal" class="modal-backdrop" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="winTitle">
       <h3 id="winTitle">Voitto!</h3>
@@ -101,8 +117,56 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+  <button class="fab" id="fabAdd" aria-label="Lisää">＋</button>
+  <div class="sheet" id="addSheet" hidden>
+    <div class="sheet-body" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <h3 id="sheetTitle">Lisää</h3>
+      <button class="btn" id="sheetAddTeam">Lisää tiimi</button>
+      <button class="btn" id="sheetAddPlayer">Lisää pelaaja (valittuun tiimiin)</button>
+      <button class="btn ghost" id="closeSheet">Sulje</button>
+    </div>
+  </div>
+
   <script type="module" src="./js/nav.js"></script>
   <script type="module" src="./js/team-app.js"></script>
   <script type="module" src="./js/sw-register.js"></script>
+
+  <script type="module">
+    const clickScore = (s) => {
+      const btn = document.querySelector(`.quick-grid .quick-btn[data-score="${s}"]`)
+              || document.querySelector(`.quick-row .quick-btn[data-score="${s}"]`);
+      btn?.click();
+    };
+    document.querySelectorAll('.tb-key').forEach(b => b.addEventListener('click', ()=>clickScore(b.dataset.score)));
+    const mirror = (srcId, targetId) => {
+      const a = document.getElementById(srcId), b = document.getElementById(targetId);
+      if (!a || !b) return;
+      const sync = ()=> a.disabled = b.disabled; sync();
+      new MutationObserver(sync).observe(b, { attributes: true, attributeFilter: ['disabled'] });
+      a.addEventListener('click', ()=> b.click());
+    };
+    mirror('undoAlt','undo'); mirror('shuffleAlt','shuffle');
+
+    // FAB sheet
+    const fab = document.getElementById('fabAdd');
+    const sheet = document.getElementById('addSheet');
+    const closeSheet = document.getElementById('closeSheet');
+    fab?.addEventListener('click', ()=> sheet.hidden = false);
+    closeSheet?.addEventListener('click', ()=> sheet.hidden = true);
+    sheet.addEventListener('click', (e)=>{ if(e.target===sheet) sheet.hidden = true; });
+
+    document.getElementById('sheetAddTeam')?.addEventListener('click', ()=>{
+      sheet.hidden = true;
+      const input = document.getElementById('teamName');
+      input?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      input?.focus();
+    });
+    document.getElementById('sheetAddPlayer')?.addEventListener('click', ()=>{
+      sheet.hidden = true;
+      const input = document.querySelector('[data-selected-team] #newPlayerName') || document.getElementById('teamName');
+      input?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      input?.focus();
+    });
+  </script>
 </body>
 </html>
