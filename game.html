@@ -5,16 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mölkky Pistelaskuri – Yksinpeli</title>
 
-  <link rel="manifest" href="./manifest.webmanifest" />
+  <!-- vain tyylit, ei manifestia -->
   <link rel="stylesheet" href="./style.css" />
   <meta name="theme-color" content="#0b1018" />
 
-  <!-- iOS PWA perusmetat (jos käytössä) -->
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-
-  <script defer src="./js/sw-register.js"></script>
+  <!-- poistettu SW ja manifest -->
   <script defer src="./js/app.js"></script>
+  <script defer src="./js/sw-kill.js"></script>
 </head>
 <body class="app app--solo">
   <header class="container section section--tight">
@@ -25,7 +22,6 @@
   </header>
 
   <main class="container">
-    <!-- Vuoro / ohjaimet -->
     <section class="card">
       <div class="row wrap center gap-s">
         <div class="grow">
@@ -39,11 +35,69 @@
         <button class="btn btn--ghost" id="randomizeBtn">Arvo</button>
       </div>
 
-      <!-- 1–12 napit -->
       <div class="grid grid-4 mt">
-        <!-- luodaan JS:llä, mutta jätetään fallbackiksi HTML -->
         <button class="btn btn--grid" data-score="1">1</button>
         <button class="btn btn--grid" data-score="2">2</button>
         <button class="btn btn--grid" data-score="3">3</button>
         <button class="btn btn--grid" data-score="4">4</button>
-        <button class=
+        <button class="btn btn--grid" data-score="5">5</button>
+        <button class="btn btn--grid" data-score="6">6</button>
+        <button class="btn btn--grid" data-score="7">7</button>
+        <button class="btn btn--grid" data-score="8">8</button>
+        <button class="btn btn--grid" data-score="9">9</button>
+        <button class="btn btn--grid" data-score="10">10</button>
+        <button class="btn btn--grid" data-score="11">11</button>
+        <button class="btn btn--grid" data-score="12">12</button>
+      </div>
+
+      <div class="row gap-s mt">
+        <input id="manualInput" type="number" min="0" max="12"
+               placeholder="0–12" aria-label="Pisteet" class="input grow" />
+        <button class="btn btn--primary" id="manualAddBtn">Lisää</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 class="h5">Pelaajat</h2>
+      <div id="playersContainer" class="col gap-s mt"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="h5">Lisää pelaajia</h2>
+      <div class="row gap-s">
+        <input id="addPlayerName" class="input grow" placeholder="Pelaajan nimi" />
+        <button id="addPlayerBtn" class="btn btn--primary">Lisää</button>
+      </div>
+      <div class="row gap-s mt">
+        <button id="sameLineupBtn" class="btn btn--ghost">Sama kokoonpano</button>
+        <button id="newPlayersBtn" class="btn btn--danger">Uudet pelaajat</button>
+      </div>
+    </section>
+
+    <section class="center muted small mt-2xl">
+      Mölkky Pistelaskuri v2.0.1 · <a href="./rules.html">Säännöt</a>
+    </section>
+  </main>
+
+  <nav class="bottom-pad" aria-label="Pikanäppäimet">
+    <div class="keypad">
+      <button class="btn btn--grid" data-keypad="1">1</button>
+      <button class="btn btn--grid" data-keypad="2">2</button>
+      <button class="btn btn--grid" data-keypad="3">3</button>
+      <button class="btn btn--grid" data-keypad="4">4</button>
+      <button class="btn btn--grid" data-keypad="5">5</button>
+      <button class="btn btn--grid" data-keypad="6">6</button>
+      <button class="btn btn--grid" data-keypad="7">7</button>
+      <button class="btn btn--grid" data-keypad="8">8</button>
+      <button class="btn btn--grid" data-keypad="9">9</button>
+      <button class="btn btn--grid" data-keypad="10">10</button>
+      <button class="btn btn--grid" data-keypad="11">11</button>
+      <button class="btn btn--grid" data-keypad="12">12</button>
+      <button class="btn btn--danger" data-keypad="0">Huti</button>
+      <button class="btn" data-action="undo">Peru</button>
+    </div>
+  </nav>
+
+  <div id="toast" class="toast" aria-live="polite" role="status" hidden></div>
+</body>
+</html>
