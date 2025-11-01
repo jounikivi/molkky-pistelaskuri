@@ -84,19 +84,32 @@
   </div>
 
   <!-- Sticky heittopaneeli -->
-  <div class="throwbar" role="region" aria-label="Heittopaneeli">
-    <button class="btn miss tb-key" data-score="0">Huti (0)</button>
-    <div class="pad" aria-label="Pisteet 1–12">
-      <button class="key tb-key" data-score="1">1</button><button class="key tb-key" data-score="2">2</button><button class="key tb-key" data-score="3">3</button>
-      <button class="key tb-key" data-score="4">4</button><button class="key tb-key" data-score="5">5</button><button class="key tb-key" data-score="6">6</button>
-      <button class="key tb-key" data-score="7">7</button><button class="key tb-key" data-score="8">8</button><button class="key tb-key" data-score="9">9</button>
-      <button class="key tb-key" data-score="10">10</button><button class="key tb-key" data-score="11">11</button><button class="key tb-key" data-score="12">12</button>
-    </div>
-    <div class="side">
-      <button id="undoAlt" class="btn ghost">Peru</button>
-      <button id="shuffleAlt" class="btn" disabled>Arvo</button>
-    </div>
+  <div class="throwbar">
+  <button class="btn miss tb-key" data-score="0">Huti (0)</button>
+
+  <!-- TÄMÄ RIVI: lisää id="throwPad" -->
+  <div class="pad" id="throwPad">
+    <button class="btn key tb-key" data-score="1">1</button>
+    <button class="btn key tb-key" data-score="2">2</button>
+    <button class="btn key tb-key" data-score="3">3</button>
+    <button class="btn key tb-key" data-score="4">4</button>
+    <button class="btn key tb-key" data-score="5">5</button>
+    <button class="btn key tb-key" data-score="6">6</button>
+    <button class="btn key tb-key" data-score="7">7</button>
+    <button class="btn key tb-key" data-score="8">8</button>
+    <button class="btn key tb-key" data-score="9">9</button>
+    <button class="btn key tb-key" data-score="10">10</button>
+    <button class="btn key tb-key" data-score="11">11</button>
+    <button class="btn key tb-key" data-score="12">12</button>
   </div>
+
+  <div class="side">
+    <button class="btn small" id="undoAlt">Peru</button>
+    <button class="btn small" id="shuffleAlt">Arvo</button>
+  </div>
+</div>
+
+  <!-- Footer -->
 
   <footer class="site-footer">
     <p>Mölkky Pistelaskuri <span id="appVersion">v2.0.0</span> · <a href="./index.html#rules">Säännöt</a></p>
