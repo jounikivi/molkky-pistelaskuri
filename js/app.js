@@ -1,4 +1,13 @@
-/* app.js — Yksilöpeli UI + logiikka (UI päivitetty: card__header + chips + eliminated) */
+/* app.js — Yksilöpeli UI + logiikka (v2.0.2: escapeHtml fix) */
+
+/* ---------------------
+   SAFETY HELPERS
+--------------------- */
+function escapeHtml(str) {
+  return String(str ?? "").replace(/[&<>"']/g, m => (
+    { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]
+  ));
+}
 
 /* ---------------------
    PERSISTENCE & STATE
@@ -12,7 +21,7 @@ const defaultState = () => ({
   ended: false,
   createdAt: Date.now(),
   updatedAt: Date.now(),
-  history: []           // game-level history if tarvitaan
+  history: []           // game-level history if needed
 });
 
 let state = load();
@@ -22,13 +31,13 @@ function load() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return defaultState();
     const data = JSON.parse(raw);
-    // suojaus: pakota kentät
     data.players ??= [];
     data.players.forEach(p => {
       p.score ??= 0;
       p.active ??= true;
       p.misses ??= 0;
       p.history ??= [];
+      p.name = String(p.name ?? "");
     });
     data.order ??= data.players.map(p => p.id);
     data.turnIndex ??= 0;
@@ -52,16 +61,17 @@ function save() {
 --------------------- */
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+function getPlayer(id) { return state.players.find(p => p.id === id); }
+
 function currentPlayer() {
   if (state.ended) return null;
   const aliveOrder = state.order.filter(id => getPlayer(id)?.active);
   if (!aliveOrder.length) return null;
-  // varmistetaan turnIndex kohdistuu elossa olevaan
   let idx = state.turnIndex % state.order.length;
   for (let i = 0; i < state.order.length; i++) {
     const id = state.order[(idx + i) % state.order.length];
     const p = getPlayer(id);
-    if (p && p.active) {
+    if (p?.active) {
       state.turnIndex = (idx + i) % state.order.length;
       return p;
     }
@@ -80,23 +90,13 @@ function nextTurn() {
   } while (steps <= state.order.length);
 }
 
-function getPlayer(id) {
-  return state.players.find(p => p.id === id);
-}
-
 function statsFromPlayer(p) {
-  // Heitot & keskiarvo & huti% turvallisesti
   const throws = p.history?.length ?? 0;
-  const sum = (p.history ?? []).reduce((acc, h) => acc + (Number(h.score) || 0), 0);
-  const misses = (p.history ?? []).reduce((acc, h) => acc + (h.score === 0 ? 1 : 0), 0);
+  const sum = (p.history ?? []).reduce((a, h) => a + (Number(h.score) || 0), 0);
+  const misses = (p.history ?? []).reduce((a, h) => a + (h.score === 0 ? 1 : 0), 0);
   const avg = throws ? (sum / throws) : 0;
   const missPct = throws ? (100 * misses / throws) : 0;
-
-  return {
-    throws,
-    avg,
-    missPct
-  };
+  return { throws, avg, missPct };
 }
 
 /* ---------------------
@@ -124,7 +124,6 @@ const els = {
   freeInput:   document.getElementById("freeInput"),
   submitFree:  document.getElementById("submitFree"),
   turnTitle:   document.getElementById("turnTitle"),
-  // alt controls (sticky bar)
   shuffleAlt:  document.getElementById("shuffleAlt"),
   undoAlt:     document.getElementById("undoAlt"),
   winModal:    document.getElementById("winModal"),
@@ -136,7 +135,7 @@ const els = {
 };
 
 /* ---------------------
-   RENDER (UI päivitykset)
+   RENDER
 --------------------- */
 function render() {
   renderTurn();
@@ -147,10 +146,7 @@ function render() {
 
 function renderTurn() {
   if (!els.turnTitle) return;
-  if (state.ended) {
-    els.turnTitle.textContent = "Peli päättynyt";
-    return;
-  }
+  if (state.ended) { els.turnTitle.textContent = "Peli päättynyt"; return; }
   const p = currentPlayer();
   els.turnTitle.textContent = p ? `Vuorossa: ${p.name}` : "Vuorossa: –";
 }
@@ -195,7 +191,6 @@ function renderPlayers() {
 function renderControls() {
   const canShuffle = state.players.length >= 2 && state.order.length >= 2 && !state.ended;
   const canUndo = state.players.some(p => p.history?.length) && !state.ended;
-
   [els.shuffle, els.shuffleAlt].forEach(b => b && (b.disabled = !canShuffle));
   [els.undo, els.undoAlt].forEach(b => b && (b.disabled = !canUndo));
 }
@@ -206,14 +201,7 @@ function renderControls() {
 function addPlayer() {
   const name = (els.playerName?.value ?? "").trim();
   if (!name) return toast("Anna nimi");
-  const p = {
-    id: uid(),
-    name,
-    score: 0,
-    active: true,
-    misses: 0,        // peräkkäiset hutit
-    history: []       // [{ score, ts }]
-  };
+  const p = { id: uid(), name, score: 0, active: true, misses: 0, history: [] };
   state.players.push(p);
   state.order = state.players.map(pl => pl.id);
   els.playerName.value = "";
@@ -223,7 +211,6 @@ function addPlayer() {
 function shuffleOrder() {
   if (state.players.length < 2) return;
   const arr = [...state.players.map(p => p.id)];
-  // Fisher–Yates
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [arr[i], arr[j]] = [arr[j], arr[i]];
@@ -241,44 +228,22 @@ function submitThrowValue(v) {
   const scoreVal = Number(v);
   const isMiss = scoreVal === 0;
 
-  if (isMiss) {
-    p.misses = (p.misses ?? 0) + 1;
-  } else {
-    p.misses = 0;
-  }
+  if (isMiss) p.misses = (p.misses ?? 0) + 1; else p.misses = 0;
+  if (p.misses >= 3) p.active = false;
 
-  // tippuminen
-  if (p.misses >= 3) {
-    p.active = false;
-  }
-
-  // lisää historiaan (pelaajakohtainen)
   p.history.push({ score: scoreVal, ts: Date.now() });
 
-  // pisteet vain jos ei tippunut juuri nyt hutien takia
   if (p.active) {
     const res = applyScoreRules(p.score ?? 0, scoreVal);
     p.score = res.score;
-
-    if (res.win) {
-      openWin(`${p.name} saavutti 50 pistettä!`);
-      state.ended = true;
-      render();
-      return;
-    }
-    if (res.reset25) {
-      toast(`${p.name} yli 50 → palautus 25 pisteeseen`);
-    }
+    if (res.win) { openWin(`${p.name} saavutti 50 pistettä!`); state.ended = true; render(); return; }
+    if (res.reset25) toast(`${p.name} yli 50 → 25 pisteeseen`);
   } else {
-    toast(`${p.name} tippui 3 peräkkäisen hutin jälkeen`);
+    toast(`${p.name} tippui (3 hutia)`);
   }
 
-  // Tarkista: jos kaikki tippuneet → peli ohi
   if (state.players.every(pl => !pl.active)) {
-    state.ended = true;
-    openWin(`Kaikki tippuivat. Ei voittajaa.`);
-    render();
-    return;
+    state.ended = true; openWin(`Kaikki tippuivat. Ei voittajaa.`); render(); return;
   }
 
   nextTurn();
@@ -286,27 +251,15 @@ function submitThrowValue(v) {
 }
 
 function undo() {
-  // Perutaan viimeisin heitto siltä pelaajalta, joka heitti viimeksi.
-  // Etsitään viimeisin p, jolla historya
   const lastWithThrow = [...state.players].reverse().find(pl => pl.history?.length);
   if (!lastWithThrow) return;
-
   const last = lastWithThrow.history.pop();
-  // Palauta missit (jos 0)
   if (last.score === 0) {
     lastWithThrow.misses = Math.max(0, (lastWithThrow.misses ?? 0) - 1);
   } else {
-    // jos oli pisteitä, yritetään palauttaa aiempi piste
-    // lasketaan pisteet koko historiasta uudestaan varman päälle
-    const recalc = (lastWithThrow.history ?? []).reduce((acc, h) => {
-      const r = applyScoreRules(acc, h.score);
-      return r.score;
-    }, 0);
+    const recalc = (lastWithThrow.history ?? []).reduce((acc, h) => applyScoreRules(acc, h.score).score, 0);
     lastWithThrow.score = recalc;
-    // jos pelaaja oli tiputettu, palauta aktiiviseksi jos on historiaa jäljellä ja missit < 3
-    if (lastWithThrow.misses >= 3) {
-      lastWithThrow.active = true;
-    }
+    if (lastWithThrow.misses >= 3) lastWithThrow.active = true;
   }
   state.ended = false;
   toast("Peruttu viimeisin heitto");
@@ -314,35 +267,17 @@ function undo() {
 }
 
 function newGameSame() {
-  // sama kokoonpano, reset pisteet/missit/historiat
-  state.players.forEach(p => {
-    p.score = 0;
-    p.misses = 0;
-    p.active = true;
-    p.history = [];
-  });
-  state.turnIndex = 0;
-  state.ended = false;
-  closeWin();
-  render();
+  state.players.forEach(p => { p.score = 0; p.misses = 0; p.active = true; p.history = []; });
+  state.turnIndex = 0; state.ended = false; closeWin(); render();
 }
 
-function newGameFresh() {
-  state = defaultState();
-  closeWin();
-  render();
-}
+function newGameFresh() { state = defaultState(); closeWin(); render(); }
 
 /* ---------------------
-   WIN MODAL & TOAST
+   WIN & TOAST
 --------------------- */
-function openWin(text) {
-  els.winText && (els.winText.textContent = text);
-  els.winModal?.removeAttribute("hidden");
-}
-function closeWin() {
-  els.winModal?.setAttribute("hidden", "");
-}
+function openWin(text) { els.winText && (els.winText.textContent = text); els.winModal?.removeAttribute("hidden"); }
+function closeWin() { els.winModal?.setAttribute("hidden", ""); }
 function toast(msg) {
   if (!els.toast) return;
   els.toast.textContent = msg;
@@ -368,27 +303,17 @@ els.submitFree?.addEventListener("click", () => {
   const val = (els.freeInput?.value ?? "").trim();
   if (!val) return;
   const n = Number(val);
-  if (Number.isNaN(n) || n < 0 || n > 12) {
-    toast("Syötä numero 0–12");
-    return;
-  }
+  if (Number.isNaN(n) || n < 0 || n > 12) { toast("Syötä numero 0–12"); return; }
   submitThrowValue(n);
   els.freeInput.value = "";
 });
 
-// Yläruudukon nopeat napit
 document.querySelectorAll(".quick-btn").forEach(b => {
-  b.addEventListener("click", () => {
-    const v = Number(b.dataset.score || 0);
-    submitThrowValue(v);
-  });
+  b.addEventListener("click", () => submitThrowValue(Number(b.dataset.score || 0)));
 });
 
-// Sticky throwbar napit peilataan HTML-sivun modulissa (game.html),
-// mutta varmistetaan fallback:
 document.querySelectorAll(".tb-key")?.forEach(b => {
   b.addEventListener("click", () => submitThrowValue(Number(b.dataset.score||0)));
 });
 
-// Ensipiirto
 render();
