@@ -1,53 +1,135 @@
+/* =========================================================
+   MÖLKKY — LAJEMPI UI (ANIMAATIOT + STATS) ilman PWA:ta
+   Versio: v2.1.0
+   ========================================================= */
+
 :root{
   --bg:#0b1018; --text:#e7ecf3; --muted:#9fb0c6;
-  --card:#111824; --border:#253245;
-  --accent:#2f7af8; --danger:#c43a4a;
-  --radius:12px; --shadow:0 6px 18px rgba(0,0,0,.25);
+  --card:#0f141c; --surface:#111826; --border:#253245;
+  --accent:#2f7af8; --danger:#c43a4a; --ok:#16a34a; --warn:#f59e0b;
+  --radius:14px; --radius-sm:10px; --shadow:0 8px 24px rgba(0,0,0,.28);
+  --focus:0 0 0 3px rgba(47,122,248,.35);
 }
+
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font:16px/1.45 system-ui,Segoe UI,Roboto,Arial;color:var(--text);background:var(--bg)}
+body{
+  margin:0; font:16px/1.45 system-ui, Segoe UI, Roboto, Arial;
+  color:var(--text); background:radial-gradient(1200px 800px at 10% -20%, #142034 0%, #0b1018 55%) fixed;
+  text-rendering:optimizeLegibility;
+}
+img{max-width:100%;display:block}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
 
-.site-header{position:sticky;top:0;z-index:10;display:flex;gap:.75rem;align-items:center;justify-content:space-between;padding:.7rem .9rem;background:#0e1520;border-bottom:1px solid var(--border)}
-.brand{margin:0;font-weight:800}
-.nav{display:flex;gap:.5rem}
+/* Header */
+.site-header{
+  position:sticky; top:0; z-index:10;
+  display:flex; align-items:center; gap:.75rem; justify-content:space-between;
+  padding:.7rem .95rem; background:rgba(17,24,38,.85); backdrop-filter:blur(8px) saturate(120%);
+  border-bottom:1px solid var(--border);
+}
+.brand{margin:0;font-weight:800;letter-spacing:.2px}
+.nav{display:flex;gap:.5rem;flex-wrap:wrap}
 
-.app-card{max-width:900px;margin:1rem auto;padding:0 .9rem}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:.9rem;margin:.75rem 0}
-.turn-title{font-weight:700;margin-bottom:.5rem}
+/* Cards */
+.app-card{max-width:1000px;margin:1rem auto;padding:0 .95rem}
+.card,.player-card,.team-card,.turn-card,.controls,.modal{
+  background:linear-gradient(180deg, rgba(24,32,48,.9), rgba(17,24,38,.95));
+  border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+  padding:1rem 1.05rem;
+  animation:fade-in .28s ease-out both;
+}
+.card__header{display:flex;justify-content:space-between;align-items:center;gap:.6rem;margin-bottom:.45rem}
+.card__title{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card__score{font-size:1.28rem;font-weight:900}
 
-.inline-input{display:grid;grid-template-columns:1fr auto;gap:.5rem}
-.inline-input input{background:#0f1724;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:.55rem .65rem}
+/* Chips / stats */
+.chips{display:flex;gap:.35rem;flex-wrap:wrap}
+.chip{
+  font-size:.75rem; padding:.32rem .5rem; border-radius:999px;
+  border:1px solid var(--border); background:#0e1726; opacity:.98;
+}
+.chip--score{background:#0f243d;border-color:#284d7c}
+.chip--avg{background:#12262a;border-color:#244c53}
+.chip--miss{background:#2a1720;border-color:#4b2a37}
+.badge-reset{background:#2a1b05;border:1px solid #7b4d07;color:#ffdcae;padding:.18rem .45rem;border-radius:.45rem;font-size:.72rem}
+
+/* Player grid */
+.player-grid{display:grid;gap:.85rem;grid-template-columns:1fr}
+@media(min-width:540px){.player-grid{grid-template-columns:1fr 1fr}}
+@media(min-width:900px){.player-grid{grid-template-columns:repeat(3,1fr)}}
+
+.player-card,.team-card{position:relative;min-height:72px}
+.card--eliminated{opacity:.55;filter:grayscale(.25)}
+.card--eliminated::after{
+  content:"Tippunut"; position:absolute; top:.6rem; right:.6rem;
+  background:#8a2232;color:#fff;border-radius:.45rem;padding:.18rem .5rem;font-size:.72rem;font-weight:800;box-shadow:0 6px 14px rgba(0,0,0,.35)
+}
+
+/* Inputs & buttons */
+.inline-input{display:grid;grid-template-columns:1fr auto;gap:.55rem}
+.inline-input input{
+  background:#0c1424;color:var(--text);border:1px solid var(--border);
+  border-radius:12px;padding:.6rem .7rem
+}
 .inline-input input::placeholder{color:var(--muted)}
 
-.btn{border:1px solid var(--border);background:#172233;color:var(--text);padding:.55rem .75rem;border-radius:10px;font-weight:600;cursor:pointer}
-.btn:hover{filter:brightness(1.05)}
-.btn:active{transform:scale(.98)}
-.btn.blue{background:var(--accent);border-color:transparent;color:#fff}
-.btn.danger{background:var(--danger);border-color:transparent;color:#fff}
-.btn.small{padding:.4rem .6rem;font-size:.9rem}
+.btn{
+  border:1px solid var(--border); background:#162338; color:var(--text);
+  padding:.58rem .8rem; border-radius:12px; font-weight:700; cursor:pointer;
+  transition:transform .12s ease, filter .18s ease, box-shadow .18s ease;
+}
+.btn:hover{ filter:brightness(1.06) }
+.btn:active{ transform:translateY(1px) scale(.99) }
+.btn.blue{ background:linear-gradient(180deg,#2f7af8,#2969d8); border-color:#1e46a8; color:#fff }
+.btn.danger{ background:linear-gradient(180deg,#d04756,#b53a48); border-color:#7a1f29; color:#fff }
+.btn.ok{ background:linear-gradient(180deg,#1aa357,#148a48); border-color:#0f6b37; color:#fff }
+.btn.small{ padding:.42rem .6rem; font-size:.9rem; border-radius:10px }
 
-.controls .split{display:flex;flex-wrap:wrap;gap:.5rem}
+.controls .split{display:flex;flex-wrap:wrap;gap:.55rem}
 
-.player-grid{display:grid;gap:.75rem;grid-template-columns:1fr}
-@media(min-width:520px){.player-grid{grid-template-columns:1fr 1fr}}
-@media(min-width:860px){.player-grid{grid-template-columns:repeat(3,1fr)}}
+/* Throw bar */
+.throwbar{
+  position:sticky; bottom:0; z-index:9;
+  display:grid; grid-template-columns:auto 1fr auto; gap:.6rem;
+  padding:.65rem .95rem calc(.65rem + env(safe-area-inset-bottom));
+  background:rgba(16,24,38,.92); backdrop-filter:blur(8px) saturate(120%);
+  border-top:1px solid var(--border)
+}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem}
+.key{height:46px;border-radius:12px}
+.toast{
+  position:fixed;left:50%;bottom:calc(5.4rem + env(safe-area-inset-bottom));transform:translateX(-50%);
+  background:#111f34;border:1px solid var(--border);padding:.55rem .8rem;border-radius:12px;opacity:0;transition:opacity .25s;box-shadow:var(--shadow);z-index:20
+}
+.toast.show{opacity:1}
 
-.player-card,.team-card{background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:.8rem}
-.card__header{display:flex;justify-content:space-between;gap:.5rem;align-items:center;margin-bottom:.35rem}
-.card__title{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card__score{font-size:1.25rem;font-weight:800}
-.chips{display:flex;gap:.35rem;flex-wrap:wrap}
-.chip{font-size:.75rem;padding:.28rem .45rem;border-radius:999px;background:#0f1a2a;border:1px solid var(--border);opacity:.96}
-.card--eliminated{opacity:.55;filter:grayscale(.25)}
-
+/* Empty */
 .muted{color:var(--muted)}
 .hidden{display:none!important}
 
-.throwbar{position:sticky;bottom:0;z-index:9;display:grid;grid-template-columns:auto 1fr auto;gap:.6rem;padding:.6rem .9rem calc(.6rem + env(safe-area-inset-bottom));background:#0e1520;border-top:1px solid var(--border)}
-.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem}
-.key{height:44px}
-.toast{position:fixed;left:50%;bottom:calc(5.2rem + env(safe-area-inset-bottom));transform:translateX(-50%);background:#172233;border:1px solid var(--border);padding:.5rem .75rem;border-radius:10px;opacity:0;transition:.2s}
-.toast.show{opacity:1}
+/* Modal (win) */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:30}
+.modal-backdrop:not([hidden]){display:grid;place-items:center}
+.modal{
+  max-width:520px;width:calc(100% - 2rem);
+}
+.modal h3{margin:.2rem 0 .6rem}
+.modal-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
 
-.site-footer{opacity:.8;color:var(--muted);text-align:center;margin:1.2rem 0}
+/* Animations */
+@keyframes fade-in{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .card,.player-card,.team-card,.turn-card,.controls,.modal{animation:none}
+  .btn{transition:none}
+}
+
+/* Mobile compact (≤600px) */
+@media(max-width:600px){
+  .btn{ padding:.46rem .62rem; border-radius:10px; font-size:.92rem }
+  .controls .split .btn{ flex:1 1 48% }
+  .throwbar{ padding:.55rem .75rem calc(.55rem + env(safe-area-inset-bottom)) }
+  .key{ height:42px }
+  .app-card main{ padding-bottom:5.4rem }
+}

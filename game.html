@@ -4,20 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>Mölkky – Yksilöpeli</title>
-  <link rel="stylesheet" href="style.css?v=reset1">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header class="site-header">
   <a class="btn" href="index.html">← Etusivu</a>
-  <h1 class="brand">Mölkky – Yksilöpeli</h1>
+  <h1 class="brand">Yksilöpeli</h1>
+  <nav class="nav">
+    <button class="btn" id="shuffle">Arvo aloitus</button>
+    <button class="btn" id="undo">Peru</button>
+  </nav>
 </header>
 
 <main class="app-card">
   <section class="turn-card card">
     <div id="turnTitle" class="turn-title">Vuorossa: –</div>
     <div class="inline-input">
-      <input id="freeInput" type="number" inputmode="numeric" min="0" max="12" placeholder="0–12 (riittää)">
-      <button id="submitFree" class="btn">Lisää</button>
+      <input id="freeInput" type="number" inputmode="numeric" min="0" max="12" placeholder="Kirjoita pisteet 0–12">
+      <button id="submitFree" class="btn ok">Lisää</button>
     </div>
   </section>
 
@@ -27,12 +31,7 @@
       <input id="playerName" type="text" placeholder="Pelaajan nimi">
       <button id="addPlayer" class="btn blue">Lisää</button>
     </div>
-    <div class="controls">
-      <div class="split">
-        <button id="shuffle" class="btn">Arvo aloitusjärjestys</button>
-        <button id="undo" class="btn">Peru viimeisin</button>
-      </div>
-    </div>
+    <div class="muted" style="margin-top:.4rem">Säännöt: 0 = huti, 1–12 = pisteet. Yli 50 → 25, täsmälleen 50 = voitto. 3 hutia peräkkäin = tippuu.</div>
   </section>
 
   <p id="emptyState" class="muted">Ei vielä pelaajia. Lisää ensin pelaajat.</p>
@@ -62,8 +61,19 @@
   </div>
 </div>
 
-<div id="toast" class="toast"></div>
+<!-- Win modal -->
+<div id="winModal" class="modal-backdrop" hidden>
+  <div class="modal">
+    <h3 id="winText">Voitto!</h3>
+    <div class="modal-actions">
+      <button id="winSame" class="btn ok">Aloita uusi peli samoilla pelaajilla</button>
+      <button id="winFresh" class="btn">Aloita alusta</button>
+      <button id="winClose" class="btn danger">Sulje</button>
+    </div>
+  </div>
+</div>
 
-<script type="module" src="js/app.js?v=reset1"></script>
+<div id="toast" class="toast"></div>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>

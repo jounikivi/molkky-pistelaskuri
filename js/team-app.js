@@ -1,111 +1,280 @@
-// team-app.js (team, rescue)
+/* team-app.js — Joukkuepeli (v2.1.0 laajempi UI, ei PWA) */
 
-function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]))}
-const LS="molkky_team_rescue";
-const def=()=>({teams:[],order:[],teamTurn:0,playerTurn:0,ended:false});
-let T=load(); function load(){try{const r=localStorage.getItem(LS);return r?JSON.parse(r):def()}catch{ return def()}}
-function save(){localStorage.setItem(LS,JSON.stringify(T))}
-const $=id=>document.getElementById(id);
-const el={grid:$("teamsGrid"),empty:$("emptyState"),name:$("teamName"),add:$("addTeam"),
-  shuffle:$("shuffle"),shuffleAlt:$("shuffleAlt"),undo:$("undo"),undoAlt:$("undoAlt"),
-  free:$("freeInput"),go:$("submitFree"),title:$("turnTitle"),toast:$("toast")};
+function escapeHtml(str){
+  return String(str ?? "").replace(/[&<>"']/g, m => (
+    { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]
+  ));
+}
 
-function uid(){return Math.random().toString(36).slice(2,9)}
-function getTeam(id){return T.teams.find(t=>t.id===id)}
-function aliveTeams(){return T.teams.filter(t=>t.active!==false)}
-function currTeam(){
-  if(T.ended||!T.teams.length) return null;
-  let i=T.teamTurn%T.order.length;
-  for(let k=0;k<T.order.length;k++){
-    const t=getTeam(T.order[(i+k)%T.order.length]); if(t?.active!==false){ T.teamTurn=(i+k)%T.order.length; return t; }
-  } return null;
+const LS_TEAM_KEY = "molkky_team_v210";
+const defaultTeamState = () => ({
+  teams: [], order: [], teamTurnIdx: 0, playerTurnIdx: 0, ended:false,
+  createdAt: Date.now(), updatedAt: Date.now()
+});
+let T = loadT();
+
+function loadT(){
+  try{
+    const raw = localStorage.getItem(LS_TEAM_KEY);
+    if(!raw) return defaultTeamState();
+    const d = JSON.parse(raw);
+    d.teams ??= [];
+    d.teams.forEach(t=>{
+      t.name = String(t.name ?? ""); t.score ??= 0; t.active ??= true;
+      t.players ??= [];
+      t.players.forEach(p=>{
+        p.name = String(p.name ?? "");
+        p.active ??= true; p.misses ??= 0; p.history ??= [];
+      });
+    });
+    d.order ??= d.teams.map(t=>t.id);
+    d.teamTurnIdx ??= 0; d.playerTurnIdx ??= 0; d.ended ??= false;
+    return d;
+  }catch{ return defaultTeamState(); }
 }
-function currPlayerScoped(){
-  const team=currTeam(); if(!team) return {team:null, player:null};
-  if(!team.players?.length) return {team, player:null};
-  let i=T.playerTurn%team.players.length;
-  for(let k=0;k<team.players.length;k++){
-    const p=team.players[(i+k)%team.players.length]; if(p?.active!==false){ T.playerTurn=(i+k)%team.players.length; return {team, player:p}; }
-  } return {team, player:null};
-}
-function nextTurn(){
-  const team=currTeam(); if(!team) return;
-  if(team.players?.length){
-    let c=0; do{ T.playerTurn=(T.playerTurn+1)%team.players.length; c++; if(team.players[T.playerTurn]?.active!==false) break; } while(c<=team.players.length);
+function saveT(){ T.updatedAt = Date.now(); localStorage.setItem(LS_TEAM_KEY, JSON.stringify(T)); }
+
+const tuid = () => Math.random().toString(36).slice(2,10);
+const getTeam = id => T.teams.find(t=>t.id===id);
+const aliveTeams = () => T.teams.filter(t=>t.active);
+
+function currentTeam(){
+  if(T.ended) return null;
+  if(!T.order.length) return null;
+  let idx = T.teamTurnIdx % T.order.length;
+  for(let i=0;i<T.order.length;i++){
+    const t = getTeam(T.order[(idx+i)%T.order.length]);
+    if(t?.active) { T.teamTurnIdx = (idx+i)%T.order.length; return t; }
   }
-  let ct=0; do{ T.teamTurn=(T.teamTurn+1)%T.order.length; ct++; if(getTeam(T.order[T.teamTurn])?.active!==false) break; } while(ct<=T.order.length);
+  return null;
 }
-function rules(old,v){const n=(old||0)+(v||0); if(n===50) return {score:50,win:true,over:false}; if(n>50) return {score:25,win:false,over:true}; return {score:n,win:false,over:false};}
+function currentPlayerTeamScoped(){
+  const team = currentTeam(); if(!team) return { team:null, player:null };
+  if(!team.players?.length) return { team, player:null };
+  let idx = T.playerTurnIdx % team.players.length;
+  for(let i=0;i<team.players.length;i++){
+    const p = team.players[(idx+i)%team.players.length];
+    if(p?.active) { T.playerTurnIdx = (idx+i)%team.players.length; return { team, player:p }; }
+  }
+  return { team, player:null };
+}
+function nextTurnTeam(){
+  const team = currentTeam(); if(!team) return;
+  if(team.players?.length){
+    let steps=0;
+    do{ T.playerTurnIdx = (T.playerTurnIdx+1)%team.players.length; steps++; }
+    while(steps<=team.players.length && !team.players[T.playerTurnIdx]?.active);
+  }
+  let stepsT=0;
+  do{ T.teamTurnIdx = (T.teamTurnIdx+1)%T.order.length; stepsT++; }
+  while(stepsT<=T.order.length && !getTeam(T.order[T.teamTurnIdx])?.active);
+}
 
-function render(){
-  const cur=currPlayerScoped();
-  el.title.textContent = T.ended ? "Peli päättynyt" : ("Vuorossa: " + (cur.team?.name||"–") + (cur.player?(" – "+cur.player.name):""));
-  el.grid.innerHTML="";
-  if(!T.teams.length){ el.empty?.classList.remove("hidden"); } else { el.empty?.classList.add("hidden"); }
-  T.teams.forEach(t=>{
-    const a=document.createElement("article"); a.className="team-card";
-    a.innerHTML=`<div class="card__header"><div class="card__title">${escapeHtml(t.name)}</div>
-      <div class="chips"><span class="chip">🥇 ${t.score||0}</span></div></div>
-      <div class="card__body"><div class="card__score">Pisteet: ${t.score||0}</div>
-      ${(t.players?.length? `<ul class="chips">${t.players.map(p=>`<li class="chip">${escapeHtml(p.name)}</li>`).join("")}</ul>` : `<p class="muted">Ei pelaajia.</p>`)}</div>`;
-    el.grid.appendChild(a);
+function tstatsFromTeam(t){
+  const all = (t.players ?? []).flatMap(p=>p.history ?? []);
+  const throws = all.length;
+  const sum = all.reduce((a,h)=>a+(Number(h.score)||0),0);
+  const misses = all.reduce((a,h)=>a+(h.score===0?1:0),0);
+  const avg = throws ? sum/throws : 0;
+  const missPct = throws ? (100*misses/throws) : 0;
+  return { throws, avg, missPct };
+}
+function pstats(p){
+  const throws = p.history?.length ?? 0;
+  const sum = (p.history ?? []).reduce((a,h)=>a+(Number(h.score)||0),0);
+  const misses = (p.history ?? []).reduce((a,h)=>a+(h.score===0?1:0),0);
+  const avg = throws ? sum/throws : 0;
+  const missPct = throws ? (100*misses/throws) : 0;
+  return { throws, avg, missPct };
+}
+
+function applyScoreRulesTeam(oldScore,gained){
+  const next = (oldScore ?? 0) + (gained ?? 0);
+  if(next === 50) return { score:50, win:true, reset25:false };
+  if(next > 50)    return { score:25, win:false, reset25:true };
+  return { score:next, win:false, reset25:false };
+}
+
+const el = {
+  grid: document.getElementById("teamsGrid"),
+  empty: document.getElementById("emptyState"),
+  teamName: document.getElementById("teamName"),
+  addTeam: document.getElementById("addTeam"),
+  shuffle: document.getElementById("shuffle"),
+  shuffleAlt: document.getElementById("shuffleAlt"),
+  undo: document.getElementById("undo"),
+  undoAlt: document.getElementById("undoAlt"),
+  free: document.getElementById("freeInput"),
+  go: document.getElementById("submitFree"),
+  turnTitle: document.getElementById("turnTitle"),
+  winModal: document.getElementById("winModal"),
+  winText: document.getElementById("winText"),
+  winSame: document.getElementById("winSame"),
+  winFresh: document.getElementById("winFresh"),
+  winClose: document.getElementById("winClose"),
+  toast: document.getElementById("toast"),
+};
+
+function trender(){
+  trenderTurn(); trenderTeams(); trenderControls(); saveT();
+}
+function trenderTurn(){
+  if(T.ended){ el.turnTitle.textContent = "Peli päättynyt"; return; }
+  const { team, player } = currentPlayerTeamScoped();
+  if(team && player) el.turnTitle.textContent = `Vuorossa: ${team.name} – ${player.name}`;
+  else if(team) el.turnTitle.textContent = `Vuorossa: ${team.name}`;
+  else el.turnTitle.textContent = "Vuorossa: –";
+}
+function trenderTeams(){
+  const grid = el.grid; if(!grid) return;
+  grid.innerHTML="";
+  if(!T.teams.length){ el.empty?.classList.remove("hidden"); return; }
+  el.empty?.classList.add("hidden");
+
+  T.teams.forEach(team=>{
+    const ts = tstatsFromTeam(team);
+    const card = document.createElement("article");
+    card.className = "team-card";
+    card.classList.toggle("card--eliminated", !team.active);
+
+    const playersHtml = (team.players ?? []).map(p=>{
+      const ps = pstats(p);
+      return `
+        <li class="${p.active ? "" : "muted"}">
+          <span>${escapeHtml(p.name)}</span>
+          <span class="chips">
+            <span class="chip chip--score">🥇 ${sumScore(p.history)}</span>
+            <span class="chip">${ps.throws}</span>
+            <span class="chip chip--miss">${Math.round(ps.missPct)}%</span>
+          </span>
+        </li>
+      `;
+    }).join("");
+
+    card.innerHTML = `
+      <div class="card__header">
+        <div class="card__title">${escapeHtml(team.name)}</div>
+        <div class="chips">
+          <span class="chip chip--score">🥇 ${team.score ?? 0}</span>
+          <span class="chip">${ts.throws} heittoa</span>
+          <span class="chip chip--avg">${ts.avg.toFixed(1)}</span>
+          <span class="chip chip--miss">${Math.round(ts.missPct)}% huti</span>
+        </div>
+      </div>
+      <div class="card__body">
+        <div class="card__score">Pisteet: ${team.score ?? 0}</div>
+        ${(team.players?.length)
+          ? `<ul class="list thin" style="list-style:none;margin:.5rem 0 0;padding:0;display:flex;flex-direction:column;gap:.3rem">${playersHtml}</ul>`
+          : `<p class="muted">Ei pelaajia.</p>`}
+      </div>
+    `;
+    grid.appendChild(card);
   });
-  const canSh=T.teams.length>=2, canUn=T.teams.some(t=>t.players?.some(p=>p.hist?.length));
-  [el.shuffle,el.shuffleAlt].forEach(b=>b&&(b.disabled=!canSh));
-  [el.undo,el.undoAlt].forEach(b=>b&&(b.disabled=!canUn));
-  save();
+}
+function trenderControls(){
+  const canSh = T.teams.length>=2 && aliveTeams().length>=2 && !T.ended;
+  const canUn = T.teams.some(t=>t.players?.some(p=>p.history?.length)) && !T.ended;
+  [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canSh));
+  [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUn));
 }
 
 function addTeam(){
-  const n=(el.name.value||"").trim(); if(!n) return toast("Anna tiimin nimi");
-  T.teams.push({id:uid(),name:n,score:0,active:true,players:[{id:uid(),name:"P1",active:true,hist:[]},{id:uid(),name:"P2",active:true,hist:[]}]});
-  T.order=T.teams.map(t=>t.id); el.name.value=""; render();
+  const name = (el.teamName?.value ?? "").trim();
+  if(!name) return ttoast("Anna tiimin nimi");
+  // luodaan kaksi peruspelaajaa, joita voit muokata myöhemmin
+  const team = { id:tuid(), name, score:0, active:true, players:[
+    { id:tuid(), name:"Pelaaja 1", active:true, misses:0, history:[] },
+    { id:tuid(), name:"Pelaaja 2", active:true, misses:0, history:[] },
+  ] };
+  T.teams.push(team);
+  T.order = T.teams.map(t=>t.id);
+  el.teamName.value = "";
+  trender();
 }
-function shuffle(){
-  if(T.teams.length<2) return;
-  const a=[...T.teams.map(t=>t.id)];
-  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];}
-  T.order=a; T.teamTurn=0; T.playerTurn=0; render();
-}
-function throwV(v){
+
+function submitThrowTeam(n){
   if(T.ended) return;
-  const {team,player}=currPlayerScoped(); if(!team||!player) return;
-  v=Number(v)||0; player.hist=player.hist||[]; player.hist.push(v);
-  if(v===0){ player.miss=(player.miss||0)+1; if(player.miss>=3){ player.active=false; toast(`${player.name} tippui`) } }
-  else { player.miss=0; const r=rules(team.score||0,v); team.score=r.score; if(r.win){ T.ended=true; toast(`${team.name} voitti!`) } if(r.over){ toast(`Yli 50 → 25`) } }
-  if(team.players.every(p=>p.active===false)) team.active=false;
-  if(T.teams.every(t=>t.active===false)){ T.ended=true; toast("Kaikki tiimit tippuivat") }
-  next(); render();
+  const { team, player } = currentPlayerTeamScoped();
+  if(!team || !player) return;
+  const val = Number(n)||0;
+  const isMiss = val===0;
+  if(isMiss){ player.misses=(player.misses||0)+1; } else { player.misses=0; }
+  if(player.misses>=3){ player.active=false; ttoast(`${player.name} tippui (3 hutia)`); }
+  player.history.push({ score:val, ts:Date.now() });
+
+  if(!team.players.some(p=>p.active)) team.active=false;
+
+  if(team.active){
+    const res = applyScoreRulesTeam(team.score||0, val);
+    team.score = res.score;
+    if(res.reset25) ttoast(`Yli 50 → 25`);
+    if(res.win){ T.ended = true; openWin(`Tiimi ${team.name} saavutti 50 pistettä!`); trender(); return; }
+  }
+  if(T.teams.every(t=>!t.active)){ T.ended=true; openWin(`Kaikki tiimit tippuivat. Ei voittajaa.`); trender(); return; }
+
+  nextTurnTeam(); trender();
 }
-function undo(){
+
+function undoTeam(){
   for(let ti=T.teams.length-1; ti>=0; ti--){
-    const t=T.teams[ti];
-    for(let pi=(t.players?.length||0)-1; pi>=0; pi--){
-      const p=t.players[pi];
-      if(p.hist?.length){
-        const v=p.hist.pop();
-        if(v===0){ p.miss=Math.max(0,(p.miss||0)-1); p.active=true; }
-        else{
-          let s=0; t.players.forEach(pl=>{ (pl.hist||[]).forEach(x=>{ const r=rules(s===-1?0:s,x); s=r.score; })}); t.score=s;
-        }
-        T.ended=false; toast("Peruttu"); render(); return;
+    const t = T.teams[ti];
+    for(let pi=(t.players?.length??0)-1; pi>=0; pi--){
+      const p = t.players[pi];
+      if(p.history?.length){
+        const last = p.history.pop();
+        if(last.score===0){ p.misses=Math.max(0,(p.misses||0)-1); p.active=true; }
+        // laske tiimin piste uusiksi kaikista heitoista
+        const all = (t.players ?? []).flatMap(pl=>pl.history ?? []);
+        let sc=0; all.forEach(h=>{ sc = applyScoreRulesTeam(sc, h.score).score; });
+        t.score = sc;
+        if(!t.active) t.active = true;
+        T.ended=false; ttoast("Peruttu viimeisin heitto"); trender(); return;
       }
     }
   }
 }
-function toast(t){ if(!el.toast) return; el.toast.textContent=t; el.toast.classList.add("show"); setTimeout(()=>el.toast.classList.remove("show"),1200); }
 
-el.add?.addEventListener("click",addTeam);
-el.shuffle?.addEventListener("click",shuffle);
-el.shuffleAlt?.addEventListener("click",shuffle);
-el.undo?.addEventListener("click",undo);
-el.undoAlt?.addEventListener("click",undo);
-el.go?.addEventListener("click",()=>{ const val=(el.free.value||"").trim(); if(val==="") return; const n=Number(val); if(n<0||n>12||Number.isNaN(n)) return toast("0–12"); throwV(n); el.free.value=""; });
+function sumScore(history){ return (history ?? []).reduce((a,h)=>a+(Number(h.score)||0),0); }
 
-const pad=document.getElementById("throwPad");
-if(pad && !pad.dataset.bound){
-  pad.addEventListener("click",(e)=>{ const b=e.target.closest("[data-score]"); if(!b) return; throwV(Number(b.dataset.score||0)); });
-  pad.dataset.bound="1";
+function openWin(txt){ el.winText.textContent=txt; el.winModal?.removeAttribute("hidden"); }
+function closeWin(){ el.winModal?.setAttribute("hidden",""); }
+function newTeamSame(){
+  T.teams.forEach(t=>{
+    t.score=0; t.active=true;
+    t.players.forEach(p=>{ p.active=true; p.misses=0; p.history=[]; });
+  });
+  T.teamTurnIdx=0; T.playerTurnIdx=0; T.ended=false; closeWin(); trender();
+}
+function newTeamFresh(){ T = defaultTeamState(); closeWin(); trender(); }
+
+function ttoast(msg){ if(!el.toast) return; el.toast.textContent=msg; el.toast.classList.add("show"); setTimeout(()=>el.toast.classList.remove("show"),1400); }
+
+el.addTeam?.addEventListener("click", addTeam);
+[el.shuffle, el.shuffleAlt].forEach(b=>b?.addEventListener("click", ()=>{
+  if(T.teams.length<2) return;
+  const arr = [...T.teams.map(t=>t.id)];
+  for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  T.order = arr; T.teamTurnIdx=0; T.playerTurnIdx=0; trender();
+}));
+[el.undo, el.undoAlt].forEach(b=>b?.addEventListener("click", undoTeam));
+el.go?.addEventListener("click", ()=>{
+  const v = (el.free?.value ?? "").trim(); if(v==="") return;
+  const n = Number(v); if(Number.isNaN(n)||n<0||n>12){ ttoast("Syötä 0–12"); return; }
+  submitThrowTeam(n); el.free.value="";
+});
+el.winSame?.addEventListener("click", newTeamSame);
+el.winFresh?.addEventListener("click", newTeamFresh);
+el.winClose?.addEventListener("click", closeWin);
+
+/* Delegoitu heittopaneeli — EI tuplia */
+const tPad = document.getElementById("throwPad");
+if(tPad && !tPad.dataset.bound){
+  tPad.addEventListener("click",(e)=>{
+    const btn = e.target.closest("[data-score]"); if(!btn) return;
+    const n = Number(btn.dataset.score || 0); if(Number.isNaN(n)) return;
+    submitThrowTeam(n);
+  });
+  tPad.dataset.bound="1";
 }
 
-render();
+trender();
