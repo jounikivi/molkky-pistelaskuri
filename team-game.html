@@ -13,6 +13,7 @@
   <nav class="nav">
     <button class="btn" id="shuffle">Arvo aloitus</button>
     <button class="btn" id="undo">Peru</button>
+    <button class="btn danger" id="reset">Nollaa peli</button>
   </nav>
 </header>
 
@@ -31,10 +32,10 @@
       <input id="teamName" type="text" placeholder="Tiimin nimi">
       <button id="addTeam" class="btn blue">Lisää</button>
     </div>
-    <div class="muted" style="margin-top:.4rem">Säännöt kuten yksilöpelissä. Tiimi tippuu, jos kaikki sen pelaajat tippuvat.</div>
+    <div class="muted" style="margin-top:.4rem">Säännöt kuten yksilöpelissä. Tiimi on pelivalmis, kun siinä on vähintään yksi pelaaja.</div>
   </section>
 
-  <p id="emptyState" class="muted">Ei vielä tiimejä. Lisää ensin tiimit (ja nimeä sitten pelaajat).</p>
+  <p id="emptyState" class="muted">Ei vielä tiimejä. Lisää ensin tiimit ja niiden pelaajat.</p>
   <section id="teamsGrid" class="player-grid"></section>
 </main>
 
@@ -57,6 +58,7 @@
   <div class="side">
     <button class="btn small" id="undoAlt">Peru</button>
     <button class="btn small" id="shuffleAlt">Arvo</button>
+    <button class="btn small danger" id="resetAlt">Nollaa</button>
   </div>
 </div>
 

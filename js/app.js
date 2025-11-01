@@ -1,4 +1,4 @@
-/* app.js — Yksilöpeli (v2.1.0 laajempi UI, ei PWA) */
+/* app.js — Yksilöpeli (v2.1.1: Nollaa peli -napit) */
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -85,6 +85,8 @@ const els = {
   winFresh: document.getElementById("winFresh"),
   winClose: document.getElementById("winClose"),
   toast: document.getElementById("toast"),
+  reset: document.getElementById("reset"),
+  resetAlt: document.getElementById("resetAlt"),
 };
 
 function render(){
@@ -171,12 +173,21 @@ function undo(){
   if(!last) return;
   const rec = last.history.pop();
   if(rec.score===0){ last.misses = Math.max(0,(last.misses||0)-1); last.active=true; }
-  // Laske pisteet uusiksi pelaajalle
+  // Laske pisteet uusiksi
   let sc=0; (last.history||[]).forEach(h=>{ sc = applyScoreRules(sc,h.score).score; });
   last.score = sc;
   state.ended=false;
   toast("Peruttu viimeisin heitto");
   render();
+}
+
+/* Nollaus */
+function newGameFresh(){ state = defaultState(); localStorage.setItem(LS_KEY, JSON.stringify(state)); render(); }
+function askReset(){
+  if(confirm("Nollataanko peli? Tämä poistaa kaikki pelaajat ja pisteet.")){
+    newGameFresh();
+    toast("Peli nollattu");
+  }
 }
 
 function openWin(txt){ els.winText.textContent = txt; els.winModal?.removeAttribute("hidden"); }
@@ -185,9 +196,9 @@ function newGameSame(){
   state.players.forEach(p=>{ p.score=0;p.misses=0;p.active=true;p.history=[]; });
   state.turnIndex=0; state.ended=false; closeWin(); render();
 }
-function newGameFresh(){ state = defaultState(); closeWin(); render(); }
 function toast(msg){ if(!els.toast) return; els.toast.textContent=msg; els.toast.classList.add("show"); setTimeout(()=>els.toast.classList.remove("show"),1400); }
 
+/* Events */
 els.addPlayer?.addEventListener("click", addPlayer);
 [els.shuffle, els.shuffleAlt].forEach(b=>b?.addEventListener("click", shuffleOrder));
 [els.undo, els.undoAlt].forEach(b=>b?.addEventListener("click", undo));
@@ -202,7 +213,10 @@ els.winSame?.addEventListener("click", newGameSame);
 els.winFresh?.addEventListener("click", newGameFresh);
 els.winClose?.addEventListener("click", closeWin);
 
-/* Delegoitu heittojen kuuntelu — EI tuplia */
+/* Nollausnapit */
+[els.reset, els.resetAlt].forEach(b=>b?.addEventListener("click", askReset));
+
+/* Heittopaneeli delegoituna */
 const throwPad = document.getElementById("throwPad");
 if(throwPad && !throwPad.dataset.bound){
   throwPad.addEventListener("click", (e)=>{

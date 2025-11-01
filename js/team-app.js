@@ -1,4 +1,4 @@
-/* team-app.js — Joukkuepeli (v2.3.2: ei “Nimeä”-nappeja, lisää/poista säilyy) */
+/* team-app.js — Joukkuepeli (v2.3.3: Nollaa peli -napit) */
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -6,7 +6,7 @@ function escapeHtml(str){
   ));
 }
 
-const LS_TEAM_KEY = "molkky_team_v232";
+const LS_TEAM_KEY = "molkky_team_v233";
 const defaultTeamState = () => ({
   teams: [], order: [], teamTurnIdx: 0, playerTurnIdx: 0, ended:false,
   createdAt: Date.now(), updatedAt: Date.now()
@@ -40,8 +40,6 @@ function saveT(){ T.updatedAt = Date.now(); localStorage.setItem(LS_TEAM_KEY, JS
 const tuid = () => Math.random().toString(36).slice(2,10);
 const getTeam = id => T.teams.find(t=>t.id===id);
 const aliveTeams = () => T.teams.filter(t=>t.active);
-
-// Tiimi on pelivalmis jos sillä on vähintään 1 aktiivinen pelaaja
 const teamReady = (t) => !!(t?.players?.some(p=>p.active));
 const teamsReadyCount = () => aliveTeams().filter(teamReady).length;
 
@@ -121,6 +119,8 @@ const el = {
   winFresh: document.getElementById("winFresh"),
   winClose: document.getElementById("winClose"),
   toast: document.getElementById("toast"),
+  reset: document.getElementById("reset"),
+  resetAlt: document.getElementById("resetAlt"),
 };
 
 /* --------------------- RENDER --------------------- */
@@ -235,7 +235,6 @@ function removePlayer(teamId, playerId){
     }
   }
 
-  // Laske tiimin pisteet uudelleen
   const all = (team.players ?? []).flatMap(pl=>pl.history ?? []);
   let sc=0; all.forEach(h=>{ sc = applyScoreRulesTeam(sc, h.score).score; });
   team.score = sc;
@@ -289,6 +288,15 @@ function undoTeam(){
   }
 }
 
+/* ---------- Nollaus ---------- */
+function newTeamFresh(){ T = defaultTeamState(); localStorage.setItem(LS_TEAM_KEY, JSON.stringify(T)); trender(); }
+function askReset(){
+  if(confirm("Nollataanko peli? Tämä poistaa kaikki tiimit ja pisteet.")){
+    newTeamFresh();
+    ttoast("Peli nollattu");
+  }
+}
+
 /* ---------- WIN, TOAST & UI ---------- */
 function openWin(txt){ el.winText.textContent=txt; el.winModal?.removeAttribute("hidden"); }
 function closeWin(){ el.winModal?.setAttribute("hidden",""); }
@@ -299,7 +307,6 @@ function newTeamSame(){
   });
   T.teamTurnIdx=0; T.playerTurnIdx=0; T.ended=false; closeWin(); trender();
 }
-function newTeamFresh(){ T = defaultTeamState(); closeWin(); trender(); }
 function ttoast(msg){ if(!el.toast) return; el.toast.textContent=msg; el.toast.classList.add("show"); setTimeout(()=>el.toast.classList.remove("show"),1400); }
 
 /* ---------- Eventit ---------- */
@@ -320,6 +327,9 @@ el.winSame?.addEventListener("click", newTeamSame);
 el.winFresh?.addEventListener("click", newTeamFresh);
 el.winClose?.addEventListener("click", closeWin);
 
+/* Nollausnapit */
+[el.reset, el.resetAlt].forEach(b=>b?.addEventListener("click", askReset));
+
 /* Heittopaneeli delegoituna */
 const tPad = document.getElementById("throwPad");
 if(tPad && !tPad.dataset.bound){
@@ -331,7 +341,7 @@ if(tPad && !tPad.dataset.bound){
   tPad.dataset.bound="1";
 }
 
-/* Kortin sisäiset napit: lisää/poista pelaaja (EI nimeämistä) */
+/* Kortin sisäiset napit: lisää/poista pelaaja */
 el.grid?.addEventListener("click",(e)=>{
   const delBtn = e.target.closest("[data-remove-player]");
   if(delBtn){
