@@ -321,3 +321,101 @@ input::placeholder { color: color-mix(in oklab, var(--text), transparent 55%); }
 
 /* (varmistus) hidden modal */
 .modal-backdrop[hidden] { display: none !important; }
+
+
+/* ===== Mobile compact (≤600px) – parempi puhelimella ===== */
+@media (max-width: 600px){
+
+  /* Piilota yläruudukko myös isommalla breakpointilla */
+  .turn-card .quick-row,
+  .turn-card .quick-grid{
+    display: none !important;
+  }
+
+  /* Header kompaktiksi */
+  .site-header{
+    padding: .45rem .6rem;
+    gap: .5rem;
+  }
+  .brand{ font-size: .98rem; }
+  .hamburger{ padding: .32rem .48rem; }
+  .theme-toggle .theme-text{ display: none; }
+  .theme-toggle .theme-ico{ display: inline-block; }
+
+  /* Yleiset napit pienemmiksi */
+  .btn{
+    padding: .42rem .6rem;
+    font-size: .85rem;
+    border-radius: 10px;
+  }
+  .btn.small{ padding: .3rem .45rem; font-size: .8rem; }
+
+  /* Kontrollien napit selkeästi kahteen sarakkeeseen ja matalammiksi */
+  .controls .split{
+    gap: .45rem;
+  }
+  .controls .split .btn{
+    flex: 1 1 48%;
+    padding: .42rem .55rem;
+    font-size: .84rem;
+    border-radius: 10px;
+  }
+
+  /* Vapaa syöte ja kentät */
+  .inline-input{
+    gap: .45rem;
+  }
+  .inline-input input{
+    padding: .48rem .6rem;
+    font-size: .95rem;
+  }
+
+  /* Korttien sisätilat kompaktiksi */
+  .player-card, .team-card, .card, .turn-card, .controls{
+    padding: .7rem .75rem;
+    border-radius: 10px;
+  }
+  .card__header{ margin-bottom: .35rem; }
+  .card__score{ font-size: 1.2rem; }
+
+  /* Chipit hieman pienemmiksi */
+  .chip{
+    padding: .28rem .42rem;
+    font-size: .72rem;
+  }
+
+  /* Pelaajalista */
+  .list.thin li{ padding: .22rem .35rem; }
+
+  /* Heittopalkki matalammaksi ja tiiviimmäksi */
+  .throwbar{
+    padding: .5rem .55rem calc(.5rem + env(safe-area-inset-bottom));
+    gap: .5rem;
+  }
+  .throwbar .key{
+    height: 40px;
+    font-size: .9rem;
+    border-radius: .55rem;
+  }
+  .throwbar .btn.miss{ min-width: 76px; font-size: .9rem; }
+
+  /* FAB pysyy palkin yläpuolella */
+  .fab{
+    right: .8rem;
+    bottom: calc(4.8rem + env(safe-area-inset-bottom));
+    width: 52px; height: 52px; line-height: 52px; font-size: 1.4rem;
+  }
+
+  /* Footer hillityksi */
+  .site-footer{
+    font-size: .82rem;
+    margin: .6rem auto .7rem;
+    opacity: .8;
+  }
+
+  /* Pieni lisätila pohjaan, ettei UI jää palkin alle */
+  .app-card main{
+    padding-bottom: 5.2rem;
+  }
+}
+
