@@ -319,3 +319,37 @@ a:hover { text-decoration: underline; }
 /* ---------- Focus näkyvyys myös näppiksellä ---------- */
 :focus-visible{ outline: none; box-shadow: var(--focus) !important; border-radius: var(--radius-sm); }
 .btn.danger:focus-visible{ box-shadow: var(--focus-danger) !important; }
+
+/* --- Hotfix: varmistetaan ruudukko myös ID:llä --- */
+#playersGrid,
+#teamsGrid{
+  display: grid;
+  gap: .75rem;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 480px){
+  #playersGrid, #teamsGrid{ grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 768px){
+  #playersGrid, #teamsGrid{ grid-template-columns: repeat(3, 1fr); }
+}
+
+/* --- Hotfix: .hidden todella piilottaa --- */
+.hidden{ display: none !important; }
+
+/* --- Hotfix: kortti ei voi “luhistua” vahingossa --- */
+.player-card,
+.team-card{
+  min-height: 68px;           /* pieni varmuusmarginaali */
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: .75rem .9rem;
+}
+
+/* --- (Vapaaehtoinen) kevyt ääriviiva debugiin — poista kun kaikki ok --- */
+/*
+.player-card, .team-card{ outline: 1px dashed #2f7af8; }
+*/
+
