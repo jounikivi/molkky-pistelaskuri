@@ -1,4 +1,4 @@
-/* team-app.js — Joukkuepeli (v2.1.0 laajempi UI, ei PWA) */
+/* team-app.js — Joukkuepeli (v2.2.0: pelaajien nimeäminen) */
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -6,7 +6,7 @@ function escapeHtml(str){
   ));
 }
 
-const LS_TEAM_KEY = "molkky_team_v210";
+const LS_TEAM_KEY = "molkky_team_v220";
 const defaultTeamState = () => ({
   teams: [], order: [], teamTurnIdx: 0, playerTurnIdx: 0, ended:false,
   createdAt: Date.now(), updatedAt: Date.now()
@@ -94,6 +94,7 @@ function applyScoreRulesTeam(oldScore,gained){
   if(next > 50)    return { score:25, win:false, reset25:true };
   return { score:next, win:false, reset25:false };
 }
+function sumScore(history){ return (history ?? []).reduce((a,h)=>a+(Number(h.score)||0),0); }
 
 const el = {
   grid: document.getElementById("teamsGrid"),
@@ -133,16 +134,18 @@ function trenderTeams(){
 
   T.teams.forEach(team=>{
     const ts = tstatsFromTeam(team);
-    const card = document.createElement("article");
-    card.className = "team-card";
-    card.classList.toggle("card--eliminated", !team.active);
 
+    // Pelaajalista: nimi + pisteet + “Nimeä”-painike joka tekee in-place editin
     const playersHtml = (team.players ?? []).map(p=>{
       const ps = pstats(p);
+      const labelId = `${team.id}:${p.id}`;
       return `
-        <li class="${p.active ? "" : "muted"}">
-          <span>${escapeHtml(p.name)}</span>
-          <span class="chips">
+        <li class="${p.active ? "" : "muted"}" style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
+          <div style="display:flex;align-items:center;gap:.45rem;min-width:0">
+            <span class="player-label" data-player-label="${labelId}" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.name)}</span>
+            <button class="btn small" data-edit-player data-team-id="${team.id}" data-player-id="${p.id}">Nimeä</button>
+          </div>
+          <span class="chips" style="flex:0 0 auto">
             <span class="chip chip--score">🥇 ${sumScore(p.history)}</span>
             <span class="chip">${ps.throws}</span>
             <span class="chip chip--miss">${Math.round(ps.missPct)}%</span>
@@ -151,6 +154,9 @@ function trenderTeams(){
       `;
     }).join("");
 
+    const card = document.createElement("article");
+    card.className = "team-card";
+    card.classList.toggle("card--eliminated", !team.active);
     card.innerHTML = `
       <div class="card__header">
         <div class="card__title">${escapeHtml(team.name)}</div>
@@ -164,7 +170,7 @@ function trenderTeams(){
       <div class="card__body">
         <div class="card__score">Pisteet: ${team.score ?? 0}</div>
         ${(team.players?.length)
-          ? `<ul class="list thin" style="list-style:none;margin:.5rem 0 0;padding:0;display:flex;flex-direction:column;gap:.3rem">${playersHtml}</ul>`
+          ? `<ul class="list thin" style="list-style:none;margin:.6rem 0 0;padding:0;display:flex;flex-direction:column;gap:.35rem">${playersHtml}</ul>`
           : `<p class="muted">Ei pelaajia.</p>`}
       </div>
     `;
@@ -181,7 +187,7 @@ function trenderControls(){
 function addTeam(){
   const name = (el.teamName?.value ?? "").trim();
   if(!name) return ttoast("Anna tiimin nimi");
-  // luodaan kaksi peruspelaajaa, joita voit muokata myöhemmin
+  // Peruspelaajat luodaan — voit heti nimetä ne kortista
   const team = { id:tuid(), name, score:0, active:true, players:[
     { id:tuid(), name:"Pelaaja 1", active:true, misses:0, history:[] },
     { id:tuid(), name:"Pelaaja 2", active:true, misses:0, history:[] },
@@ -223,7 +229,6 @@ function undoTeam(){
       if(p.history?.length){
         const last = p.history.pop();
         if(last.score===0){ p.misses=Math.max(0,(p.misses||0)-1); p.active=true; }
-        // laske tiimin piste uusiksi kaikista heitoista
         const all = (t.players ?? []).flatMap(pl=>pl.history ?? []);
         let sc=0; all.forEach(h=>{ sc = applyScoreRulesTeam(sc, h.score).score; });
         t.score = sc;
@@ -234,7 +239,54 @@ function undoTeam(){
   }
 }
 
-function sumScore(history){ return (history ?? []).reduce((a,h)=>a+(Number(h.score)||0),0); }
+/* ---------- Pelaajien nimeäminen (in-place edit) ---------- */
+
+function startInlineEdit(teamId, playerId){
+  // Etsi kohde-elementti DOM:ista
+  const labelSelector = `[data-player-label="${teamId}:${playerId}"]`;
+  const labelEl = el.grid.querySelector(labelSelector);
+  if(!labelEl) return;
+
+  const team = getTeam(teamId);
+  const player = team?.players?.find(p=>p.id===playerId);
+  if(!player) return;
+
+  const oldName = player.name;
+  // Luo input
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = oldName;
+  input.setAttribute("data-editing","1");
+  input.style.minWidth = "8rem";
+  input.style.maxWidth = "40vw";
+  input.style.padding = ".35rem .5rem";
+  input.style.border = "1px solid var(--border)";
+  input.style.borderRadius = "10px";
+  input.style.background = "#0c1424";
+  input.style.color = "var(--text)";
+
+  // Korvaa label inputilla
+  labelEl.replaceWith(input);
+  input.focus();
+  input.select();
+
+  const commit = () => {
+    const newName = (input.value || "").trim();
+    player.name = newName || oldName || "Pelaaja";
+    saveT();
+    // Renderöi koko kortit uudelleen (helpoin ja varmin)
+    trender();
+  };
+  const cancel = () => { trender(); };
+
+  input.addEventListener("keydown",(e)=>{
+    if(e.key === "Enter"){ e.preventDefault(); commit(); }
+    if(e.key === "Escape"){ e.preventDefault(); cancel(); }
+  });
+  input.addEventListener("blur", commit);
+}
+
+/* ---------- DOM & UI ---------- */
 
 function openWin(txt){ el.winText.textContent=txt; el.winModal?.removeAttribute("hidden"); }
 function closeWin(){ el.winModal?.setAttribute("hidden",""); }
@@ -248,6 +300,8 @@ function newTeamSame(){
 function newTeamFresh(){ T = defaultTeamState(); closeWin(); trender(); }
 
 function ttoast(msg){ if(!el.toast) return; el.toast.textContent=msg; el.toast.classList.add("show"); setTimeout(()=>el.toast.classList.remove("show"),1400); }
+
+/* ---------- Eventit ---------- */
 
 el.addTeam?.addEventListener("click", addTeam);
 [el.shuffle, el.shuffleAlt].forEach(b=>b?.addEventListener("click", ()=>{
@@ -276,5 +330,15 @@ if(tPad && !tPad.dataset.bound){
   });
   tPad.dataset.bound="1";
 }
+
+/* Delegoitu “Nimeä”-painike joukkuekorttien sisällä */
+el.grid?.addEventListener("click",(e)=>{
+  const btn = e.target.closest("[data-edit-player]");
+  if(!btn) return;
+  const teamId = btn.getAttribute("data-team-id");
+  const playerId = btn.getAttribute("data-player-id");
+  if(!teamId || !playerId) return;
+  startInlineEdit(teamId, playerId);
+});
 
 trender();
