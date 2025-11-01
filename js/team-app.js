@@ -1,4 +1,4 @@
-/* team-app.js — Joukkuepeli (v2.3.0: lisää/poista pelaaja + nimeäminen) */
+/* team-app.js — Joukkuepeli (v2.3.1: tiimi luodaan ilman oletuspelaajia) */
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -6,7 +6,7 @@ function escapeHtml(str){
   ));
 }
 
-const LS_TEAM_KEY = "molkky_team_v230";
+const LS_TEAM_KEY = "molkky_team_v231";
 const defaultTeamState = () => ({
   teams: [], order: [], teamTurnIdx: 0, playerTurnIdx: 0, ended:false,
   createdAt: Date.now(), updatedAt: Date.now()
@@ -21,8 +21,10 @@ function loadT(){
     d.teams ??= [];
     d.teams.forEach(t=>{
       t.id ||= tuid();
-      t.name = String(t.name ?? ""); t.score ??= 0; t.active ??= true;
-      t.players ??= [];
+      t.name = String(t.name ?? "");
+      t.score ??= 0;
+      t.active ??= true;
+      t.players ??= []; // <— tärkeä: tyhjä lista sallittu
       t.players.forEach(p=>{
         p.id ||= tuid();
         p.name = String(p.name ?? "");
@@ -37,8 +39,13 @@ function loadT(){
 function saveT(){ T.updatedAt = Date.now(); localStorage.setItem(LS_TEAM_KEY, JSON.stringify(T)); }
 
 const tuid = () => Math.random().toString(36).slice(2,10);
+
 const getTeam = id => T.teams.find(t=>t.id===id);
 const aliveTeams = () => T.teams.filter(t=>t.active);
+
+// Tiimi on "ready" jos sillä on vähintään 1 aktiivinen pelaaja
+const teamReady = (t) => !!(t?.players?.some(p=>p.active) );
+const teamsReadyCount = () => aliveTeams().filter(teamReady).length;
 
 function currentTeam(){
   if(T.ended) return null;
@@ -46,7 +53,7 @@ function currentTeam(){
   let idx = T.teamTurnIdx % T.order.length;
   for(let i=0;i<T.order.length;i++){
     const t = getTeam(T.order[(idx+i)%T.order.length]);
-    if(t?.active) { T.teamTurnIdx = (idx+i)%T.order.length; return t; }
+    if(t?.active){ T.teamTurnIdx = (idx+i)%T.order.length; return t; }
   }
   return null;
 }
@@ -56,7 +63,7 @@ function currentPlayerTeamScoped(){
   let idx = T.playerTurnIdx % team.players.length;
   for(let i=0;i<team.players.length;i++){
     const p = team.players[(idx+i)%team.players.length];
-    if(p?.active) { T.playerTurnIdx = (idx+i)%team.players.length; return { team, player:p }; }
+    if(p?.active){ T.playerTurnIdx = (idx+i)%team.players.length; return { team, player:p }; }
   }
   return { team, player:null };
 }
@@ -127,6 +134,7 @@ function trenderTurn(){
   if(T.ended){ el.turnTitle.textContent = "Peli päättynyt"; return; }
   const { team, player } = currentPlayerTeamScoped();
   if(team && player) el.turnTitle.textContent = `Vuorossa: ${team.name} – ${player.name}`;
+  else if(team && !team.players?.length) el.turnTitle.textContent = `Vuorossa: ${team.name} – lisää pelaajia tiimiin`;
   else if(team) el.turnTitle.textContent = `Vuorossa: ${team.name}`;
   else el.turnTitle.textContent = "Vuorossa: –";
 }
@@ -139,7 +147,7 @@ function trenderTeams(){
   T.teams.forEach(team=>{
     const ts = tstatsFromTeam(team);
 
-    const playersHtml = (team.players ?? []).map((p, idx)=>{
+    const playersHtml = (team.players ?? []).map(p=>{
       const ps = pstats(p);
       const labelId = `${team.id}:${p.id}`;
       return `
@@ -175,7 +183,7 @@ function trenderTeams(){
         <div class="card__score">Pisteet: ${team.score ?? 0}</div>
         ${(team.players?.length)
           ? `<ul class="list thin" style="list-style:none;margin:.6rem 0 .5rem;padding:0;display:flex;flex-direction:column;gap:.35rem">${playersHtml}</ul>`
-          : `<p class="muted" style="margin:.5rem 0">Ei pelaajia.</p>`}
+          : `<p class="muted" style="margin:.5rem 0">Ei pelaajia. Lisää pelaajia tiimiin.</p>`}
         <div>
           <button class="btn small ok" data-add-player data-team-id="${team.id}">Lisää pelaaja</button>
         </div>
@@ -185,21 +193,17 @@ function trenderTeams(){
   });
 }
 function trenderControls(){
-  const canSh = T.teams.length>=2 && aliveTeams().length>=2 && !T.ended;
-  const canUn = T.teams.some(t=>t.players?.some(p=>p.history?.length)) && !T.ended;
-  [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canSh));
-  [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUn));
+  const canShuffle = teamsReadyCount() >= 2 && !T.ended; // väh. 2 pelivalmista tiimiä
+  const canUndo = T.teams.some(t=>t.players?.some(p=>p.history?.length)) && !T.ended;
+  [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuffle));
+  [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
 }
 
 /* --------------------- ACTIONS --------------------- */
 function addTeam(){
   const name = (el.teamName?.value ?? "").trim();
   if(!name) return ttoast("Anna tiimin nimi");
-  // OLETUS: 2 pelaajaa (voit lisätä kortista lisää)
-  const team = { id:tuid(), name, score:0, active:true, players:[
-    { id:tuid(), name:"Pelaaja 1", active:true, misses:0, history:[] },
-    { id:tuid(), name:"Pelaaja 2", active:true, misses:0, history:[] },
-  ] };
+  const team = { id:tuid(), name, score:0, active:true, players:[] }; // <— EI oletuspelaajia
   T.teams.push(team);
   T.order = T.teams.map(t=>t.id);
   el.teamName.value = "";
@@ -216,7 +220,6 @@ function addPlayerToTeam(teamId, name){
   };
   team.players = team.players || [];
   team.players.push(newP);
-  // Jos joukkue oli tiputettu koska kaikki pelaajat tippuivat, herätä se
   if(!team.active) team.active = true;
   saveT(); trender();
 }
@@ -226,24 +229,26 @@ function removePlayer(teamId, playerId){
   const idx = team.players?.findIndex(p=>p.id===playerId);
   if(idx == null || idx < 0) return;
 
-  // Poista ja korjaa turn-indeksit
   team.players.splice(idx,1);
+
   if(team.players.length === 0){
-    team.active = false;
+    // pelaajia ei ole → tiimi ei ole "ready"; pidetään active:true
+    // mutta seuraava heitto ei kohdistu tähän tiimiin (koska currentPlayerTeamScoped palauttaa player:null)
+    T.playerTurnIdx = 0;
   } else {
-    // Säädä playerTurnIdx kun pelaajia poistuu nykyisestä joukkueesta
     if(T.playerTurnIdx >= team.players.length){
       T.playerTurnIdx = team.players.length - 1;
       if(T.playerTurnIdx < 0) T.playerTurnIdx = 0;
     }
   }
-  // Laske tiimin pisteet uudelleen jäljellä olevista heitoista
+
+  // Laske tiimin pisteet uudelleen
   const all = (team.players ?? []).flatMap(pl=>pl.history ?? []);
   let sc=0; all.forEach(h=>{ sc = applyScoreRulesTeam(sc, h.score).score; });
   team.score = sc;
 
-  // Jos kaikki tiimit passivoituivat, peli päättyy
-  if(T.teams.every(t=>!t.active)) T.ended = true;
+  // Jos kaikki tiimit ovat ilman pelaajia → peli päättyy (ei voittajaa)
+  if(aliveTeams().every(t => !teamReady(t))) T.ended = true;
 
   saveT(); trender();
 }
@@ -251,7 +256,10 @@ function removePlayer(teamId, playerId){
 function submitThrowTeam(n){
   if(T.ended) return;
   const { team, player } = currentPlayerTeamScoped();
-  if(!team || !player) return;
+
+  if(!team){ ttoast("Lisää ensin tiimejä"); return; }
+  if(!player){ ttoast("Lisää pelaajia tiimiin"); return; }
+
   const val = Number(n)||0;
   const isMiss = val===0;
   if(isMiss){ player.misses=(player.misses||0)+1; } else { player.misses=0; }
@@ -266,7 +274,7 @@ function submitThrowTeam(n){
     if(res.reset25) ttoast(`Yli 50 → 25`);
     if(res.win){ T.ended = true; openWin(`Tiimi ${team.name} saavutti 50 pistettä!`); trender(); return; }
   }
-  if(T.teams.every(t=>!t.active)){ T.ended=true; openWin(`Kaikki tiimit tippuivat. Ei voittajaa.`); trender(); return; }
+  if(aliveTeams().every(t=>!teamReady(t))){ T.ended=true; openWin(`Ei pelivalmiita tiimejä. Ei voittajaa.`); trender(); return; }
 
   nextTurnTeam(); trender();
 }
@@ -347,7 +355,7 @@ function ttoast(msg){ if(!el.toast) return; el.toast.textContent=msg; el.toast.c
 /* ---------- Eventit ---------- */
 el.addTeam?.addEventListener("click", addTeam);
 [el.shuffle, el.shuffleAlt].forEach(b=>b?.addEventListener("click", ()=>{
-  if(T.teams.length<2) return;
+  if(teamsReadyCount() < 2) return;
   const arr = [...T.teams.map(t=>t.id)];
   for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
   T.order = arr; T.teamTurnIdx=0; T.playerTurnIdx=0; trender();
