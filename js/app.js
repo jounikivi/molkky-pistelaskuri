@@ -67,6 +67,44 @@ function applyScoreRules(oldScore,gained){
   return { score:next, win:false, reset25:false };
 }
 
+function recomputePlayerState(p){
+  let score = 0;
+  let misses = 0;
+  let active = true;
+
+  for(const h of (p.history ?? []).sort((a,b)=>(a.ts ?? 0) - (b.ts ?? 0))){
+    const val = Number(h.score) || 0;
+    if(val === 0){
+      misses += 1;
+      if(misses >= 3){
+        active = false;
+        misses = 3;
+        break;
+      }
+      continue;
+    }
+
+    misses = 0;
+    score = applyScoreRules(score, val).score;
+  }
+
+  p.score = score;
+  p.misses = active ? misses : 3;
+  p.active = active;
+}
+
+function getLatestThrow(){
+  let latest = null;
+  state.players.forEach((player, index)=>{
+    const rec = player.history?.[player.history.length - 1];
+    if(!rec) return;
+    if(!latest || (rec.ts ?? 0) > (latest.rec.ts ?? 0)){
+      latest = { player, index, rec };
+    }
+  });
+  return latest;
+}
+
 const els = {
   playersGrid: document.getElementById("playersGrid"),
   emptyState: document.getElementById("emptyState"),
@@ -169,20 +207,20 @@ function applyThrow(n){
   nextTurn(); render();
 }
 function undo(){
-  const last = [...state.players].reverse().find(pl=>pl.history?.length);
-  if(!last) return;
-  const rec = last.history.pop();
-  if(rec.score===0){ last.misses = Math.max(0,(last.misses||0)-1); last.active=true; }
-  // Laske pisteet uusiksi
-  let sc=0; (last.history||[]).forEach(h=>{ sc = applyScoreRules(sc,h.score).score; });
-  last.score = sc;
+  const latest = getLatestThrow();
+  if(!latest) return;
+
+  latest.player.history.pop();
+  recomputePlayerState(latest.player);
+  state.turnIndex = latest.index;
   state.ended=false;
+  closeWin();
   toast("Peruttu viimeisin heitto");
   render();
 }
 
 /* Nollaus */
-function newGameFresh(){ state = defaultState(); localStorage.setItem(LS_KEY, JSON.stringify(state)); render(); }
+function newGameFresh(){ state = defaultState(); closeWin(); localStorage.setItem(LS_KEY, JSON.stringify(state)); render(); }
 function askReset(){
   if(confirm("Nollataanko peli? Tämä poistaa kaikki pelaajat ja pisteet.")){
     newGameFresh();

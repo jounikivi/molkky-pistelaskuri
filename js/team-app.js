@@ -23,6 +23,7 @@ function loadT(){
       t.id ||= tuid();
       t.name = String(t.name ?? "");
       t.score ??= 0; t.active ??= true;
+      t.nextPlayerIdx ??= 0;
       t.players ??= [];
       t.players.forEach(p=>{
         p.id ||= tuid();
@@ -55,19 +56,19 @@ function currentTeam(){
 function currentPlayerTeamScoped(){
   const team = currentTeam(); if(!team) return { team:null, player:null };
   if(!team.players?.length) return { team, player:null };
-  let idx = T.playerTurnIdx % team.players.length;
-  for(let i=0;i<team.players.length;i++){
-    const p = team.players[(idx+i)%team.players.length];
-    if(p?.active){ T.playerTurnIdx = (idx+i)%team.players.length; return { team, player:p }; }
+  const idx = getNextActivePlayerIndex(team, team.nextPlayerIdx ?? 0);
+  if(idx >= 0){
+    team.nextPlayerIdx = idx;
+    return { team, player:team.players[idx] };
   }
   return { team, player:null };
 }
 function nextTurnTeam(){
   const team = currentTeam(); if(!team) return;
   if(team.players?.length){
-    let steps=0;
-    do{ T.playerTurnIdx = (T.playerTurnIdx+1)%team.players.length; steps++; }
-    while(steps<=team.players.length && !team.players[T.playerTurnIdx]?.active);
+    const currentIdx = team.players.findIndex(p=>p.id === currentPlayerTeamScoped().player?.id);
+    const nextIdx = getNextActivePlayerIndex(team, currentIdx + 1);
+    team.nextPlayerIdx = nextIdx >= 0 ? nextIdx : 0;
   }
   let stepsT=0;
   do{ T.teamTurnIdx = (T.teamTurnIdx+1)%T.order.length; stepsT++; }
@@ -98,6 +99,70 @@ function applyScoreRulesTeam(oldScore,gained){
   if(next === 50) return { score:50, win:true, reset25:false };
   if(next > 50)    return { score:25, win:false, reset25:true };
   return { score:next, win:false, reset25:false };
+}
+
+function getNextActivePlayerIndex(team, startIdx = 0){
+  if(!team?.players?.length) return -1;
+  const len = team.players.length;
+  const idx = ((startIdx % len) + len) % len;
+  for(let i=0;i<len;i++){
+    const candidate = (idx + i) % len;
+    if(team.players[candidate]?.active) return candidate;
+  }
+  return -1;
+}
+
+function recomputePlayerState(player){
+  let misses = 0;
+  let active = true;
+
+  for(const h of (player.history ?? []).sort((a,b)=>(a.ts ?? 0) - (b.ts ?? 0))){
+    const val = Number(h.score) || 0;
+    if(val === 0){
+      misses += 1;
+      if(misses >= 3){
+        active = false;
+        misses = 3;
+        break;
+      }
+      continue;
+    }
+    misses = 0;
+  }
+
+  player.misses = active ? misses : 3;
+  player.active = active;
+}
+
+function recomputeTeamState(team){
+  (team.players ?? []).forEach(recomputePlayerState);
+
+  const allThrows = (team.players ?? [])
+    .flatMap(player => (player.history ?? []).map(rec => ({ ...rec })))
+    .sort((a,b)=>(a.ts ?? 0) - (b.ts ?? 0));
+
+  let score = 0;
+  allThrows.forEach(rec=>{
+    score = applyScoreRulesTeam(score, Number(rec.score) || 0).score;
+  });
+
+  team.score = score;
+  team.active = !!team.players?.some(player => player.active);
+  team.nextPlayerIdx = team.active ? Math.max(0, getNextActivePlayerIndex(team, team.nextPlayerIdx ?? 0)) : 0;
+}
+
+function getLatestTeamThrow(){
+  let latest = null;
+  T.teams.forEach((team, teamIndex)=>{
+    (team.players ?? []).forEach((player, playerIndex)=>{
+      const rec = player.history?.[player.history.length - 1];
+      if(!rec) return;
+      if(!latest || (rec.ts ?? 0) > (latest.rec.ts ?? 0)){
+        latest = { team, teamIndex, player, playerIndex, rec };
+      }
+    });
+  });
+  return latest;
 }
 
 /* --------------------- DOM --------------------- */
@@ -198,7 +263,7 @@ function trenderControls(){
 function addTeam(){
   const name = (el.teamName?.value ?? "").trim();
   if(!name) return ttoast("Anna tiimin nimi");
-  const team = { id:tuid(), name, score:0, active:true, players:[] };
+  const team = { id:tuid(), name, score:0, active:true, nextPlayerIdx:0, players:[] };
   T.teams.push(team);
   T.order = T.teams.map(t=>t.id);
   el.teamName.value = "";
@@ -215,7 +280,8 @@ function addPlayerToTeam(teamId, name){
   };
   team.players = team.players || [];
   team.players.push(newP);
-  if(!team.active) team.active = true;
+  team.active = true;
+  if(team.players.length === 1) team.nextPlayerIdx = 0;
   saveT(); trender();
 }
 
@@ -227,17 +293,17 @@ function removePlayer(teamId, playerId){
   team.players.splice(idx,1);
 
   if(team.players.length === 0){
-    T.playerTurnIdx = 0;
-  } else {
-    if(T.playerTurnIdx >= team.players.length){
-      T.playerTurnIdx = team.players.length - 1;
-      if(T.playerTurnIdx < 0) T.playerTurnIdx = 0;
-    }
+    team.nextPlayerIdx = 0;
+  } else if(team.nextPlayerIdx >= team.players.length){
+    team.nextPlayerIdx = team.players.length - 1;
   }
 
-  const all = (team.players ?? []).flatMap(pl=>pl.history ?? []);
-  let sc=0; all.forEach(h=>{ sc = applyScoreRulesTeam(sc, h.score).score; });
-  team.score = sc;
+  recomputeTeamState(team);
+
+  if(T.order[T.teamTurnIdx] === teamId && !team.active){
+    const nextReadyIdx = T.order.findIndex(id => getTeam(id)?.active);
+    T.teamTurnIdx = nextReadyIdx >= 0 ? nextReadyIdx : 0;
+  }
 
   if(aliveTeams().every(t => !teamReady(t))) T.ended = true;
 
@@ -257,6 +323,9 @@ function submitThrowTeam(n){
   if(player.misses>=3){ player.active=false; ttoast(`${player.name} tippui (3 hutia)`); }
   player.history.push({ score:val, ts:Date.now() });
 
+  const playerIdx = team.players.findIndex(p=>p.id===player.id);
+  if(playerIdx >= 0) team.nextPlayerIdx = playerIdx;
+
   if(!team.players.some(p=>p.active)) team.active=false;
 
   if(team.active){
@@ -265,31 +334,29 @@ function submitThrowTeam(n){
     if(res.reset25) ttoast(`Yli 50 → 25`);
     if(res.win){ T.ended = true; openWin(`Tiimi ${team.name} saavutti 50 pistettä!`); trender(); return; }
   }
+
   if(aliveTeams().every(t=>!teamReady(t))){ T.ended=true; openWin(`Ei pelivalmiita tiimejä. Ei voittajaa.`); trender(); return; }
 
   nextTurnTeam(); trender();
 }
 
 function undoTeam(){
-  for(let ti=T.teams.length-1; ti>=0; ti--){
-    const t = T.teams[ti];
-    for(let pi=(t.players?.length??0)-1; pi>=0; pi--){
-      const p = t.players[pi];
-      if(p.history?.length){
-        const last = p.history.pop();
-        if(last.score===0){ p.misses=Math.max(0,(p.misses||0)-1); p.active=true; }
-        const all = (t.players ?? []).flatMap(pl=>pl.history ?? []);
-        let sc=0; all.forEach(h=>{ sc = applyScoreRulesTeam(sc, h.score).score; });
-        t.score = sc;
-        if(!t.active) t.active = true;
-        T.ended=false; ttoast("Peruttu viimeisin heitto"); trender(); return;
-      }
-    }
-  }
+  const latest = getLatestTeamThrow();
+  if(!latest) return;
+
+  latest.player.history.pop();
+  recomputeTeamState(latest.team);
+  latest.team.nextPlayerIdx = latest.playerIndex;
+  T.teamTurnIdx = latest.teamIndex;
+  T.playerTurnIdx = 0;
+  T.ended=false;
+  closeWin();
+  ttoast("Peruttu viimeisin heitto");
+  trender();
 }
 
 /* ---------- Nollaus ---------- */
-function newTeamFresh(){ T = defaultTeamState(); localStorage.setItem(LS_TEAM_KEY, JSON.stringify(T)); trender(); }
+function newTeamFresh(){ T = defaultTeamState(); closeWin(); localStorage.setItem(LS_TEAM_KEY, JSON.stringify(T)); trender(); }
 function askReset(){
   if(confirm("Nollataanko peli? Tämä poistaa kaikki tiimit ja pisteet.")){
     newTeamFresh();
@@ -304,6 +371,7 @@ function newTeamSame(){
   T.teams.forEach(t=>{
     t.score=0; t.active=true;
     t.players.forEach(p=>{ p.active=true; p.misses=0; p.history=[]; });
+    t.nextPlayerIdx = 0;
   });
   T.teamTurnIdx=0; T.playerTurnIdx=0; T.ended=false; closeWin(); trender();
 }
@@ -315,6 +383,7 @@ el.addTeam?.addEventListener("click", addTeam);
   if(teamsReadyCount() < 2) return;
   const arr = [...T.teams.map(t=>t.id)];
   for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
+  T.teams.forEach(t=>{ t.nextPlayerIdx = 0; });
   T.order = arr; T.teamTurnIdx=0; T.playerTurnIdx=0; trender();
 }));
 [el.undo, el.undoAlt].forEach(b=>b?.addEventListener("click", undoTeam));
