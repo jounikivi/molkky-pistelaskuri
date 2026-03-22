@@ -6,6 +6,18 @@ function escapeHtml(str){
   ));
 }
 
+function sanitizeName(raw){
+  return String(raw ?? "")
+    .replace(/[<>"]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 40);
+}
+
+function canonName(name){
+  return sanitizeName(name).toLowerCase();
+}
+
 const LS_KEY = "molkky_solo_v210";
 const defaultState = () => ({
   players: [], order: [], turnIndex: 0, ended: false,
@@ -174,8 +186,11 @@ function renderControls(){
 }
 
 function addPlayer(){
-  const name = (els.playerName?.value ?? "").trim();
+  const name = sanitizeName(els.playerName?.value);
   if(!name) return toast("Anna nimi");
+  if(state.players.some(player => canonName(player.name) === canonName(name))){
+    return toast("Pelaaja on jo lisätty");
+  }
   state.players.push({ id:uid(), name, score:0, active:true, misses:0, history:[] });
   state.order = state.players.map(p=>p.id);
   els.playerName.value = "";

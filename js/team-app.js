@@ -6,6 +6,18 @@ function escapeHtml(str){
   ));
 }
 
+function sanitizeName(raw){
+  return String(raw ?? "")
+    .replace(/[<>"]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 40);
+}
+
+function canonName(name){
+  return sanitizeName(name).toLowerCase();
+}
+
 const LS_TEAM_KEY = "molkky_team_v233";
 const defaultTeamState = () => ({
   teams: [], order: [], teamTurnIdx: 0, playerTurnIdx: 0, ended:false,
@@ -261,8 +273,11 @@ function trenderControls(){
 
 /* --------------------- ACTIONS --------------------- */
 function addTeam(){
-  const name = (el.teamName?.value ?? "").trim();
+  const name = sanitizeName(el.teamName?.value);
   if(!name) return ttoast("Anna tiimin nimi");
+  if(T.teams.some(team => canonName(team.name) === canonName(name))){
+    return ttoast("Tiimi on jo lisätty");
+  }
   const team = { id:tuid(), name, score:0, active:true, nextPlayerIdx:0, players:[] };
   T.teams.push(team);
   T.order = T.teams.map(t=>t.id);
@@ -273,9 +288,14 @@ function addTeam(){
 function addPlayerToTeam(teamId, name){
   const team = getTeam(teamId); if(!team) return;
   const nextNum = (team.players?.length ?? 0) + 1;
+  const cleanName = sanitizeName(name || `Pelaaja ${nextNum}`) || `Pelaaja ${nextNum}`;
+  if(team.players.some(player => canonName(player.name) === canonName(cleanName))){
+    ttoast("Pelaaja on jo tiimissä");
+    return;
+  }
   const newP = {
     id: tuid(),
-    name: (name || `Pelaaja ${nextNum}`).trim() || `Pelaaja ${nextNum}`,
+    name: cleanName,
     active: true, misses: 0, history: []
   };
   team.players = team.players || [];
