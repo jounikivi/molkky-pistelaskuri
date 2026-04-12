@@ -73,6 +73,10 @@ function recomputePlayerState(p){
     if(val === 0){
       misses += 1;
       if(misses >= 3){
+        if(h.missDecision === "continue"){
+          misses = 0;
+          continue;
+        }
         active = false;
         misses = 3;
         break;
@@ -183,9 +187,24 @@ function applyThrow(n){
   const p = currentPlayer(); if(!p) return;
   const val = Number(n)||0;
   const isMiss = val===0;
-  if(isMiss){ p.misses=(p.misses||0)+1; } else { p.misses=0; }
-  if(p.misses>=3){ p.active=false; toast(`${p.name} tippui (3 hutia)`); }
-  p.history.push({ score:val, ts:Date.now() });
+  let missDecision = null;
+  if(isMiss){
+    p.misses=(p.misses||0)+1;
+    if(p.misses>=3){
+      const shouldContinue = confirm(`${p.name} on heittänyt 3 hutia peräkkäin. Jatkaako pelaaja pelissä?`);
+      missDecision = shouldContinue ? "continue" : "eliminate";
+      if(shouldContinue){
+        p.misses = 0;
+        toast(`${p.name} jatkaa peliä`);
+      } else {
+        p.active=false;
+        toast(`${p.name} tippui (3 hutia)`);
+      }
+    }
+  } else {
+    p.misses=0;
+  }
+  p.history.push({ score:val, ts:Date.now(), missDecision });
 
   if(p.active){
     const res = applyScoreRules(p.score||0, val);
