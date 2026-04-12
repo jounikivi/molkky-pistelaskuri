@@ -1,21 +1,11 @@
 /* app.js — Yksilöpeli (v2.1.1: Nollaa peli -napit) */
 
+import { canonName, getLatestHistoryEntry, sanitizeName, sortByTimestamp } from "./shared.js";
+
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
     { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]
   ));
-}
-
-function sanitizeName(raw){
-  return String(raw ?? "")
-    .replace(/[<>"]/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 40);
-}
-
-function canonName(name){
-  return sanitizeName(name).toLowerCase();
 }
 
 const LS_KEY = "molkky_solo_v210";
@@ -84,7 +74,7 @@ function recomputePlayerState(p){
   let misses = 0;
   let active = true;
 
-  for(const h of (p.history ?? []).sort((a,b)=>(a.ts ?? 0) - (b.ts ?? 0))){
+  for(const h of sortByTimestamp(p.history)){
     const val = Number(h.score) || 0;
     if(val === 0){
       misses += 1;
@@ -106,15 +96,7 @@ function recomputePlayerState(p){
 }
 
 function getLatestThrow(){
-  let latest = null;
-  state.players.forEach((player, index)=>{
-    const rec = player.history?.[player.history.length - 1];
-    if(!rec) return;
-    if(!latest || (rec.ts ?? 0) > (latest.rec.ts ?? 0)){
-      latest = { player, index, rec };
-    }
-  });
-  return latest;
+  return getLatestHistoryEntry(state.players.map((player, index)=>({ player, index, history: player.history })));
 }
 
 const els = {

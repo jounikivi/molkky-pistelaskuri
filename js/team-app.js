@@ -1,21 +1,11 @@
 /* team-app.js — Joukkuepeli (v2.3.3: Nollaa peli -napit) */
 
+import { canonName, getLatestHistoryEntry, sanitizeName, sortByTimestamp } from "./shared.js";
+
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
     { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]
   ));
-}
-
-function sanitizeName(raw){
-  return String(raw ?? "")
-    .replace(/[<>"]/g, "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 40);
-}
-
-function canonName(name){
-  return sanitizeName(name).toLowerCase();
 }
 
 const LS_TEAM_KEY = "molkky_team_v233";
@@ -128,7 +118,7 @@ function recomputePlayerState(player){
   let misses = 0;
   let active = true;
 
-  for(const h of (player.history ?? []).sort((a,b)=>(a.ts ?? 0) - (b.ts ?? 0))){
+  for(const h of sortByTimestamp(player.history)){
     const val = Number(h.score) || 0;
     if(val === 0){
       misses += 1;
@@ -149,9 +139,9 @@ function recomputePlayerState(player){
 function recomputeTeamState(team){
   (team.players ?? []).forEach(recomputePlayerState);
 
-  const allThrows = (team.players ?? [])
-    .flatMap(player => (player.history ?? []).map(rec => ({ ...rec })))
-    .sort((a,b)=>(a.ts ?? 0) - (b.ts ?? 0));
+  const allThrows = sortByTimestamp(
+    (team.players ?? []).flatMap(player => (player.history ?? []).map(rec => ({ ...rec })))
+  );
 
   let score = 0;
   allThrows.forEach(rec=>{
@@ -164,17 +154,16 @@ function recomputeTeamState(team){
 }
 
 function getLatestTeamThrow(){
-  let latest = null;
-  T.teams.forEach((team, teamIndex)=>{
-    (team.players ?? []).forEach((player, playerIndex)=>{
-      const rec = player.history?.[player.history.length - 1];
-      if(!rec) return;
-      if(!latest || (rec.ts ?? 0) > (latest.rec.ts ?? 0)){
-        latest = { team, teamIndex, player, playerIndex, rec };
-      }
-    });
-  });
-  return latest;
+  const candidates = T.teams.flatMap((team, teamIndex)=>
+    (team.players ?? []).map((player, playerIndex)=>({
+      team,
+      teamIndex,
+      player,
+      playerIndex,
+      history: player.history
+    }))
+  );
+  return getLatestHistoryEntry(candidates);
 }
 
 /* --------------------- DOM --------------------- */
