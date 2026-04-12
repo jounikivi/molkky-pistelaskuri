@@ -182,10 +182,17 @@ const el = {
   winSame: document.getElementById("winSame"),
   winFresh: document.getElementById("winFresh"),
   winClose: document.getElementById("winClose"),
+  missModal: document.getElementById("missModal"),
+  missTitle: document.getElementById("missTitle"),
+  missText: document.getElementById("missText"),
+  missContinue: document.getElementById("missContinue"),
+  missEliminate: document.getElementById("missEliminate"),
   toast: document.getElementById("toast"),
   reset: document.getElementById("reset"),
   resetAlt: document.getElementById("resetAlt"),
 };
+
+let pendingMissDecision = null;
 
 /* --------------------- RENDER --------------------- */
 function trender(){
@@ -318,8 +325,9 @@ function removePlayer(teamId, playerId){
   saveT(); trender();
 }
 
-function submitThrowTeam(n){
+async function submitThrowTeam(n){
   if(T.ended) return;
+  if(pendingMissDecision) return;
   const { team, player } = currentPlayerTeamScoped();
 
   if(!team){ ttoast("Lisää ensin tiimejä"); return; }
@@ -331,7 +339,7 @@ function submitThrowTeam(n){
   if(isMiss){
     player.misses=(player.misses||0)+1;
     if(player.misses>=3){
-      const shouldContinue = confirm(`${player.name} on heittänyt 3 hutia peräkkäin. Jatkaako pelaaja pelissä?`);
+      const shouldContinue = await askMissDecision(player.name);
       missDecision = shouldContinue ? "continue" : "eliminate";
       if(shouldContinue){
         player.misses = 0;
@@ -390,6 +398,34 @@ function askReset(){
 /* ---------- WIN, TOAST & UI ---------- */
 function openWin(txt){ el.winText.textContent=txt; el.winModal?.removeAttribute("hidden"); }
 function closeWin(){ el.winModal?.setAttribute("hidden",""); }
+function askMissDecision(playerName){
+  if(!el.missModal || !el.missContinue || !el.missEliminate) return Promise.resolve(false);
+  if(pendingMissDecision) return pendingMissDecision.promise;
+
+  el.missTitle.textContent = "Kolme hutia";
+  el.missText.textContent = `${playerName} on heittänyt 3 hutia peräkkäin. Jatkaako pelaaja pelissä vai tiputetaanko hänet?`;
+  el.missModal.removeAttribute("hidden");
+
+  let resolveChoice;
+  const promise = new Promise(resolve => {
+    resolveChoice = resolve;
+  });
+
+  const onContinue = () => cleanup(true);
+  const onEliminate = () => cleanup(false);
+  const cleanup = (choice) => {
+    el.missModal.setAttribute("hidden", "");
+    el.missContinue.removeEventListener("click", onContinue);
+    el.missEliminate.removeEventListener("click", onEliminate);
+    pendingMissDecision = null;
+    resolveChoice(choice);
+  };
+
+  el.missContinue.addEventListener("click", onContinue, { once:true });
+  el.missEliminate.addEventListener("click", onEliminate, { once:true });
+  pendingMissDecision = { promise };
+  return promise;
+}
 function newTeamSame(){
   T.teams.forEach(t=>{
     t.score=0; t.active=true;

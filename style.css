@@ -97,6 +97,7 @@ a:hover{text-decoration:underline}
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:30}
 .modal-backdrop:not([hidden]){display:grid;place-items:center}
 .modal{max-width:520px;width:calc(100% - 2rem)}
+.modal p{margin:.5rem 0 0;color:var(--muted)}
 .modal-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
 
 /* Animations */
