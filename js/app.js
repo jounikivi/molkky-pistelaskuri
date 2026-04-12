@@ -1,5 +1,6 @@
 /* app.js — Yksilöpeli (v2.1.1: Nollaa peli -napit) */
 
+import { createPlayerState, applyScoreRules } from "./rules.js";
 import { canonName, getLatestHistoryEntry, sanitizeName, sortByTimestamp } from "./shared.js";
 
 function escapeHtml(str){
@@ -60,13 +61,6 @@ function statsFromPlayer(p){
   const avg = throws ? sum/throws : 0;
   const missPct = throws ? (100*misses/throws) : 0;
   return { throws, avg, missPct };
-}
-
-function applyScoreRules(oldScore,gained){
-  const next = (oldScore ?? 0) + (gained ?? 0);
-  if(next === 50) return { score:50, win:true, reset25:false };
-  if(next > 50)    return { score:25, win:false, reset25:true };
-  return { score:next, win:false, reset25:false };
 }
 
 function recomputePlayerState(p){
@@ -173,7 +167,7 @@ function addPlayer(){
   if(state.players.some(player => canonName(player.name) === canonName(name))){
     return toast("Pelaaja on jo lisätty");
   }
-  state.players.push({ id:uid(), name, score:0, active:true, misses:0, history:[] });
+  state.players.push({ id:uid(), ...createPlayerState(name), history:[] });
   state.order = state.players.map(p=>p.id);
   els.playerName.value = "";
   render();
@@ -195,7 +189,7 @@ function applyThrow(n){
 
   if(p.active){
     const res = applyScoreRules(p.score||0, val);
-    if(res.reset25) toast(`Yli 50 → 25`);
+    if(res.bounced) toast(`Yli 50 → 25`);
     p.score = res.score;
     if(res.win){ state.ended = true; openWin(`${p.name} saavutti 50 pistettä!`); render(); return; }
   }

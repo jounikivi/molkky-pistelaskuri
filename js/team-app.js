@@ -1,5 +1,6 @@
 /* team-app.js — Joukkuepeli (v2.3.3: Nollaa peli -napit) */
 
+import { applyScoreRules, createPlayerState } from "./rules.js";
 import { canonName, getLatestHistoryEntry, sanitizeName, sortByTimestamp } from "./shared.js";
 
 function escapeHtml(str){
@@ -96,13 +97,6 @@ function pstats(p){
 }
 function sumScore(history){ return (history ?? []).reduce((a,h)=>a+(Number(h.score)||0),0); }
 
-function applyScoreRulesTeam(oldScore,gained){
-  const next = (oldScore ?? 0) + (gained ?? 0);
-  if(next === 50) return { score:50, win:true, reset25:false };
-  if(next > 50)    return { score:25, win:false, reset25:true };
-  return { score:next, win:false, reset25:false };
-}
-
 function getNextActivePlayerIndex(team, startIdx = 0){
   if(!team?.players?.length) return -1;
   const len = team.players.length;
@@ -145,7 +139,7 @@ function recomputeTeamState(team){
 
   let score = 0;
   allThrows.forEach(rec=>{
-    score = applyScoreRulesTeam(score, Number(rec.score) || 0).score;
+    score = applyScoreRules(score, Number(rec.score) || 0).score;
   });
 
   team.score = score;
@@ -285,7 +279,8 @@ function addPlayerToTeam(teamId, name){
   const newP = {
     id: tuid(),
     name: cleanName,
-    active: true, misses: 0, history: []
+    ...createPlayerState(cleanName),
+    history: []
   };
   team.players = team.players || [];
   team.players.push(newP);
@@ -338,9 +333,9 @@ function submitThrowTeam(n){
   if(!team.players.some(p=>p.active)) team.active=false;
 
   if(team.active){
-    const res = applyScoreRulesTeam(team.score||0, val);
+    const res = applyScoreRules(team.score||0, val);
     team.score = res.score;
-    if(res.reset25) ttoast(`Yli 50 → 25`);
+    if(res.bounced) ttoast(`Yli 50 → 25`);
     if(res.win){ T.ended = true; openWin(`Tiimi ${team.name} saavutti 50 pistettä!`); trender(); return; }
   }
 
