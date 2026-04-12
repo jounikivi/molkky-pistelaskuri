@@ -193,6 +193,7 @@ const el = {
 };
 
 let pendingMissDecision = null;
+let lastFocusedBeforeMissModal = null;
 
 /* --------------------- RENDER --------------------- */
 function trender(){
@@ -398,13 +399,39 @@ function askReset(){
 /* ---------- WIN, TOAST & UI ---------- */
 function openWin(txt){ el.winText.textContent=txt; el.winModal?.removeAttribute("hidden"); }
 function closeWin(){ el.winModal?.setAttribute("hidden",""); }
+function handleMissModalKeydown(event){
+  if(!pendingMissDecision) return;
+  if(event.key === "Escape"){
+    event.preventDefault();
+    el.missEliminate?.click();
+    return;
+  }
+  if(event.key !== "Tab") return;
+
+  const focusables = [el.missContinue, el.missEliminate].filter(Boolean);
+  if(!focusables.length) return;
+
+  const currentIndex = focusables.indexOf(document.activeElement);
+  let nextIndex = currentIndex;
+
+  if(event.shiftKey){
+    nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
+  } else {
+    nextIndex = currentIndex === -1 || currentIndex >= focusables.length - 1 ? 0 : currentIndex + 1;
+  }
+
+  event.preventDefault();
+  focusables[nextIndex]?.focus();
+}
 function askMissDecision(playerName){
   if(!el.missModal || !el.missContinue || !el.missEliminate) return Promise.resolve(false);
   if(pendingMissDecision) return pendingMissDecision.promise;
 
+  lastFocusedBeforeMissModal = document.activeElement;
   el.missTitle.textContent = "Kolme hutia";
   el.missText.textContent = `${playerName} on heittänyt 3 hutia peräkkäin. Jatkaako pelaaja pelissä vai tiputetaanko hänet?`;
   el.missModal.removeAttribute("hidden");
+  el.missModal.addEventListener("keydown", handleMissModalKeydown);
 
   let resolveChoice;
   const promise = new Promise(resolve => {
@@ -417,13 +444,17 @@ function askMissDecision(playerName){
     el.missModal.setAttribute("hidden", "");
     el.missContinue.removeEventListener("click", onContinue);
     el.missEliminate.removeEventListener("click", onEliminate);
+    el.missModal.removeEventListener("keydown", handleMissModalKeydown);
     pendingMissDecision = null;
     resolveChoice(choice);
+    lastFocusedBeforeMissModal?.focus?.();
+    lastFocusedBeforeMissModal = null;
   };
 
   el.missContinue.addEventListener("click", onContinue, { once:true });
   el.missEliminate.addEventListener("click", onEliminate, { once:true });
   pendingMissDecision = { promise };
+  el.missContinue.focus();
   return promise;
 }
 function newTeamSame(){
