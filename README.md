@@ -22,6 +22,12 @@ Projektissa on kevyt Node-pohjainen testisetti yhteiselle logiikalle.
 npm test
 ```
 
+## Manuaalinen selaintestaus
+
+Tarkeimmille pelipoluille on erillinen tarkistuslista:
+
+- [MANUAL-TESTING.md](./MANUAL-TESTING.md)
+
 ## Rakenne
 
 - [index.html](./index.html): etusivu
