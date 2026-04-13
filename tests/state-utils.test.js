@@ -1,7 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { getNextActivePlayerIndex, recomputePlayerFromHistory, recomputeTeamFromHistory } from "../js/state-utils.js";
+import {
+  applySoloThrowToPlayer,
+  applyTeamThrowToTeam,
+  getNextActivePlayerIndex,
+  getNextSoloTurnIndex,
+  getNextTeamTurnIndex,
+  recomputePlayerFromHistory,
+  recomputeTeamFromHistory,
+  shouldEndSoloGame,
+  shouldEndTeamGame
+} from "../js/state-utils.js";
 
 test("recomputePlayerFromHistory handles continue decision after third miss", () => {
   const player = {
@@ -82,4 +92,93 @@ test("getNextActivePlayerIndex skips inactive players", () => {
   ];
 
   assert.equal(getNextActivePlayerIndex(players, 0), 2);
+});
+
+test("applySoloThrowToPlayer records throw and resets misses on continue decision", () => {
+  const player = {
+    id: "p1",
+    name: "Aki",
+    score: 0,
+    misses: 2,
+    active: true,
+    history: []
+  };
+
+  const result = applySoloThrowToPlayer(player, 0, "continue");
+  assert.equal(result.active, true);
+  assert.equal(result.misses, 0);
+  assert.equal(result.history.length, 1);
+  assert.equal(result.history[0].missDecision, "continue");
+});
+
+test("applySoloThrowToPlayer eliminates player on third miss", () => {
+  const player = {
+    id: "p1",
+    name: "Aki",
+    score: 0,
+    misses: 2,
+    active: true,
+    history: []
+  };
+
+  const result = applySoloThrowToPlayer(player, 0, "eliminate");
+  assert.equal(result.active, false);
+});
+
+test("applyTeamThrowToTeam updates team score and player history", () => {
+  const team = {
+    id: "t1",
+    name: "Tiimi",
+    score: 10,
+    active: true,
+    nextPlayerIdx: 0,
+    players: [
+      { id: "p1", name: "A", score: 0, misses: 0, active: true, history: [] }
+    ]
+  };
+
+  const result = applyTeamThrowToTeam(team, "p1", 7);
+  assert.equal(result.team.score, 17);
+  assert.equal(result.team.players[0].history.length, 1);
+  assert.equal(result.playerIndex, 0);
+});
+
+test("getNextSoloTurnIndex skips eliminated players", () => {
+  const players = [
+    { id: "a", active: true },
+    { id: "b", active: false },
+    { id: "c", active: true }
+  ];
+  const order = ["a", "b", "c"];
+
+  assert.equal(getNextSoloTurnIndex(players, order, 0), 2);
+});
+
+test("shouldEndSoloGame returns true when all players are inactive", () => {
+  assert.equal(shouldEndSoloGame([{ active: false }, { active: false }]), true);
+  assert.equal(shouldEndSoloGame([{ active: true }, { active: false }]), false);
+});
+
+test("getNextTeamTurnIndex skips inactive teams", () => {
+  const teams = [
+    { id: "t1", active: true },
+    { id: "t2", active: false },
+    { id: "t3", active: true }
+  ];
+  const order = ["t1", "t2", "t3"];
+
+  assert.equal(getNextTeamTurnIndex(teams, order, 0), 2);
+});
+
+test("shouldEndTeamGame returns true when no active players remain in active teams", () => {
+  const ended = shouldEndTeamGame([
+    { active: true, players: [{ active: false }] },
+    { active: false, players: [{ active: false }] }
+  ]);
+  const notEnded = shouldEndTeamGame([
+    { active: true, players: [{ active: true }] }
+  ]);
+
+  assert.equal(ended, true);
+  assert.equal(notEnded, false);
 });

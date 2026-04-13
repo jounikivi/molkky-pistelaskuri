@@ -2,7 +2,12 @@
 
 import { createPlayerState, applyScoreRules } from "./rules.js";
 import { canonName, getLatestHistoryEntry, sanitizeName } from "./shared.js";
-import { recomputePlayerFromHistory } from "./state-utils.js";
+import {
+  applySoloThrowToPlayer,
+  getNextSoloTurnIndex,
+  recomputePlayerFromHistory,
+  shouldEndSoloGame
+} from "./state-utils.js";
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -48,11 +53,7 @@ function currentPlayer(){
   return null;
 }
 function nextTurn(){
-  if(!state.order.length) return;
-  let steps=0;
-  do{
-    state.turnIndex = (state.turnIndex+1)%state.order.length; steps++;
-  }while(steps<=state.order.length && !getPlayer(state.order[state.turnIndex])?.active);
+  state.turnIndex = getNextSoloTurnIndex(state.players, state.order, state.turnIndex);
 }
 
 function statsFromPlayer(p){
@@ -170,6 +171,7 @@ async function applyThrow(n){
   if(pendingMissDecision) return;
   const p = currentPlayer(); if(!p) return;
   const val = Number(n)||0;
+  const previousScore = p.score || 0;
   const isMiss = val===0;
   let missDecision = null;
   if(isMiss){
@@ -186,17 +188,15 @@ async function applyThrow(n){
       }
     }
   } else {
-    p.misses=0;
   }
-  p.history.push({ score:val, ts:Date.now(), missDecision });
+  Object.assign(p, applySoloThrowToPlayer(p, val, missDecision));
 
   if(p.active){
-    const res = applyScoreRules(p.score||0, val);
+    const res = applyScoreRules(previousScore, val);
     if(res.bounced) toast(`Yli 50 → 25`);
-    p.score = res.score;
     if(res.win){ state.ended = true; openWin(`${p.name} saavutti 50 pistettä!`); render(); return; }
   }
-  if(state.players.every(x=>!x.active)){ state.ended=true; openWin(`Kaikki tippuivat. Ei voittajaa.`); render(); return; }
+  if(shouldEndSoloGame(state.players)){ state.ended=true; openWin(`Kaikki tippuivat. Ei voittajaa.`); render(); return; }
 
   nextTurn(); render();
 }

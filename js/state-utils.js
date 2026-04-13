@@ -68,3 +68,113 @@ export function recomputeTeamFromHistory(team){
     nextPlayerIdx
   };
 }
+
+export function applySoloThrowToPlayer(player, value, missDecision = null){
+  const next = {
+    ...player,
+    history: [...(player.history ?? [])]
+  };
+  const val = Number(value) || 0;
+  const isMiss = val === 0;
+
+  if(isMiss){
+    next.misses = (next.misses || 0) + 1;
+    if(next.misses >= 3){
+      if(missDecision === "continue"){
+        next.misses = 0;
+      } else if(missDecision === "eliminate"){
+        next.active = false;
+      }
+    }
+  } else {
+    next.misses = 0;
+  }
+
+  next.history.push({ score: val, ts: Date.now(), missDecision });
+
+  if(next.active){
+    next.score = applyScoreRules(next.score || 0, val).score;
+  }
+
+  return next;
+}
+
+export function applyTeamThrowToTeam(team, playerId, value, missDecision = null){
+  const val = Number(value) || 0;
+  const next = {
+    ...team,
+    players: (team.players ?? []).map(player => ({
+      ...player,
+      history: [...(player.history ?? [])]
+    }))
+  };
+
+  const playerIdx = next.players.findIndex(player => player.id === playerId);
+  if(playerIdx < 0) return { team: next, playerIndex: -1 };
+
+  const player = next.players[playerIdx];
+  const isMiss = val === 0;
+
+  if(isMiss){
+    player.misses = (player.misses || 0) + 1;
+    if(player.misses >= 3){
+      if(missDecision === "continue"){
+        player.misses = 0;
+      } else if(missDecision === "eliminate"){
+        player.active = false;
+      }
+    }
+  } else {
+    player.misses = 0;
+  }
+
+  player.history.push({ score: val, ts: Date.now(), missDecision });
+  next.nextPlayerIdx = playerIdx;
+
+  if(!next.players.some(item => item.active)){
+    next.active = false;
+  }
+
+  if(next.active){
+    next.score = applyScoreRules(next.score || 0, val).score;
+  }
+
+  return { team: next, playerIndex: playerIdx };
+}
+
+export function getNextSoloTurnIndex(players, order, currentTurnIndex){
+  if(!order?.length) return currentTurnIndex ?? 0;
+  let nextTurnIndex = currentTurnIndex ?? 0;
+  let steps = 0;
+  do{
+    nextTurnIndex = (nextTurnIndex + 1) % order.length;
+    steps += 1;
+  }while(
+    steps <= order.length &&
+    !players.find(player => player.id === order[nextTurnIndex])?.active
+  );
+  return nextTurnIndex;
+}
+
+export function shouldEndSoloGame(players){
+  return !!players.length && players.every(player => !player.active);
+}
+
+export function getNextTeamTurnIndex(teams, order, currentTeamTurnIdx){
+  if(!order?.length) return currentTeamTurnIdx ?? 0;
+  let nextTeamTurnIdx = currentTeamTurnIdx ?? 0;
+  let steps = 0;
+  do{
+    nextTeamTurnIdx = (nextTeamTurnIdx + 1) % order.length;
+    steps += 1;
+  }while(
+    steps <= order.length &&
+    !teams.find(team => team.id === order[nextTeamTurnIdx])?.active
+  );
+  return nextTeamTurnIdx;
+}
+
+export function shouldEndTeamGame(teams){
+  const aliveTeams = (teams ?? []).filter(team => team.active);
+  return !aliveTeams.some(team => team.players?.some(player => player.active));
+}

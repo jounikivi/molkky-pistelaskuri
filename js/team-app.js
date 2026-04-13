@@ -2,7 +2,13 @@
 
 import { applyScoreRules, createPlayerState } from "./rules.js";
 import { canonName, getLatestHistoryEntry, sanitizeName } from "./shared.js";
-import { getNextActivePlayerIndex, recomputeTeamFromHistory } from "./state-utils.js";
+import {
+  applyTeamThrowToTeam,
+  getNextActivePlayerIndex,
+  getNextTeamTurnIndex,
+  recomputeTeamFromHistory,
+  shouldEndTeamGame
+} from "./state-utils.js";
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -74,9 +80,7 @@ function nextTurnTeam(){
     const nextIdx = getNextActivePlayerIndex(team.players, currentIdx + 1);
     team.nextPlayerIdx = nextIdx >= 0 ? nextIdx : 0;
   }
-  let stepsT=0;
-  do{ T.teamTurnIdx = (T.teamTurnIdx+1)%T.order.length; stepsT++; }
-  while(stepsT<=T.order.length && !getTeam(T.order[T.teamTurnIdx])?.active);
+  T.teamTurnIdx = getNextTeamTurnIndex(T.teams, T.order, T.teamTurnIdx);
 }
 
 function tstatsFromTeam(t){
@@ -272,7 +276,7 @@ function removePlayer(teamId, playerId){
     T.teamTurnIdx = nextReadyIdx >= 0 ? nextReadyIdx : 0;
   }
 
-  if(aliveTeams().every(t => !teamReady(t))) T.ended = true;
+  if(shouldEndTeamGame(T.teams)) T.ended = true;
 
   saveT(); trender();
 }
@@ -286,6 +290,7 @@ async function submitThrowTeam(n){
   if(!player){ ttoast("Lisää pelaajia tiimiin"); return; }
 
   const val = Number(n)||0;
+  const previousScore = team.score || 0;
   const isMiss = val===0;
   let missDecision = null;
   if(isMiss){
@@ -302,23 +307,18 @@ async function submitThrowTeam(n){
       }
     }
   } else {
-    player.misses=0;
   }
-  player.history.push({ score:val, ts:Date.now(), missDecision });
-
-  const playerIdx = team.players.findIndex(p=>p.id===player.id);
-  if(playerIdx >= 0) team.nextPlayerIdx = playerIdx;
-
-  if(!team.players.some(p=>p.active)) team.active=false;
+  const applied = applyTeamThrowToTeam(team, player.id, val, missDecision);
+  Object.assign(team, applied.team);
+  const playerIdx = applied.playerIndex;
 
   if(team.active){
-    const res = applyScoreRules(team.score||0, val);
-    team.score = res.score;
+    const res = applyScoreRules(previousScore, val);
     if(res.bounced) ttoast(`Yli 50 → 25`);
     if(res.win){ T.ended = true; openWin(`Tiimi ${team.name} saavutti 50 pistettä!`); trender(); return; }
   }
 
-  if(aliveTeams().every(t=>!teamReady(t))){ T.ended=true; openWin(`Ei pelivalmiita tiimejä. Ei voittajaa.`); trender(); return; }
+  if(shouldEndTeamGame(T.teams)){ T.ended=true; openWin(`Ei pelivalmiita tiimejä. Ei voittajaa.`); trender(); return; }
 
   nextTurnTeam(); trender();
 }
