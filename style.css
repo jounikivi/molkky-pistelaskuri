@@ -114,6 +114,107 @@ a:hover{text-decoration:underline}
 .modal p{margin:.5rem 0 0;color:var(--muted)}
 .modal-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
 
+/* Match summary */
+.match-summary{
+  margin-top:.85rem;
+  padding-top:.85rem;
+  border-top:1px solid var(--border);
+}
+.match-summary__header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:.45rem;
+  flex-wrap:wrap;
+  margin-bottom:.55rem;
+}
+.match-summary__title{
+  color:var(--muted);
+  font-size:.78rem;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.match-summary__leader{
+  color:var(--muted);
+  font-size:.92rem;
+}
+.match-summary__list{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:.4rem;
+}
+.match-summary__item{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  grid-template-areas:
+    "place name score"
+    "badges badges badges";
+  gap:.18rem .5rem;
+  padding:.55rem .65rem;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(10,18,32,.55);
+}
+.match-summary__item.is-current{
+  border-color:#2b4d7c;
+  background:rgba(15,36,61,.45);
+}
+.match-summary__item.is-eliminated{
+  opacity:.72;
+}
+.match-summary__place{
+  grid-area:place;
+  color:var(--muted);
+  font-weight:800;
+  min-width:1.5rem;
+}
+.match-summary__name{
+  grid-area:name;
+  font-weight:700;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.match-summary__score{
+  grid-area:score;
+  font-weight:900;
+  font-size:1.05rem;
+}
+.match-summary__badges{
+  grid-area:badges;
+  display:flex;
+  flex-wrap:wrap;
+  gap:.35rem;
+}
+.match-summary__badge{
+  display:inline-flex;
+  align-items:center;
+  min-height:24px;
+  padding:.12rem .45rem;
+  border-radius:999px;
+  border:1px solid var(--border);
+  font-size:.72rem;
+  color:var(--muted);
+  background:#0e1726;
+}
+.match-summary__badge--turn{
+  color:#dbeafe;
+  border-color:#2b4d7c;
+  background:#0f243d;
+}
+.match-summary__badge--out{
+  color:#fecdd3;
+  border-color:#7a1f29;
+  background:#31131d;
+}
+.match-summary__empty{
+  font-size:.92rem;
+}
+
 /* Home */
 .home-kicker{
   color:var(--muted);
@@ -338,6 +439,9 @@ a:hover{text-decoration:underline}
   }
   .game-page .inline-input .btn{
     width:100%;
+  }
+  .match-summary__item{
+    padding:.52rem .58rem;
   }
   .btn{ padding:.5rem .68rem; border-radius:10px; font-size:.95rem }
   .throwbar{

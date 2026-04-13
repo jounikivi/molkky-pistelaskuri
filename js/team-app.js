@@ -123,6 +123,16 @@ function hasTeamGameStarted(){
   return T.teams.some(team => team.players?.some(player => player.history?.length));
 }
 
+function getTeamRanking(){
+  return [...T.teams].sort((a, b)=>{
+    const scoreDiff = (b.score || 0) - (a.score || 0);
+    if(scoreDiff) return scoreDiff;
+    const activeDiff = Number(b.active) - Number(a.active);
+    if(activeDiff) return activeDiff;
+    return String(a.name || "").localeCompare(String(b.name || ""), "fi");
+  });
+}
+
 /* --------------------- DOM --------------------- */
 const el = {
   grid: document.getElementById("teamsGrid"),
@@ -137,6 +147,7 @@ const el = {
   free: document.getElementById("freeInput"),
   go: document.getElementById("submitFree"),
   turnTitle: document.getElementById("turnTitle"),
+  matchSummary: document.getElementById("matchSummary"),
   winModal: document.getElementById("winModal"),
   winText: document.getElementById("winText"),
   winSame: document.getElementById("winSame"),
@@ -157,7 +168,7 @@ let lastFocusedBeforeMissModal = null;
 
 /* --------------------- RENDER --------------------- */
 function trender(){
-  trenderTurn(); trenderTeams(); trenderControls(); saveT();
+  trenderTurn(); trenderMatchSummary(); trenderTeams(); trenderControls(); saveT();
 }
 function trenderTurn(){
   if(T.ended){ el.turnTitle.textContent = "Peli päättynyt"; return; }
@@ -166,6 +177,37 @@ function trenderTurn(){
   else if(team && !team.players?.length) el.turnTitle.textContent = `Vuorossa: ${team.name} – lisää pelaajia tiimiin`;
   else if(team) el.turnTitle.textContent = `Vuorossa: ${team.name}`;
   else el.turnTitle.textContent = "Vuorossa: –";
+}
+function trenderMatchSummary(){
+  if(!el.matchSummary) return;
+  if(!T.teams.length){
+    el.matchSummary.innerHTML = `<div class="match-summary__empty muted">Pelitilanne näkyy tässä, kun tiimit on lisätty.</div>`;
+    return;
+  }
+
+  const ranking = getTeamRanking();
+  const current = currentTeam();
+  const leader = ranking[0];
+
+  el.matchSummary.innerHTML = `
+    <div class="match-summary__header">
+      <div class="match-summary__title">Pelitilanne</div>
+      <div class="match-summary__leader">Johdossa: <strong>${escapeHtml(leader?.name ?? "–")}</strong> (${leader?.score ?? 0})</div>
+    </div>
+    <ol class="match-summary__list">
+      ${ranking.map((team, index)=>`
+        <li class="match-summary__item ${team.id === current?.id ? "is-current" : ""} ${!team.active ? "is-eliminated" : ""}">
+          <span class="match-summary__place">${index + 1}.</span>
+          <span class="match-summary__name">${escapeHtml(team.name)}</span>
+          <span class="match-summary__score">${team.score ?? 0}</span>
+          <span class="match-summary__badges">
+            ${team.id === current?.id ? `<span class="match-summary__badge match-summary__badge--turn">Vuorossa</span>` : ""}
+            ${!team.active ? `<span class="match-summary__badge match-summary__badge--out">Ei aktiivisia pelaajia</span>` : ""}
+          </span>
+        </li>
+      `).join("")}
+    </ol>
+  `;
 }
 function trenderTeams(){
   const grid = el.grid; if(!grid) return;

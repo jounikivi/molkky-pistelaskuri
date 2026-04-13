@@ -65,6 +65,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Tarkista puhelinleveydella, etta ylapalkissa naytetaan vain `Arvo aloitus` ja `Nollaa peli`, ja etta `Peru` naytetaan vain alapalkissa pistepainikkeiden yhteydessa.
 - Tarkista puhelinleveydella, etta pisteensyoton kentta ja nappi pinoutuvat allekkain ja ovat kaytettavia myos ruutunayttonappaimiston ollessa auki.
 - Tarkista puhelinleveydella, etta alapalkin heittopainikkeet ovat helposti painettavia, mahtuvat ruudulle ilman vaakasuuntaista scrollausta ja etta sivun loppu sisalto nousee niiden ylapuolelle.
+- Tarkista, etta `Pelitilanne`-osio paivittyy jokaisen heiton jalkeen oikein ja etta johtaja, sijoitukset ja vuorossa oleva pelaaja tai tiimi vastaavat todellista tilannetta.
 - Tarkista joukkuepelissa puhelinleveydella, etta pelaajarivit, poistopainike ja tilastochipit pinoutuvat luettavasti eivatka leikkaannu.
 - Tarkista tablettileveydella, etta kortit asettuvat kahteen sarakkeeseen ilman ahtautta ja etta alapalkki pysyy kaytettavana pysty- ja vaakasuunnassa.
 - Testaa 3 huti -modaali kokonaan ilman hiirta. Odotus: fokus siirtyy modaalin sisaan, `Tab` ja `Shift+Tab` kiertavat vain modaalin painikkeissa, `Escape` sulkee tilanteen tiputusvalinnalla ja fokus palautuu aiemmin aktiiviseen elementtiin.

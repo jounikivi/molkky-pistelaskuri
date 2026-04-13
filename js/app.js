@@ -77,6 +77,16 @@ function hasSoloGameStarted(){
   return state.players.some(player => player.history?.length);
 }
 
+function getSoloRanking(){
+  return [...state.players].sort((a, b)=>{
+    const scoreDiff = (b.score || 0) - (a.score || 0);
+    if(scoreDiff) return scoreDiff;
+    const activeDiff = Number(b.active) - Number(a.active);
+    if(activeDiff) return activeDiff;
+    return String(a.name || "").localeCompare(String(b.name || ""), "fi");
+  });
+}
+
 const els = {
   playersGrid: document.getElementById("playersGrid"),
   emptyState: document.getElementById("emptyState"),
@@ -90,6 +100,7 @@ const els = {
   freeInput: document.getElementById("freeInput"),
   submitFree: document.getElementById("submitFree"),
   turnTitle: document.getElementById("turnTitle"),
+  matchSummary: document.getElementById("matchSummary"),
   winModal: document.getElementById("winModal"),
   winText: document.getElementById("winText"),
   winSame: document.getElementById("winSame"),
@@ -110,6 +121,7 @@ let lastFocusedBeforeMissModal = null;
 
 function render(){
   renderTurn();
+  renderMatchSummary();
   renderPlayers();
   renderControls();
   save();
@@ -118,6 +130,37 @@ function renderTurn(){
   if(state.ended){ els.turnTitle.textContent = "Peli päättynyt"; return; }
   const p = currentPlayer();
   els.turnTitle.textContent = p ? `Vuorossa: ${p.name}` : "Vuorossa: –";
+}
+function renderMatchSummary(){
+  if(!els.matchSummary) return;
+  if(!state.players.length){
+    els.matchSummary.innerHTML = `<div class="match-summary__empty muted">Pelitilanne näkyy tässä, kun pelaajat on lisätty.</div>`;
+    return;
+  }
+
+  const ranking = getSoloRanking();
+  const currentId = currentPlayer()?.id;
+  const leader = ranking[0];
+
+  els.matchSummary.innerHTML = `
+    <div class="match-summary__header">
+      <div class="match-summary__title">Pelitilanne</div>
+      <div class="match-summary__leader">Johdossa: <strong>${escapeHtml(leader?.name ?? "–")}</strong> (${leader?.score ?? 0})</div>
+    </div>
+    <ol class="match-summary__list">
+      ${ranking.map((player, index)=>`
+        <li class="match-summary__item ${player.id === currentId ? "is-current" : ""} ${!player.active ? "is-eliminated" : ""}">
+          <span class="match-summary__place">${index + 1}.</span>
+          <span class="match-summary__name">${escapeHtml(player.name)}</span>
+          <span class="match-summary__score">${player.score ?? 0}</span>
+          <span class="match-summary__badges">
+            ${player.id === currentId ? `<span class="match-summary__badge match-summary__badge--turn">Vuorossa</span>` : ""}
+            ${!player.active ? `<span class="match-summary__badge match-summary__badge--out">Tippunut</span>` : ""}
+          </span>
+        </li>
+      `).join("")}
+    </ol>
+  `;
 }
 function renderPlayers(){
   const grid = els.playersGrid; if(!grid) return;
