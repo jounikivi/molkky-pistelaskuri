@@ -180,12 +180,12 @@ function trenderTeams(){
     const playersHtml = (team.players ?? []).map(p=>{
       const ps = pstats(p);
       return `
-        <li class="${p.active ? "" : "muted"}" style="display:flex;align-items:center;justify-content:space-between;gap:.5rem">
-          <div style="display:flex;align-items:center;gap:.45rem;min-width:0">
-            <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHtml(p.name)}</span>
+        <li class="team-player-row ${p.active ? "" : "muted"}">
+          <div class="team-player-main">
+            <span class="team-player-name">${escapeHtml(p.name)}</span>
             <button class="btn small danger" data-remove-player data-team-id="${team.id}" data-player-id="${p.id}" title="Poista">🗑</button>
           </div>
-          <span class="chips" style="flex:0 0 auto">
+          <span class="chips team-player-stats">
             <span class="chip chip--score">🥇 ${sumScore(p.history)}</span>
             <span class="chip">${ps.throws}</span>
             <span class="chip chip--miss">${Math.round(ps.missPct)}%</span>
@@ -210,9 +210,9 @@ function trenderTeams(){
       <div class="card__body">
         <div class="card__score">Pisteet: ${team.score ?? 0}</div>
         ${(team.players?.length)
-          ? `<ul class="list thin" style="list-style:none;margin:.6rem 0 .5rem;padding:0;display:flex;flex-direction:column;gap:.35rem">${playersHtml}</ul>`
+          ? `<ul class="list thin team-player-list">${playersHtml}</ul>`
           : `<p class="muted" style="margin:.5rem 0">Ei pelaajia. Lisää pelaajia tiimiin.</p>`}
-        <div>
+        <div class="team-card__actions">
           <button class="btn small ok" data-add-player data-team-id="${team.id}" ${rosterLocked ? "disabled" : ""}>Lisää pelaaja</button>
         </div>
       </div>

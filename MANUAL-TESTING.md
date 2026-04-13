@@ -61,6 +61,11 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 
 - Tarkista, etta pitkat nimet eivat riko korttien layoutia yksilo- tai joukkuepelissa.
 - Tarkista, etta napit ovat kaytettavia myos kapealla leveydella eika heittopaneeli peita kriittista sisaltoa.
+- Tarkista puhelinleveydella, etta ylapalkin toiminnot pinoutuvat siististi omalle rivilleen eivatka valu ruudun ulos.
+- Tarkista puhelinleveydella, etta pisteensyoton kentta ja nappi pinoutuvat allekkain ja ovat kaytettavia myos ruutunayttonappaimiston ollessa auki.
+- Tarkista puhelinleveydella, etta alapalkin heittopainikkeet ovat helposti painettavia, mahtuvat ruudulle ilman vaakasuuntaista scrollausta ja etta sivun loppu sisalto nousee niiden ylapuolelle.
+- Tarkista joukkuepelissa puhelinleveydella, etta pelaajarivit, poistopainike ja tilastochipit pinoutuvat luettavasti eivatka leikkaannu.
+- Tarkista tablettileveydella, etta kortit asettuvat kahteen sarakkeeseen ilman ahtautta ja etta alapalkki pysyy kaytettavana pysty- ja vaakasuunnassa.
 - Testaa 3 huti -modaali kokonaan ilman hiirta. Odotus: fokus siirtyy modaalin sisaan, `Tab` ja `Shift+Tab` kiertavat vain modaalin painikkeissa, `Escape` sulkee tilanteen tiputusvalinnalla ja fokus palautuu aiemmin aktiiviseen elementtiin.
 - Tarkista, etta uudelleenlataus palauttaa keskeneraisen pelin oikeaan tilaan seka yksilo- etta joukkuepelissa.
 
