@@ -143,6 +143,40 @@ test("applyTeamThrowToTeam updates team score and player history", () => {
   assert.equal(result.playerIndex, 0);
 });
 
+test("applyTeamThrowToTeam keeps player active on continue decision after third miss", () => {
+  const team = {
+    id: "t1",
+    name: "Tiimi",
+    score: 10,
+    active: true,
+    nextPlayerIdx: 0,
+    players: [
+      { id: "p1", name: "A", score: 0, misses: 2, active: true, history: [] }
+    ]
+  };
+
+  const result = applyTeamThrowToTeam(team, "p1", 0, "continue");
+  assert.equal(result.team.players[0].active, true);
+  assert.equal(result.team.players[0].misses, 0);
+  assert.equal(result.team.players[0].history[0].missDecision, "continue");
+});
+
+test("applyTeamThrowToTeam eliminates player on third miss when chosen", () => {
+  const team = {
+    id: "t1",
+    name: "Tiimi",
+    score: 10,
+    active: true,
+    nextPlayerIdx: 0,
+    players: [
+      { id: "p1", name: "A", score: 0, misses: 2, active: true, history: [] }
+    ]
+  };
+
+  const result = applyTeamThrowToTeam(team, "p1", 0, "eliminate");
+  assert.equal(result.team.players[0].active, false);
+});
+
 test("getNextSoloTurnIndex skips eliminated players", () => {
   const players = [
     { id: "a", active: true },
