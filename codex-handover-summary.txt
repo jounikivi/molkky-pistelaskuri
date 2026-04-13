@@ -1,0 +1,129 @@
+Projektin tavoite
+
+Tavoitteena on tehdä selainpohjaisesta Molkky-pistelaskurista vakaampi, ammattimaisempi ja helpommin yllapidettava ilman etta nykyinen kayttoliittyma tai toimiva pelikaytos rikkoutuu. Sovellus tukee seka yksilo- etta joukkuepelia.
+
+Mita on jo tehty
+
+Nykyista aktiivista toteutusta on korjattu ja rakennetta siivottu merkittavasti.
+
+Tehdyt toiminnalliset korjaukset:
+- undo korjattu niin, etta se kayttaa oikeasti viimeisinta heittoa seka yksilo- etta joukkuepelissa
+- joukkuepelin vuorotus korjattu tiimikohtaiseksi
+- joukkuepelin pisteiden uudelleenlaskenta korjattu aikajarjestyksen perusteella
+- uuden pelin aloitus sulkee voittomodaalin oikein
+- nimien sanitointi ja duplikaattiesto lisatty aktiiviseen kayttoon
+- 3 hudin saanto muutettu:
+  - pelaajaa ei tiputeta automaattisesti
+  - kolmannen perakkaisen hudin kohdalla kysytaan jatkaako pelaaja vai tiputetaanko
+  - tama paatos tallennetaan historiaan (missDecision), jotta undo ja uudelleenlataus toimivat oikein
+- selain-confirm korvattu omalla modaalilla
+- modaalille lisatty saavutettavuus ja nappaimistotuki:
+  - fokus siirtyy modaalin sisaan
+  - Tab pysyy modaalissa
+  - Escape toimii
+  - fokus palautuu takaisin sulkemisen jalkeen
+
+Tehdyt rakenteelliset parannukset:
+- yhteiset apurit erotettu tiedostoon js/shared.js
+- historiasta laskettava tilalogiikka erotettu tiedostoon js/state-utils.js
+- yhteinen saantologiikka otettu aktiiviseen kayttoon tiedostosta js/rules.js
+- heiton tilavaikutukset erotettu puhtaiksi funktioiksi
+- vuoronvaihto ja pelin paattymisen paatokset siirretty puhtaaseen tilakerrokseen
+- kayttamattomat vanhat tiedostot poistettu:
+  - js/gameState.js
+  - js/teamState.js
+  - js/nav.js
+
+Testit:
+- lisatty kevyt Node-pohjainen testipohja
+- npm test toimii
+- kaikki testit menevat lapi
+- testejä on lisatty rules, shared ja state-utils -logiikalle
+- README on paivitetty vastaamaan nykyista rakennetta
+
+Tarkeat tiedostot
+
+Kayttoliittyma:
+- index.html
+- game.html
+- team-game.html
+- style.css
+
+Aktiivinen UI-logiikka:
+- js/app.js
+- js/team-app.js
+
+Yhteinen logiikka:
+- js/rules.js
+- js/shared.js
+- js/state-utils.js
+
+Testit:
+- package.json
+- tests/rules.test.js
+- tests/shared.test.js
+- tests/state-utils.test.js
+
+Dokumentaatio:
+- README.md
+
+Sovitut ratkaisut
+
+- UI pidetaan mahdollisimman ennallaan, rakennetta parannetaan sisaltapain
+- logiikka erotetaan vaiheittain pois UI-tiedostoista
+- rules.js on yhteinen saantomoottori
+- shared.js sisaltaa yleiset apufunktiot
+- state-utils.js sisaltaa puhtaat tilafunktiot
+- app.js ja team-app.js saavat olla mahdollisimman paljon UI-kerrosta
+- 3 hudin kohdalla kayttaja tekee paatoksen:
+  - continue
+  - eliminate
+- paatos tallennetaan historiaan missDecision-kenttana
+- omia moduleita ja logiikkaa testataan kevyella Node-testipohjalla ilman ulkoisia testikirjastoja
+
+Keskeneraiset asiat
+
+Teknisesti kriittinen perusrakenne on jo paljon parempi, mutta viimeistelya on viela mahdollista tehda.
+
+Mahdollisesti keskeneräista tai seuraavia parannuksia:
+- selainpohjainen manuaalinen testikierros tarkeimmille poluille
+- mahdollinen lisasaavutettavuus modaalille ja muille UI-osille
+- mahdollinen inline-tyylien vahentaminen team-app.js:n rakentamassa HTML:ssa
+- mahdollinen lisarefaktorointi, jossa app.js ja team-app.js ohenevat viela lisaa
+- mahdollinen commitointi tai julkaisuvalmistelu
+- mahdollinen viela laajempi testaus tilakayttaytymiselle ja UI-rajapinnoille
+
+Mita seuraavaksi tehdään
+
+Suositeltu seuraava tyjjarjestys:
+1. Tee selaimessa manuaalinen tarkistuskierros:
+   - yksilopeli
+   - joukkuepeli
+   - undo
+   - 3 huti -> jatka
+   - 3 huti -> tiputa
+   - yli 50 -> 25
+   - voittotilanne
+   - uusi peli
+2. Siivoa tarvittaessa UI-koodia edelleen:
+   - etenkin team-app.js:n rakennettu HTML ja inline-tyylit
+3. Harkitse pienta lisatestisettia UI-tasolle tai ainakin rajapintatason tilatesteja
+4. Jos kaikki nayttaa hyvalta, tee commit tai valmistelu julkaisuun
+
+Mita ei saa rikkoa
+
+Naita ei saa rikkoa seuraavissa muutoksissa:
+- nykyinen UI-virta seka yksilo- etta joukkuepelissa
+- undo pitaa aina palauttaa viimeisin oikea heitto
+- joukkuepelin vuorotus ei saa palata vanhaan rikkinäiseen malliin
+- pisteiden laskenta pitaa sailya oikein aikajarjestyksen mukaan
+- yli 50 -> 25 pitaa toimia edelleen oikein
+- 3 huti ei saa enaa tiputtaa automaattisesti
+- 3 huti -paatos pitaa tallentua historiaan
+- modaalin nappaimistotuki ja fokusohjaus eivat saa rikkoutua
+- npm test pitaa pysya vihreana
+- app.js ja team-app.js eivat saa alkaa taas kerata takaisin samaa duplikaattilogiikkaa, joka on jo siirretty shared.js- ja state-utils.js-tiedostoihin
+
+Lyhyt tilannekuva uudelle Codex-keskustelulle
+
+Projekti on nyt siistitty selvästi alkuperaista parempaan kuntoon. Ydinsaannot, tilamuutokset, vuorot ja pelin paattely on pitkälti siirretty testattavaan logiikkakerrokseen. Kayttamaton vanha koodi on poistettu. Testit toimivat npm test -komennolla ja README on paivitetty. Seuraava työ on enemman viimeistelya ja varmennusta kuin iso pelastusoperaatio.

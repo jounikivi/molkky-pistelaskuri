@@ -1,0 +1,343 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R 5 0 R 7 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 4 0 R >>
+endobj
+4 0 obj
+<< /Length 2392 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 800 Td
+(Projektin tavoite) Tj
+T*
+() Tj
+T*
+(Tavoitteena on tehdä selainpohjaisesta Molkky-pistelaskurista vakaampi, ammattimaisempi ja) Tj
+T*
+(helpommin yllapidettava ilman etta nykyinen kayttoliittyma tai toimiva pelikaytos rikkoutuu.) Tj
+T*
+(Sovellus tukee seka yksilo- etta joukkuepelia.) Tj
+T*
+() Tj
+T*
+(Mita on jo tehty) Tj
+T*
+() Tj
+T*
+(Nykyista aktiivista toteutusta on korjattu ja rakennetta siivottu merkittavasti.) Tj
+T*
+() Tj
+T*
+(Tehdyt toiminnalliset korjaukset:) Tj
+T*
+(- undo korjattu niin, etta se kayttaa oikeasti viimeisinta heittoa seka yksilo- etta) Tj
+T*
+(joukkuepelissa) Tj
+T*
+(- joukkuepelin vuorotus korjattu tiimikohtaiseksi) Tj
+T*
+(- joukkuepelin pisteiden uudelleenlaskenta korjattu aikajarjestyksen perusteella) Tj
+T*
+(- uuden pelin aloitus sulkee voittomodaalin oikein) Tj
+T*
+(- nimien sanitointi ja duplikaattiesto lisatty aktiiviseen kayttoon) Tj
+T*
+(- 3 hudin saanto muutettu:) Tj
+T*
+(- pelaajaa ei tiputeta automaattisesti) Tj
+T*
+(- kolmannen perakkaisen hudin kohdalla kysytaan jatkaako pelaaja vai tiputetaanko) Tj
+T*
+(- tama paatos tallennetaan historiaan \(missDecision\), jotta undo ja uudelleenlataus toimivat) Tj
+T*
+(oikein) Tj
+T*
+(- selain-confirm korvattu omalla modaalilla) Tj
+T*
+(- modaalille lisatty saavutettavuus ja nappaimistotuki:) Tj
+T*
+(- fokus siirtyy modaalin sisaan) Tj
+T*
+(- Tab pysyy modaalissa) Tj
+T*
+(- Escape toimii) Tj
+T*
+(- fokus palautuu takaisin sulkemisen jalkeen) Tj
+T*
+() Tj
+T*
+(Tehdyt rakenteelliset parannukset:) Tj
+T*
+(- yhteiset apurit erotettu tiedostoon js/shared.js) Tj
+T*
+(- historiasta laskettava tilalogiikka erotettu tiedostoon js/state-utils.js) Tj
+T*
+(- yhteinen saantologiikka otettu aktiiviseen kayttoon tiedostosta js/rules.js) Tj
+T*
+(- heiton tilavaikutukset erotettu puhtaiksi funktioiksi) Tj
+T*
+(- vuoronvaihto ja pelin paattymisen paatokset siirretty puhtaaseen tilakerrokseen) Tj
+T*
+(- kayttamattomat vanhat tiedostot poistettu:) Tj
+T*
+(- js/gameState.js) Tj
+T*
+(- js/teamState.js) Tj
+T*
+(- js/nav.js) Tj
+T*
+() Tj
+T*
+(Testit:) Tj
+T*
+(- lisatty kevyt Node-pohjainen testipohja) Tj
+T*
+(- npm test toimii) Tj
+T*
+(- kaikki testit menevat lapi) Tj
+T*
+(- testejä on lisatty rules, shared ja state-utils -logiikalle) Tj
+T*
+(- README on paivitetty vastaamaan nykyista rakennetta) Tj
+T*
+() Tj
+T*
+(Tarkeat tiedostot) Tj
+T*
+() Tj
+T*
+(Kayttoliittyma:) Tj
+T*
+(- index.html) Tj
+T*
+(- game.html) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 6 0 R >>
+endobj
+6 0 obj
+<< /Length 1947 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 800 Td
+(- team-game.html) Tj
+T*
+(- style.css) Tj
+T*
+() Tj
+T*
+(Aktiivinen UI-logiikka:) Tj
+T*
+(- js/app.js) Tj
+T*
+(- js/team-app.js) Tj
+T*
+() Tj
+T*
+(Yhteinen logiikka:) Tj
+T*
+(- js/rules.js) Tj
+T*
+(- js/shared.js) Tj
+T*
+(- js/state-utils.js) Tj
+T*
+() Tj
+T*
+(Testit:) Tj
+T*
+(- package.json) Tj
+T*
+(- tests/rules.test.js) Tj
+T*
+(- tests/shared.test.js) Tj
+T*
+(- tests/state-utils.test.js) Tj
+T*
+() Tj
+T*
+(Dokumentaatio:) Tj
+T*
+(- README.md) Tj
+T*
+() Tj
+T*
+(Sovitut ratkaisut) Tj
+T*
+() Tj
+T*
+(- UI pidetaan mahdollisimman ennallaan, rakennetta parannetaan sisaltapain) Tj
+T*
+(- logiikka erotetaan vaiheittain pois UI-tiedostoista) Tj
+T*
+(- rules.js on yhteinen saantomoottori) Tj
+T*
+(- shared.js sisaltaa yleiset apufunktiot) Tj
+T*
+(- state-utils.js sisaltaa puhtaat tilafunktiot) Tj
+T*
+(- app.js ja team-app.js saavat olla mahdollisimman paljon UI-kerrosta) Tj
+T*
+(- 3 hudin kohdalla kayttaja tekee paatoksen:) Tj
+T*
+(- continue) Tj
+T*
+(- eliminate) Tj
+T*
+(- paatos tallennetaan historiaan missDecision-kenttana) Tj
+T*
+(- omia moduleita ja logiikkaa testataan kevyella Node-testipohjalla ilman ulkoisia) Tj
+T*
+(testikirjastoja) Tj
+T*
+() Tj
+T*
+(Keskeneraiset asiat) Tj
+T*
+() Tj
+T*
+(Teknisesti kriittinen perusrakenne on jo paljon parempi, mutta viimeistelya on viela) Tj
+T*
+(mahdollista tehda.) Tj
+T*
+() Tj
+T*
+(Mahdollisesti keskeneräista tai seuraavia parannuksia:) Tj
+T*
+(- selainpohjainen manuaalinen testikierros tarkeimmille poluille) Tj
+T*
+(- mahdollinen lisasaavutettavuus modaalille ja muille UI-osille) Tj
+T*
+(- mahdollinen inline-tyylien vahentaminen team-app.js:n rakentamassa HTML:ssa) Tj
+T*
+(- mahdollinen lisarefaktorointi, jossa app.js ja team-app.js ohenevat viela lisaa) Tj
+T*
+(- mahdollinen commitointi tai julkaisuvalmistelu) Tj
+T*
+(- mahdollinen viela laajempi testaus tilakayttaytymiselle ja UI-rajapinnoille) Tj
+T*
+() Tj
+T*
+(Mita seuraavaksi tehdään) Tj
+T*
+() Tj
+T*
+(Suositeltu seuraava tyjjarjestys:) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 9 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 1816 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+50 800 Td
+(1. Tee selaimessa manuaalinen tarkistuskierros:) Tj
+T*
+(- yksilopeli) Tj
+T*
+(- joukkuepeli) Tj
+T*
+(- undo) Tj
+T*
+(- 3 huti -> jatka) Tj
+T*
+(- 3 huti -> tiputa) Tj
+T*
+(- yli 50 -> 25) Tj
+T*
+(- voittotilanne) Tj
+T*
+(- uusi peli) Tj
+T*
+(2. Siivoa tarvittaessa UI-koodia edelleen:) Tj
+T*
+(- etenkin team-app.js:n rakennettu HTML ja inline-tyylit) Tj
+T*
+(3. Harkitse pienta lisatestisettia UI-tasolle tai ainakin rajapintatason tilatesteja) Tj
+T*
+(4. Jos kaikki nayttaa hyvalta, tee commit tai valmistelu julkaisuun) Tj
+T*
+() Tj
+T*
+(Mita ei saa rikkoa) Tj
+T*
+() Tj
+T*
+(Naita ei saa rikkoa seuraavissa muutoksissa:) Tj
+T*
+(- nykyinen UI-virta seka yksilo- etta joukkuepelissa) Tj
+T*
+(- undo pitaa aina palauttaa viimeisin oikea heitto) Tj
+T*
+(- joukkuepelin vuorotus ei saa palata vanhaan rikkinäiseen malliin) Tj
+T*
+(- pisteiden laskenta pitaa sailya oikein aikajarjestyksen mukaan) Tj
+T*
+(- yli 50 -> 25 pitaa toimia edelleen oikein) Tj
+T*
+(- 3 huti ei saa enaa tiputtaa automaattisesti) Tj
+T*
+(- 3 huti -paatos pitaa tallentua historiaan) Tj
+T*
+(- modaalin nappaimistotuki ja fokusohjaus eivat saa rikkoutua) Tj
+T*
+(- npm test pitaa pysya vihreana) Tj
+T*
+(- app.js ja team-app.js eivat saa alkaa taas kerata takaisin samaa duplikaattilogiikkaa,) Tj
+T*
+(joka on jo siirretty shared.js- ja state-utils.js-tiedostoihin) Tj
+T*
+() Tj
+T*
+(Lyhyt tilannekuva uudelle Codex-keskustelulle) Tj
+T*
+() Tj
+T*
+(Projekti on nyt siistitty selvästi alkuperaista parempaan kuntoon. Ydinsaannot,) Tj
+T*
+(tilamuutokset, vuorot ja pelin paattely on pitkälti siirretty testattavaan) Tj
+T*
+(logiikkakerrokseen. Kayttamaton vanha koodi on poistettu. Testit toimivat npm test) Tj
+T*
+(-komennolla ja README on paivitetty. Seuraava työ on enemman viimeistelya ja varmennusta) Tj
+T*
+(kuin iso pelastusoperaatio.) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 10
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000127 00000 n 
+0000000253 00000 n 
+0000002697 00000 n 
+0000002823 00000 n 
+0000004822 00000 n 
+0000004948 00000 n 
+0000006816 00000 n 
+trailer
+<< /Size 10 /Root 1 0 R >>
+startxref
+6886
+%%EOF
