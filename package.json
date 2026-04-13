@@ -1,0 +1,8 @@
+{
+  "name": "molkky-pistelaskuri",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node tests/rules.test.js && node tests/shared.test.js"
+  }
+}
