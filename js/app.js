@@ -1,7 +1,8 @@
 /* app.js — Yksilöpeli (v2.1.1: Nollaa peli -napit) */
 
 import { createPlayerState, applyScoreRules } from "./rules.js";
-import { canonName, getLatestHistoryEntry, sanitizeName, sortByTimestamp } from "./shared.js";
+import { canonName, getLatestHistoryEntry, sanitizeName } from "./shared.js";
+import { recomputePlayerFromHistory } from "./state-utils.js";
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -64,33 +65,7 @@ function statsFromPlayer(p){
 }
 
 function recomputePlayerState(p){
-  let score = 0;
-  let misses = 0;
-  let active = true;
-
-  for(const h of sortByTimestamp(p.history)){
-    const val = Number(h.score) || 0;
-    if(val === 0){
-      misses += 1;
-      if(misses >= 3){
-        if(h.missDecision === "continue"){
-          misses = 0;
-          continue;
-        }
-        active = false;
-        misses = 3;
-        break;
-      }
-      continue;
-    }
-
-    misses = 0;
-    score = applyScoreRules(score, val).score;
-  }
-
-  p.score = score;
-  p.misses = active ? misses : 3;
-  p.active = active;
+  Object.assign(p, recomputePlayerFromHistory(p));
 }
 
 function getLatestThrow(){

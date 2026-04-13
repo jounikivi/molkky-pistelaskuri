@@ -1,7 +1,8 @@
 /* team-app.js — Joukkuepeli (v2.3.3: Nollaa peli -napit) */
 
 import { applyScoreRules, createPlayerState } from "./rules.js";
-import { canonName, getLatestHistoryEntry, sanitizeName, sortByTimestamp } from "./shared.js";
+import { canonName, getLatestHistoryEntry, sanitizeName } from "./shared.js";
+import { getNextActivePlayerIndex, recomputeTeamFromHistory } from "./state-utils.js";
 
 function escapeHtml(str){
   return String(str ?? "").replace(/[&<>"']/g, m => (
@@ -59,7 +60,7 @@ function currentTeam(){
 function currentPlayerTeamScoped(){
   const team = currentTeam(); if(!team) return { team:null, player:null };
   if(!team.players?.length) return { team, player:null };
-  const idx = getNextActivePlayerIndex(team, team.nextPlayerIdx ?? 0);
+  const idx = getNextActivePlayerIndex(team.players, team.nextPlayerIdx ?? 0);
   if(idx >= 0){
     team.nextPlayerIdx = idx;
     return { team, player:team.players[idx] };
@@ -70,7 +71,7 @@ function nextTurnTeam(){
   const team = currentTeam(); if(!team) return;
   if(team.players?.length){
     const currentIdx = team.players.findIndex(p=>p.id === currentPlayerTeamScoped().player?.id);
-    const nextIdx = getNextActivePlayerIndex(team, currentIdx + 1);
+    const nextIdx = getNextActivePlayerIndex(team.players, currentIdx + 1);
     team.nextPlayerIdx = nextIdx >= 0 ? nextIdx : 0;
   }
   let stepsT=0;
@@ -97,58 +98,8 @@ function pstats(p){
 }
 function sumScore(history){ return (history ?? []).reduce((a,h)=>a+(Number(h.score)||0),0); }
 
-function getNextActivePlayerIndex(team, startIdx = 0){
-  if(!team?.players?.length) return -1;
-  const len = team.players.length;
-  const idx = ((startIdx % len) + len) % len;
-  for(let i=0;i<len;i++){
-    const candidate = (idx + i) % len;
-    if(team.players[candidate]?.active) return candidate;
-  }
-  return -1;
-}
-
-function recomputePlayerState(player){
-  let misses = 0;
-  let active = true;
-
-  for(const h of sortByTimestamp(player.history)){
-    const val = Number(h.score) || 0;
-    if(val === 0){
-      misses += 1;
-      if(misses >= 3){
-        if(h.missDecision === "continue"){
-          misses = 0;
-          continue;
-        }
-        active = false;
-        misses = 3;
-        break;
-      }
-      continue;
-    }
-    misses = 0;
-  }
-
-  player.misses = active ? misses : 3;
-  player.active = active;
-}
-
 function recomputeTeamState(team){
-  (team.players ?? []).forEach(recomputePlayerState);
-
-  const allThrows = sortByTimestamp(
-    (team.players ?? []).flatMap(player => (player.history ?? []).map(rec => ({ ...rec })))
-  );
-
-  let score = 0;
-  allThrows.forEach(rec=>{
-    score = applyScoreRules(score, Number(rec.score) || 0).score;
-  });
-
-  team.score = score;
-  team.active = !!team.players?.some(player => player.active);
-  team.nextPlayerIdx = team.active ? Math.max(0, getNextActivePlayerIndex(team, team.nextPlayerIdx ?? 0)) : 0;
+  Object.assign(team, recomputeTeamFromHistory(team));
 }
 
 function getLatestTeamThrow(){

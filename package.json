@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node tests/rules.test.js && node tests/shared.test.js"
+    "test": "node tests/rules.test.js && node tests/shared.test.js && node tests/state-utils.test.js"
   }
 }
