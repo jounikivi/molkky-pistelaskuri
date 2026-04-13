@@ -178,10 +178,13 @@ a:hover{text-decoration:underline}
     grid-row:2;
     width:100%;
     display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
   .game-page .site-header > .nav .btn{
     width:100%;
+  }
+  .game-page #undo{
+    display:none;
   }
   .home-page .site-header{
     align-items:flex-start;
@@ -238,7 +241,11 @@ a:hover{text-decoration:underline}
   }
   .throwbar > .side{
     grid-area:side;
-    grid-template-columns:repeat(3,minmax(0,1fr));
+    grid-template-columns:1fr;
+  }
+  .game-page #shuffleAlt,
+  .game-page #resetAlt{
+    display:none;
   }
   .key{
     height:48px;
