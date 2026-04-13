@@ -114,6 +114,121 @@ a:hover{text-decoration:underline}
 .modal p{margin:.5rem 0 0;color:var(--muted)}
 .modal-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
 
+/* Home */
+.home-kicker{
+  color:var(--muted);
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  margin-bottom:.2rem;
+}
+.home-main{
+  display:grid;
+  gap:.9rem;
+}
+.home-hero{
+  background:
+    radial-gradient(900px 420px at 100% 0%, rgba(47,122,248,.20) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(24,32,48,.96), rgba(17,24,38,.98));
+}
+.home-hero__title{
+  margin:.1rem 0 .45rem;
+  font-size:clamp(1.45rem, 2.8vw, 2.25rem);
+  line-height:1.1;
+}
+.home-hero__text{
+  margin:0;
+  color:var(--muted);
+  max-width:62ch;
+}
+.home-badges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  margin-top:.85rem;
+}
+.home-mode-grid{
+  display:grid;
+  gap:.85rem;
+  grid-template-columns:1fr;
+}
+.home-mode-card{
+  display:block;
+  color:var(--text);
+  text-decoration:none;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:1rem 1.05rem;
+  box-shadow:var(--shadow);
+  min-height:220px;
+  transition:transform .14s ease, border-color .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.home-mode-card:hover{
+  text-decoration:none;
+  transform:translateY(-2px);
+  filter:brightness(1.03);
+}
+.home-mode-card--solo{
+  background:
+    radial-gradient(600px 260px at 100% 0%, rgba(47,122,248,.20) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(20,35,58,.96), rgba(17,24,38,.98));
+  border-color:#2b4d7c;
+}
+.home-mode-card--team{
+  background:
+    radial-gradient(600px 260px at 100% 0%, rgba(22,163,74,.18) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(18,38,42,.96), rgba(17,24,38,.98));
+  border-color:#29525a;
+}
+.home-mode-card__eyebrow{
+  color:var(--muted);
+  font-size:.82rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.home-mode-card__title{
+  margin:.5rem 0 .35rem;
+  font-size:1.55rem;
+}
+.home-mode-card__text{
+  margin:0;
+  color:var(--muted);
+  max-width:34ch;
+}
+.home-mode-card__cta{
+  display:inline-flex;
+  align-items:center;
+  margin-top:1rem;
+  font-weight:800;
+  color:#fff;
+}
+.home-info-grid{
+  display:grid;
+  gap:.85rem;
+  grid-template-columns:1fr;
+}
+.home-info-card h3{
+  margin-top:0;
+  margin-bottom:.65rem;
+}
+.home-steps,
+.home-rules{
+  margin:.2rem 0 0;
+  padding-left:1.2rem;
+  color:var(--muted);
+}
+.home-steps li,
+.home-rules li{
+  margin:.38rem 0;
+}
+.home-footer{
+  text-align:center;
+  margin:1.2rem 0;
+  padding:0 .95rem;
+}
+
 /* Team rows */
 .team-player-list{
   list-style:none;
@@ -197,6 +312,9 @@ a:hover{text-decoration:underline}
   }
   .home-page .site-header .nav .btn{
     width:100%;
+  }
+  .home-mode-card{
+    min-height:0;
   }
   .game-page .app-card{
     margin:.75rem auto 0;
@@ -284,5 +402,12 @@ a:hover{text-decoration:underline}
   }
   .card__score{
     font-size:1.15rem;
+  }
+}
+
+@media(min-width:760px){
+  .home-mode-grid,
+  .home-info-grid{
+    grid-template-columns:1fr 1fr;
   }
 }

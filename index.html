@@ -8,20 +8,67 @@
 </head>
 <body class="home-page">
 <header class="site-header">
-  <h1 class="brand">Mölkky</h1>
+  <div>
+    <div class="home-kicker">Mölkky pistelaskuri</div>
+    <h1 class="brand">Valitse pelimuoto</h1>
+  </div>
   <nav class="nav">
     <a class="btn blue" href="game.html">Yksilöpeli</a>
     <a class="btn" href="team-game.html">Joukkuepeli</a>
   </nav>
 </header>
 
-<main class="app-card">
-  <section class="card">
-    <h2>Tervetuloa!</h2>
-    <p>Valitse pelimuoto ylhäältä. Tämä versio sisältää laajemman UI:n: animaatiot, chip-statistiikat, voittoruudun ja mobiili-optimoinnin.</p>
+<main class="app-card home-main">
+  <section class="card home-hero">
+    <div class="home-hero__content">
+      <h2 class="home-hero__title">Aloita peli nopeasti ilman ylimääräistä säätöä.</h2>
+      <p class="home-hero__text">Valitse yksilöpeli, kun pisteitä kirjataan pelaajille yksi kerrallaan. Valitse joukkuepeli, kun useampi pelaaja heittää saman tiimin pisteisiin.</p>
+    </div>
+    <div class="home-badges">
+      <span class="chip chip--score">Selainpohjainen</span>
+      <span class="chip chip--avg">Mobiiliystävällinen</span>
+      <span class="chip chip--miss">Nopea käyttö</span>
+    </div>
+  </section>
+
+  <section class="home-mode-grid" aria-label="Pelimuodot">
+    <a class="home-mode-card home-mode-card--solo" href="game.html">
+      <div class="home-mode-card__eyebrow">Yksin tai vuoropelaaminen</div>
+      <h2 class="home-mode-card__title">Yksilöpeli</h2>
+      <p class="home-mode-card__text">Lisää pelaajat, arvo aloitus ja kirjaa pisteet nopeasti yhdelle vuorossa olevalle pelaajalle.</p>
+      <span class="home-mode-card__cta">Avaa yksilöpeli →</span>
+    </a>
+
+    <a class="home-mode-card home-mode-card--team" href="team-game.html">
+      <div class="home-mode-card__eyebrow">Useampi pelaaja per tiimi</div>
+      <h2 class="home-mode-card__title">Joukkuepeli</h2>
+      <p class="home-mode-card__text">Luo tiimit, lisää pelaajat tiimeihin ja seuraa vuoroja sekä yhteispisteitä yhdestä näkymästä.</p>
+      <span class="home-mode-card__cta">Avaa joukkuepeli →</span>
+    </a>
+  </section>
+
+  <section class="home-info-grid" aria-label="Nopea aloitus">
+    <article class="card home-info-card">
+      <h3>Nopea aloitus</h3>
+      <ol class="home-steps">
+        <li>Valitse yksilö- tai joukkuepeli.</li>
+        <li>Lisää pelaajat tai tiimit ennen ensimmäistä heittoa.</li>
+        <li>Kirjaa pisteet alapalkin painikkeilla tai syöttökentästä.</li>
+      </ol>
+    </article>
+
+    <article class="card home-info-card">
+      <h3>Pelisäännöt sovelluksessa</h3>
+      <ul class="home-rules">
+        <li>0 = huti, 1–12 = pisteet.</li>
+        <li>Yli 50 pistettä palauttaa 25 pisteeseen.</li>
+        <li>Tasalle 50 päättää pelin voittoon.</li>
+        <li>Kolmannen hudin kohdalla päätetään jatkaako pelaaja vai tiputetaanko hänet.</li>
+      </ul>
+    </article>
   </section>
 </main>
 
-<footer class="site-footer muted" style="text-align:center;margin:1.2rem 0">Mölkky Pistelaskuri v2.1 (no-PWA)</footer>
+<footer class="site-footer muted home-footer">Selainpohjainen Mölkky-pistelaskuri yksilö- ja joukkuepeleihin.</footer>
 </body>
 </html>
