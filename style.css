@@ -63,6 +63,9 @@ a:hover{text-decoration:underline}
   border-radius:12px;padding:.6rem .7rem
 }
 .inline-input input::placeholder{color:var(--muted)}
+.inline-input input:disabled{
+  opacity:.65; cursor:not-allowed; background:#0a1220;
+}
 .btn{
   border:1px solid var(--border); background:#162338; color:var(--text);
   padding:.58rem .8rem; border-radius:12px; font-weight:700; cursor:pointer;
@@ -70,6 +73,10 @@ a:hover{text-decoration:underline}
 }
 .btn:hover{ filter:brightness(1.06) }
 .btn:active{ transform:translateY(1px) scale(.99) }
+.btn:disabled{
+  opacity:.58; cursor:not-allowed; filter:none; transform:none;
+}
+.btn:disabled:hover{ filter:none }
 .btn.blue{ background:linear-gradient(180deg,#2f7af8,#2969d8); border-color:#1e46a8; color:#fff }
 .btn.danger{ background:linear-gradient(180deg,#d04756,#b53a48); border-color:#7a1f29; color:#fff }
 .btn.ok{ background:linear-gradient(180deg,#1aa357,#148a48); border-color:#0f6b37; color:#fff }

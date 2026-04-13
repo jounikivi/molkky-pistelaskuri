@@ -119,12 +119,17 @@ function getLatestTeamThrow(){
   return getLatestHistoryEntry(candidates);
 }
 
+function hasTeamGameStarted(){
+  return T.teams.some(team => team.players?.some(player => player.history?.length));
+}
+
 /* --------------------- DOM --------------------- */
 const el = {
   grid: document.getElementById("teamsGrid"),
   empty: document.getElementById("emptyState"),
   teamName: document.getElementById("teamName"),
   addTeam: document.getElementById("addTeam"),
+  teamLockNotice: document.getElementById("teamLockNotice"),
   shuffle: document.getElementById("shuffle"),
   shuffleAlt: document.getElementById("shuffleAlt"),
   undo: document.getElementById("undo"),
@@ -164,6 +169,7 @@ function trenderTurn(){
 }
 function trenderTeams(){
   const grid = el.grid; if(!grid) return;
+  const rosterLocked = hasTeamGameStarted();
   grid.innerHTML="";
   if(!T.teams.length){ el.empty?.classList.remove("hidden"); return; }
   el.empty?.classList.add("hidden");
@@ -207,7 +213,7 @@ function trenderTeams(){
           ? `<ul class="list thin" style="list-style:none;margin:.6rem 0 .5rem;padding:0;display:flex;flex-direction:column;gap:.35rem">${playersHtml}</ul>`
           : `<p class="muted" style="margin:.5rem 0">Ei pelaajia. Lisää pelaajia tiimiin.</p>`}
         <div>
-          <button class="btn small ok" data-add-player data-team-id="${team.id}">Lisää pelaaja</button>
+          <button class="btn small ok" data-add-player data-team-id="${team.id}" ${rosterLocked ? "disabled" : ""}>Lisää pelaaja</button>
         </div>
       </div>
     `;
@@ -217,12 +223,17 @@ function trenderTeams(){
 function trenderControls(){
   const canShuffle = teamsReadyCount() >= 2 && !T.ended;
   const canUndo = T.teams.some(t=>t.players?.some(p=>p.history?.length)) && !T.ended;
+  const rosterLocked = hasTeamGameStarted();
   [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuffle));
   [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
+  if(el.addTeam) el.addTeam.disabled = rosterLocked;
+  if(el.teamName) el.teamName.disabled = rosterLocked;
+  el.teamLockNotice?.classList.toggle("hidden", !rosterLocked);
 }
 
 /* --------------------- ACTIONS --------------------- */
 function addTeam(){
+  if(hasTeamGameStarted()) return ttoast("Tiimejä ei voi lisätä kesken pelin");
   const name = sanitizeName(el.teamName?.value);
   if(!name) return ttoast("Anna tiimin nimi");
   if(T.teams.some(team => canonName(team.name) === canonName(name))){
@@ -236,6 +247,10 @@ function addTeam(){
 }
 
 function addPlayerToTeam(teamId, name){
+  if(hasTeamGameStarted()){
+    ttoast("Pelaajia ei voi lisätä kesken pelin");
+    return;
+  }
   const team = getTeam(teamId); if(!team) return;
   const nextNum = (team.players?.length ?? 0) + 1;
   const cleanName = sanitizeName(name || `Pelaaja ${nextNum}`) || `Pelaaja ${nextNum}`;

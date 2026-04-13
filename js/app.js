@@ -73,11 +73,16 @@ function getLatestThrow(){
   return getLatestHistoryEntry(state.players.map((player, index)=>({ player, index, history: player.history })));
 }
 
+function hasSoloGameStarted(){
+  return state.players.some(player => player.history?.length);
+}
+
 const els = {
   playersGrid: document.getElementById("playersGrid"),
   emptyState: document.getElementById("emptyState"),
   playerName: document.getElementById("playerName"),
   addPlayer: document.getElementById("addPlayer"),
+  playerLockNotice: document.getElementById("playerLockNotice"),
   shuffle: document.getElementById("shuffle"),
   shuffleAlt: document.getElementById("shuffleAlt"),
   undo: document.getElementById("undo"),
@@ -145,11 +150,16 @@ function renderPlayers(){
 function renderControls(){
   const canShuf = state.players.length>=2 && !state.ended;
   const canUndo = state.players.some(p=>p.history?.length) && !state.ended;
+  const rosterLocked = hasSoloGameStarted();
   [els.shuffle,els.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuf));
   [els.undo,els.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
+  if(els.addPlayer) els.addPlayer.disabled = rosterLocked;
+  if(els.playerName) els.playerName.disabled = rosterLocked;
+  els.playerLockNotice?.classList.toggle("hidden", !rosterLocked);
 }
 
 function addPlayer(){
+  if(hasSoloGameStarted()) return toast("Pelaajia ei voi lisätä kesken pelin");
   const name = sanitizeName(els.playerName?.value);
   if(!name) return toast("Anna nimi");
   if(state.players.some(player => canonName(player.name) === canonName(name))){
