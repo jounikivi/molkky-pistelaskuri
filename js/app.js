@@ -98,8 +98,6 @@ const els = {
   shuffleAlt: document.getElementById("shuffleAlt"),
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
-  freeInput: document.getElementById("freeInput"),
-  submitFree: document.getElementById("submitFree"),
   turnTitle: document.getElementById("turnTitle"),
   matchSummary: document.getElementById("matchSummary"),
   winModal: document.getElementById("winModal"),
@@ -418,13 +416,6 @@ function toast(msg){ if(!els.toast) return; els.toast.textContent=msg; els.toast
 els.addPlayer?.addEventListener("click", addPlayer);
 [els.shuffle, els.shuffleAlt].forEach(b=>b?.addEventListener("click", shuffleOrder));
 [els.undo, els.undoAlt].forEach(b=>b?.addEventListener("click", undo));
-els.submitFree?.addEventListener("click", ()=>{
-  const v = (els.freeInput?.value ?? "").trim();
-  if(v==="") return;
-  const n = Number(v);
-  if(Number.isNaN(n) || n<0 || n>12){ toast("Syötä 0–12"); return; }
-  applyThrow(n); els.freeInput.value="";
-});
 els.winSame?.addEventListener("click", newGameSame);
 els.winFresh?.addEventListener("click", newGameFresh);
 els.winClose?.addEventListener("click", closeWin);
@@ -433,15 +424,15 @@ els.winClose?.addEventListener("click", closeWin);
 [els.reset, els.resetAlt].forEach(b=>b?.addEventListener("click", askReset));
 
 /* Heittopaneeli delegoituna */
-const throwPad = document.getElementById("throwPad");
-if(throwPad && !throwPad.dataset.bound){
-  throwPad.addEventListener("click", (e)=>{
+const throwBar = document.querySelector(".throwbar");
+if(throwBar && !throwBar.dataset.bound){
+  throwBar.addEventListener("click", (e)=>{
     const btn = e.target.closest("[data-score]"); if(!btn) return;
     const n = Number(btn.dataset.score || 0);
     if(Number.isNaN(n)) return;
     applyThrow(n);
   });
-  throwPad.dataset.bound="1";
+  throwBar.dataset.bound="1";
 }
 
 render();

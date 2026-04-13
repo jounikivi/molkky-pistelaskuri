@@ -145,8 +145,6 @@ const el = {
   shuffleAlt: document.getElementById("shuffleAlt"),
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
-  free: document.getElementById("freeInput"),
-  go: document.getElementById("submitFree"),
   turnTitle: document.getElementById("turnTitle"),
   matchSummary: document.getElementById("matchSummary"),
   winModal: document.getElementById("winModal"),
@@ -632,11 +630,6 @@ el.addTeam?.addEventListener("click", addTeam);
   T.order = arr; T.teamTurnIdx=0; T.playerTurnIdx=0; trender();
 }));
 [el.undo, el.undoAlt].forEach(b=>b?.addEventListener("click", undoTeam));
-el.go?.addEventListener("click", ()=>{
-  const v = (el.free?.value ?? "").trim(); if(v==="") return;
-  const n = Number(v); if(Number.isNaN(n)||n<0||n>12){ ttoast("Syötä 0–12"); return; }
-  submitThrowTeam(n); el.free.value="";
-});
 el.winSame?.addEventListener("click", newTeamSame);
 el.winFresh?.addEventListener("click", newTeamFresh);
 el.winClose?.addEventListener("click", closeWin);
@@ -645,14 +638,14 @@ el.winClose?.addEventListener("click", closeWin);
 [el.reset, el.resetAlt].forEach(b=>b?.addEventListener("click", askReset));
 
 /* Heittopaneeli delegoituna */
-const tPad = document.getElementById("throwPad");
-if(tPad && !tPad.dataset.bound){
-  tPad.addEventListener("click",(e)=>{
+const tThrowBar = document.querySelector(".throwbar");
+if(tThrowBar && !tThrowBar.dataset.bound){
+  tThrowBar.addEventListener("click",(e)=>{
     const btn = e.target.closest("[data-score]"); if(!btn) return;
     const n = Number(btn.dataset.score || 0); if(Number.isNaN(n)) return;
     submitThrowTeam(n);
   });
-  tPad.dataset.bound="1";
+  tThrowBar.dataset.bound="1";
 }
 
 /* Kortin sisäiset napit: lisää/poista pelaaja */

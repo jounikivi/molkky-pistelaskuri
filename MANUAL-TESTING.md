@@ -22,7 +22,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Yrita lisata duplikaatti, esimerkiksi `matti`. Odotus: duplikaattia ei lisata.
 - Yrita lisata nimi, jossa on turhia valeja tai kulmasulkeita, esimerkiksi `  <Teemu>  `. Odotus: nimi siistiytyy turvalliseen muotoon eika riko layoutia.
 - Paina `Arvo aloitus`. Odotus: vuorojarjestys voi vaihtua, mutta vuorossa on edelleen vain yksi aktiivinen pelaaja kerrallaan.
-- Syota yksi heitto numeronapeilla ja toinen tekstikentasta. Odotus: pisteet paivittyvat oikein, `Peru` aktivoituu ja vuoro siirtyy seuraavalle aktiiviselle pelaajalle.
+- Syota kaksi heittoa alapalkin pistepainikkeilla, mukaan lukien `Huti (0)`. Odotus: pisteet tai huti paivittyvat oikein, `Peru` aktivoituu ja vuoro siirtyy seuraavalle aktiiviselle pelaajalle.
 - Ensimmainen heitto lukitsee kokoonpanon. Odotus: `Lisaa pelaaja` -kortti poistuu nakyvista ja sen tilalla naytetaan pieni viesti siita, etta kokoonpano on lukittu pelin ajaksi.
 - Tee heitto `0`. Odotus: kyseiselle pelaajalle kirjautuu huti, mutta pelaaja ei tipu viela ennen kolmatta perakkaista hutia.
 - Rakenna tilanne, jossa sama pelaaja heittaa kolme hutia perakkain, ja valitse modaalista `Jatkaa pelia`. Odotus: pelaaja pysyy aktiivisena, hutilaskuri nollautuu ja peli jatkuu normaalisti.
@@ -43,7 +43,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Lisaa kumpaankin tiimiin vahintaan kaksi pelaajaa `Lisaa pelaaja` -napilla. Odotus: pelaajat ilmestyvat oikean tiimin alle, eivatka duplikaatit mene saman tiimin sisalla lapi.
 - Paina `Arvo aloitus`. Odotus: vuorossa on yksi tiimi ja yksi kyseisen tiimin aktiivinen pelaaja.
 - Tee nelja heittoa niin, etta kumpikin tiimi ehtii vuoroon kahdesti. Odotus: vuorotus etenee tiimikohtaisesti, esimerkiksi `Punainen - pelaaja 1`, `Sininen - pelaaja 1`, `Punainen - pelaaja 2`, `Sininen - pelaaja 2`.
-- Syota heitto numeronapeista ja toinen tekstikentasta. Odotus: joukkueen pisteet paivittyvat oikein ja heitto kirjautuu oikealle pelaajalle oikeassa vuorossa.
+- Syota kaksi heittoa alapalkin pistepainikkeilla, mukaan lukien `Huti (0)`. Odotus: joukkueen pisteet tai huti paivittyvat oikein ja heitto kirjautuu oikealle pelaajalle oikeassa vuorossa.
 - Ensimmainen heitto lukitsee kokoonpanon. Odotus: `Lisaa tiimi` -kortti poistuu nakyvista ja sen tilalla naytetaan pieni viesti siita, etta kokoonpano on lukittu pelin ajaksi. Joukkuekorttien `Lisaa pelaaja` -napit menevat samalla pois kaytosta.
 - Paina `Peru` useamman heiton jalkeen. Odotus: vain viimeisin oikea heitto peruuntuu, oikean pelaajan historia palautuu ja vuoro palaa oikealle joukkueelle ja pelaajalle.
 - Rakenna tilanne, jossa joukkue menee yli 50 pisteen. Odotus: joukkueen pisteet putoavat arvoon 25 ja peli jatkuu.
@@ -63,7 +63,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Tarkista, etta napit ovat kaytettavia myos kapealla leveydella eika heittopaneeli peita kriittista sisaltoa.
 - Tarkista puhelinleveydella, etta ylapalkin toiminnot pinoutuvat siististi omalle rivilleen eivatka valu ruudun ulos.
 - Tarkista puhelinleveydella, etta ylapalkissa naytetaan vain `Arvo aloitus` ja `Nollaa peli`, ja etta `Peru` naytetaan vain alapalkissa pistepainikkeiden yhteydessa.
-- Tarkista puhelinleveydella, etta pisteensyoton kentta ja nappi pinoutuvat allekkain ja ovat kaytettavia myos ruutunayttonappaimiston ollessa auki.
+- Tarkista puhelinleveydella, etta pisteita lisataan vain alapalkin heittopaneelista ja etta punainen `Huti (0)` toimii samalla tavalla kuin muutkin pistepainikkeet.
 - Tarkista puhelinleveydella, etta alapalkin heittopainikkeet ovat helposti painettavia, mahtuvat ruudulle ilman vaakasuuntaista scrollausta ja etta sivun loppu sisalto nousee niiden ylapuolelle.
 - Tarkista, etta `Pelitilanne`-osio paivittyy jokaisen heiton jalkeen oikein ja etta johtaja, sijoitukset ja vuorossa oleva pelaaja tai tiimi vastaavat todellista tilannetta.
 - Tarkista joukkuepelissa puhelinleveydella, etta pelaajarivit, poistopainike ja tilastochipit pinoutuvat luettavasti eivatka leikkaannu.
