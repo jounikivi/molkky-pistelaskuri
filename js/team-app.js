@@ -137,6 +137,7 @@ function getTeamRanking(){
 const el = {
   grid: document.getElementById("teamsGrid"),
   empty: document.getElementById("emptyState"),
+  teamSetupCard: document.getElementById("teamSetupCard"),
   teamName: document.getElementById("teamName"),
   addTeam: document.getElementById("addTeam"),
   teamLockNotice: document.getElementById("teamLockNotice"),
@@ -268,6 +269,7 @@ function trenderControls(){
   const rosterLocked = hasTeamGameStarted();
   [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuffle));
   [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
+  el.teamSetupCard?.classList.toggle("hidden", rosterLocked);
   if(el.addTeam) el.addTeam.disabled = rosterLocked;
   if(el.teamName) el.teamName.disabled = rosterLocked;
   el.teamLockNotice?.classList.toggle("hidden", !rosterLocked);

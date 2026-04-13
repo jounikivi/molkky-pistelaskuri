@@ -23,7 +23,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Yrita lisata nimi, jossa on turhia valeja tai kulmasulkeita, esimerkiksi `  <Teemu>  `. Odotus: nimi siistiytyy turvalliseen muotoon eika riko layoutia.
 - Paina `Arvo aloitus`. Odotus: vuorojarjestys voi vaihtua, mutta vuorossa on edelleen vain yksi aktiivinen pelaaja kerrallaan.
 - Syota yksi heitto numeronapeilla ja toinen tekstikentasta. Odotus: pisteet paivittyvat oikein, `Peru` aktivoituu ja vuoro siirtyy seuraavalle aktiiviselle pelaajalle.
-- Ensimmainen heitto lukitsee kokoonpanon. Odotus: pelaajan nimikentta ja `Lisaa`-nappi menevat pois kaytosta, ja ruudulla naytetaan viesti ettei pelaajia voi lisata kesken pelin.
+- Ensimmainen heitto lukitsee kokoonpanon. Odotus: `Lisaa pelaaja` -kortti poistuu nakyvista ja sen tilalla naytetaan pieni viesti siita, etta kokoonpano on lukittu pelin ajaksi.
 - Tee heitto `0`. Odotus: kyseiselle pelaajalle kirjautuu huti, mutta pelaaja ei tipu viela ennen kolmatta perakkaista hutia.
 - Rakenna tilanne, jossa sama pelaaja heittaa kolme hutia perakkain, ja valitse modaalista `Jatkaa pelia`. Odotus: pelaaja pysyy aktiivisena, hutilaskuri nollautuu ja peli jatkuu normaalisti.
 - Lataa sivu uudelleen heti `Jatkaa pelia` -valinnan jalkeen. Odotus: tila sailyy oikein uudelleenlatauksen yli.
@@ -44,7 +44,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Paina `Arvo aloitus`. Odotus: vuorossa on yksi tiimi ja yksi kyseisen tiimin aktiivinen pelaaja.
 - Tee nelja heittoa niin, etta kumpikin tiimi ehtii vuoroon kahdesti. Odotus: vuorotus etenee tiimikohtaisesti, esimerkiksi `Punainen - pelaaja 1`, `Sininen - pelaaja 1`, `Punainen - pelaaja 2`, `Sininen - pelaaja 2`.
 - Syota heitto numeronapeista ja toinen tekstikentasta. Odotus: joukkueen pisteet paivittyvat oikein ja heitto kirjautuu oikealle pelaajalle oikeassa vuorossa.
-- Ensimmainen heitto lukitsee kokoonpanon. Odotus: tiimin nimikentta, `Lisaa tiimi` ja joukkuekorttien `Lisaa pelaaja` -napit menevat pois kaytosta, ja ruudulla naytetaan viesti ettei kokoonpanoa voi muuttaa kesken pelin.
+- Ensimmainen heitto lukitsee kokoonpanon. Odotus: `Lisaa tiimi` -kortti poistuu nakyvista ja sen tilalla naytetaan pieni viesti siita, etta kokoonpano on lukittu pelin ajaksi. Joukkuekorttien `Lisaa pelaaja` -napit menevat samalla pois kaytosta.
 - Paina `Peru` useamman heiton jalkeen. Odotus: vain viimeisin oikea heitto peruuntuu, oikean pelaajan historia palautuu ja vuoro palaa oikealle joukkueelle ja pelaajalle.
 - Rakenna tilanne, jossa joukkue menee yli 50 pisteen. Odotus: joukkueen pisteet putoavat arvoon 25 ja peli jatkuu.
 - Rakenna tilanne, jossa joukkue saavuttaa tasan 50 pistetta. Odotus: voittomodaali aukeaa, voittajaksi tulee oikea tiimi ja uusia heittoja ei voi enaa kirjata.

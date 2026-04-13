@@ -27,15 +27,15 @@
     <div id="matchSummary" class="match-summary" aria-live="polite"></div>
   </section>
 
-  <section class="card">
+  <section id="teamSetupCard" class="card">
     <h3>Lisää tiimi</h3>
     <div class="inline-input">
       <input id="teamName" type="text" placeholder="Tiimin nimi">
       <button id="addTeam" class="btn blue">Lisää</button>
     </div>
     <div class="muted" style="margin-top:.4rem">Säännöt kuten yksilöpelissä. Tiimi on pelivalmis, kun siinä on vähintään yksi pelaaja.</div>
-    <div id="teamLockNotice" class="muted hidden" style="margin-top:.4rem">Tiimejä tai pelaajia ei voi lisätä kesken pelin. Aloita uusi peli, jos haluat muuttaa kokoonpanoa.</div>
   </section>
+  <p id="teamLockNotice" class="section-note muted hidden">Kokoonpano lukittu pelin ajaksi. Aloita uusi peli, jos haluat muuttaa tiimejä tai pelaajia.</p>
 
   <p id="emptyState" class="muted">Ei vielä tiimejä. Lisää ensin tiimit ja niiden pelaajat.</p>
   <section id="teamsGrid" class="player-grid"></section>

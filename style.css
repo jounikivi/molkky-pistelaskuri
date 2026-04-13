@@ -106,6 +106,13 @@ a:hover{text-decoration:underline}
 
 .muted{color:var(--muted)}
 .hidden{display:none!important}
+.section-note{
+  margin:.75rem 0 0;
+  padding:.7rem .85rem;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:rgba(12,20,36,.55);
+}
 
 /* Win modal */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:30}
@@ -442,6 +449,9 @@ a:hover{text-decoration:underline}
   }
   .match-summary__item{
     padding:.52rem .58rem;
+  }
+  .section-note{
+    font-size:.92rem;
   }
   .btn{ padding:.5rem .68rem; border-radius:10px; font-size:.95rem }
   .throwbar{

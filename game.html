@@ -27,15 +27,15 @@
     <div id="matchSummary" class="match-summary" aria-live="polite"></div>
   </section>
 
-  <section class="card">
+  <section id="playerSetupCard" class="card">
     <h3>Lisää pelaaja</h3>
     <div class="inline-input">
       <input id="playerName" type="text" placeholder="Pelaajan nimi">
       <button id="addPlayer" class="btn blue">Lisää</button>
     </div>
     <div class="muted" style="margin-top:.4rem">Säännöt: 0 = huti, 1–12 = pisteet. Yli 50 → 25, täsmälleen 50 = voitto. 3 peräkkäisen hudin kohdalla valitaan jatkaako pelaaja vai tiputetaanko hänet.</div>
-    <div id="playerLockNotice" class="muted hidden" style="margin-top:.4rem">Pelaajia ei voi lisätä kesken pelin. Aloita uusi peli, jos haluat muuttaa kokoonpanoa.</div>
   </section>
+  <p id="playerLockNotice" class="section-note muted hidden">Kokoonpano lukittu pelin ajaksi. Aloita uusi peli, jos haluat muuttaa pelaajia.</p>
 
   <p id="emptyState" class="muted">Ei vielä pelaajia. Lisää ensin pelaajat.</p>
   <section id="playersGrid" class="player-grid"></section>

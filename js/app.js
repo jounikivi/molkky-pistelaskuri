@@ -90,6 +90,7 @@ function getSoloRanking(){
 const els = {
   playersGrid: document.getElementById("playersGrid"),
   emptyState: document.getElementById("emptyState"),
+  playerSetupCard: document.getElementById("playerSetupCard"),
   playerName: document.getElementById("playerName"),
   addPlayer: document.getElementById("addPlayer"),
   playerLockNotice: document.getElementById("playerLockNotice"),
@@ -196,6 +197,7 @@ function renderControls(){
   const rosterLocked = hasSoloGameStarted();
   [els.shuffle,els.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuf));
   [els.undo,els.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
+  els.playerSetupCard?.classList.toggle("hidden", rosterLocked);
   if(els.addPlayer) els.addPlayer.disabled = rosterLocked;
   if(els.playerName) els.playerName.disabled = rosterLocked;
   els.playerLockNotice?.classList.toggle("hidden", !rosterLocked);
