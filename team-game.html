@@ -86,6 +86,31 @@
   </div>
 </div>
 
+<div id="confirmModal" class="modal-backdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmText">
+    <h3 id="confirmTitle">Vahvista toiminto</h3>
+    <p id="confirmText">Haluatko varmasti jatkaa?</p>
+    <div class="modal-actions">
+      <button id="confirmCancel" class="btn">Peruuta</button>
+      <button id="confirmOk" class="btn danger">OK</button>
+    </div>
+  </div>
+</div>
+
+<div id="entryModal" class="modal-backdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="entryTitle" aria-describedby="entryText">
+    <h3 id="entryTitle">Lisää pelaaja</h3>
+    <p id="entryText">Anna uuden pelaajan nimi.</p>
+    <div class="modal-field">
+      <input id="entryInput" type="text" placeholder="Pelaajan nimi" maxlength="40">
+    </div>
+    <div class="modal-actions">
+      <button id="entryCancel" class="btn">Peruuta</button>
+      <button id="entrySave" class="btn ok">Lisää pelaaja</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
 <script type="module" src="js/team-app.js"></script>
 </body>

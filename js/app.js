@@ -112,6 +112,11 @@ const els = {
   missText: document.getElementById("missText"),
   missContinue: document.getElementById("missContinue"),
   missEliminate: document.getElementById("missEliminate"),
+  confirmModal: document.getElementById("confirmModal"),
+  confirmTitle: document.getElementById("confirmTitle"),
+  confirmText: document.getElementById("confirmText"),
+  confirmCancel: document.getElementById("confirmCancel"),
+  confirmOk: document.getElementById("confirmOk"),
   toast: document.getElementById("toast"),
   reset: document.getElementById("reset"),
   resetAlt: document.getElementById("resetAlt"),
@@ -119,6 +124,8 @@ const els = {
 
 let pendingMissDecision = null;
 let lastFocusedBeforeMissModal = null;
+let pendingConfirmDecision = null;
+let lastFocusedBeforeConfirmModal = null;
 
 function render(){
   renderTurn();
@@ -270,11 +277,15 @@ function undo(){
 
 /* Nollaus */
 function newGameFresh(){ state = defaultState(); closeWin(); localStorage.setItem(LS_KEY, JSON.stringify(state)); render(); }
-function askReset(){
-  if(confirm("Nollataanko peli? Tämä poistaa kaikki pelaajat ja pisteet.")){
-    newGameFresh();
-    toast("Peli nollattu");
-  }
+async function askReset(){
+  const confirmed = await askConfirm({
+    title: "Nollataanko peli?",
+    text: "Tämä poistaa kaikki pelaajat ja pisteet.",
+    confirmLabel: "Nollaa peli"
+  });
+  if(!confirmed) return;
+  newGameFresh();
+  toast("Peli nollattu");
 }
 
 function openWin(txt){ els.winText.textContent = txt; els.winModal?.removeAttribute("hidden"); }
@@ -335,6 +346,66 @@ function askMissDecision(playerName){
   els.missEliminate.addEventListener("click", onEliminate, { once:true });
   pendingMissDecision = { promise };
   els.missContinue.focus();
+  return promise;
+}
+function handleConfirmModalKeydown(event){
+  if(!pendingConfirmDecision) return;
+  if(event.key === "Escape"){
+    event.preventDefault();
+    els.confirmCancel?.click();
+    return;
+  }
+  if(event.key !== "Tab") return;
+
+  const focusables = [els.confirmCancel, els.confirmOk].filter(Boolean);
+  if(!focusables.length) return;
+
+  const currentIndex = focusables.indexOf(document.activeElement);
+  let nextIndex = currentIndex;
+
+  if(event.shiftKey){
+    nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
+  } else {
+    nextIndex = currentIndex === -1 || currentIndex >= focusables.length - 1 ? 0 : currentIndex + 1;
+  }
+
+  event.preventDefault();
+  focusables[nextIndex]?.focus();
+}
+function askConfirm({ title, text, confirmLabel = "OK", cancelLabel = "Peruuta" } = {}){
+  if(!els.confirmModal || !els.confirmCancel || !els.confirmOk) return Promise.resolve(false);
+  if(pendingConfirmDecision) return pendingConfirmDecision.promise;
+
+  lastFocusedBeforeConfirmModal = document.activeElement;
+  els.confirmTitle.textContent = title || "Vahvista toiminto";
+  els.confirmText.textContent = text || "";
+  els.confirmCancel.textContent = cancelLabel;
+  els.confirmOk.textContent = confirmLabel;
+  els.confirmModal.removeAttribute("hidden");
+  els.confirmModal.addEventListener("keydown", handleConfirmModalKeydown);
+
+  let resolveChoice;
+  const promise = new Promise(resolve => {
+    resolveChoice = resolve;
+  });
+
+  const onCancel = () => cleanup(false);
+  const onConfirm = () => cleanup(true);
+  const cleanup = (choice) => {
+    els.confirmModal.setAttribute("hidden", "");
+    els.confirmCancel.removeEventListener("click", onCancel);
+    els.confirmOk.removeEventListener("click", onConfirm);
+    els.confirmModal.removeEventListener("keydown", handleConfirmModalKeydown);
+    pendingConfirmDecision = null;
+    resolveChoice(choice);
+    lastFocusedBeforeConfirmModal?.focus?.();
+    lastFocusedBeforeConfirmModal = null;
+  };
+
+  els.confirmCancel.addEventListener("click", onCancel, { once:true });
+  els.confirmOk.addEventListener("click", onConfirm, { once:true });
+  pendingConfirmDecision = { promise };
+  els.confirmCancel.focus();
   return promise;
 }
 function newGameSame(){

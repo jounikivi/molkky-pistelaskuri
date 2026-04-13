@@ -159,6 +159,17 @@ const el = {
   missText: document.getElementById("missText"),
   missContinue: document.getElementById("missContinue"),
   missEliminate: document.getElementById("missEliminate"),
+  confirmModal: document.getElementById("confirmModal"),
+  confirmTitle: document.getElementById("confirmTitle"),
+  confirmText: document.getElementById("confirmText"),
+  confirmCancel: document.getElementById("confirmCancel"),
+  confirmOk: document.getElementById("confirmOk"),
+  entryModal: document.getElementById("entryModal"),
+  entryTitle: document.getElementById("entryTitle"),
+  entryText: document.getElementById("entryText"),
+  entryInput: document.getElementById("entryInput"),
+  entryCancel: document.getElementById("entryCancel"),
+  entrySave: document.getElementById("entrySave"),
   toast: document.getElementById("toast"),
   reset: document.getElementById("reset"),
   resetAlt: document.getElementById("resetAlt"),
@@ -166,6 +177,10 @@ const el = {
 
 let pendingMissDecision = null;
 let lastFocusedBeforeMissModal = null;
+let pendingConfirmDecision = null;
+let lastFocusedBeforeConfirmModal = null;
+let pendingEntryRequest = null;
+let lastFocusedBeforeEntryModal = null;
 
 /* --------------------- RENDER --------------------- */
 function trender(){
@@ -399,11 +414,15 @@ function undoTeam(){
 
 /* ---------- Nollaus ---------- */
 function newTeamFresh(){ T = defaultTeamState(); closeWin(); localStorage.setItem(LS_TEAM_KEY, JSON.stringify(T)); trender(); }
-function askReset(){
-  if(confirm("Nollataanko peli? Tämä poistaa kaikki tiimit ja pisteet.")){
-    newTeamFresh();
-    ttoast("Peli nollattu");
-  }
+async function askReset(){
+  const confirmed = await askConfirm({
+    title: "Nollataanko peli?",
+    text: "Tämä poistaa kaikki tiimit ja pisteet.",
+    confirmLabel: "Nollaa peli"
+  });
+  if(!confirmed) return;
+  newTeamFresh();
+  ttoast("Peli nollattu");
 }
 
 /* ---------- WIN, TOAST & UI ---------- */
@@ -467,6 +486,132 @@ function askMissDecision(playerName){
   el.missContinue.focus();
   return promise;
 }
+function handleConfirmModalKeydown(event){
+  if(!pendingConfirmDecision) return;
+  if(event.key === "Escape"){
+    event.preventDefault();
+    el.confirmCancel?.click();
+    return;
+  }
+  if(event.key !== "Tab") return;
+
+  const focusables = [el.confirmCancel, el.confirmOk].filter(Boolean);
+  if(!focusables.length) return;
+
+  const currentIndex = focusables.indexOf(document.activeElement);
+  let nextIndex = currentIndex;
+
+  if(event.shiftKey){
+    nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
+  } else {
+    nextIndex = currentIndex === -1 || currentIndex >= focusables.length - 1 ? 0 : currentIndex + 1;
+  }
+
+  event.preventDefault();
+  focusables[nextIndex]?.focus();
+}
+function askConfirm({ title, text, confirmLabel = "OK", cancelLabel = "Peruuta" } = {}){
+  if(!el.confirmModal || !el.confirmCancel || !el.confirmOk) return Promise.resolve(false);
+  if(pendingConfirmDecision) return pendingConfirmDecision.promise;
+
+  lastFocusedBeforeConfirmModal = document.activeElement;
+  el.confirmTitle.textContent = title || "Vahvista toiminto";
+  el.confirmText.textContent = text || "";
+  el.confirmCancel.textContent = cancelLabel;
+  el.confirmOk.textContent = confirmLabel;
+  el.confirmModal.removeAttribute("hidden");
+  el.confirmModal.addEventListener("keydown", handleConfirmModalKeydown);
+
+  let resolveChoice;
+  const promise = new Promise(resolve => {
+    resolveChoice = resolve;
+  });
+
+  const onCancel = () => cleanup(false);
+  const onConfirm = () => cleanup(true);
+  const cleanup = (choice) => {
+    el.confirmModal.setAttribute("hidden", "");
+    el.confirmCancel.removeEventListener("click", onCancel);
+    el.confirmOk.removeEventListener("click", onConfirm);
+    el.confirmModal.removeEventListener("keydown", handleConfirmModalKeydown);
+    pendingConfirmDecision = null;
+    resolveChoice(choice);
+    lastFocusedBeforeConfirmModal?.focus?.();
+    lastFocusedBeforeConfirmModal = null;
+  };
+
+  el.confirmCancel.addEventListener("click", onCancel, { once:true });
+  el.confirmOk.addEventListener("click", onConfirm, { once:true });
+  pendingConfirmDecision = { promise };
+  el.confirmCancel.focus();
+  return promise;
+}
+function handleEntryModalKeydown(event){
+  if(!pendingEntryRequest) return;
+  if(event.key === "Escape"){
+    event.preventDefault();
+    el.entryCancel?.click();
+    return;
+  }
+  if(event.key === "Enter"){
+    event.preventDefault();
+    el.entrySave?.click();
+    return;
+  }
+  if(event.key !== "Tab") return;
+
+  const focusables = [el.entryInput, el.entryCancel, el.entrySave].filter(Boolean);
+  if(!focusables.length) return;
+
+  const currentIndex = focusables.indexOf(document.activeElement);
+  let nextIndex = currentIndex;
+
+  if(event.shiftKey){
+    nextIndex = currentIndex <= 0 ? focusables.length - 1 : currentIndex - 1;
+  } else {
+    nextIndex = currentIndex === -1 || currentIndex >= focusables.length - 1 ? 0 : currentIndex + 1;
+  }
+
+  event.preventDefault();
+  focusables[nextIndex]?.focus();
+}
+function askPlayerName({ title, text, defaultValue = "", confirmLabel = "Lisää pelaaja" } = {}){
+  if(!el.entryModal || !el.entryInput || !el.entryCancel || !el.entrySave) return Promise.resolve(defaultValue);
+  if(pendingEntryRequest) return pendingEntryRequest.promise;
+
+  lastFocusedBeforeEntryModal = document.activeElement;
+  el.entryTitle.textContent = title || "Lisää pelaaja";
+  el.entryText.textContent = text || "";
+  el.entryInput.value = defaultValue;
+  el.entrySave.textContent = confirmLabel;
+  el.entryModal.removeAttribute("hidden");
+  el.entryModal.addEventListener("keydown", handleEntryModalKeydown);
+
+  let resolveValue;
+  const promise = new Promise(resolve => {
+    resolveValue = resolve;
+  });
+
+  const onCancel = () => cleanup(null);
+  const onSave = () => cleanup(el.entryInput.value);
+  const cleanup = (value) => {
+    el.entryModal.setAttribute("hidden", "");
+    el.entryCancel.removeEventListener("click", onCancel);
+    el.entrySave.removeEventListener("click", onSave);
+    el.entryModal.removeEventListener("keydown", handleEntryModalKeydown);
+    pendingEntryRequest = null;
+    resolveValue(value);
+    lastFocusedBeforeEntryModal?.focus?.();
+    lastFocusedBeforeEntryModal = null;
+  };
+
+  el.entryCancel.addEventListener("click", onCancel, { once:true });
+  el.entrySave.addEventListener("click", onSave, { once:true });
+  pendingEntryRequest = { promise };
+  el.entryInput.focus();
+  el.entryInput.select();
+  return promise;
+}
 function newTeamSame(){
   T.teams.forEach(t=>{
     t.score=0; t.active=true;
@@ -519,11 +664,19 @@ el.grid?.addEventListener("click",(e)=>{
   }
   const addBtn = e.target.closest("[data-add-player]");
   if(addBtn){
+    e.preventDefault();
     const teamId = addBtn.getAttribute("data-team-id");
     const team = getTeam(teamId);
     const defaultName = `Pelaaja ${(team?.players?.length ?? 0) + 1}`;
-    const name = prompt("Uuden pelaajan nimi:", defaultName) ?? "";
-    addPlayerToTeam(teamId, name);
+    askPlayerName({
+      title: "Lisää pelaaja",
+      text: `Anna uuden pelaajan nimi tiimiin ${team?.name ?? ""}.`,
+      defaultValue: defaultName,
+      confirmLabel: "Lisää pelaaja"
+    }).then(name => {
+      if(name == null) return;
+      addPlayerToTeam(teamId, name);
+    });
   }
 });
 

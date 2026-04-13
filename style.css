@@ -120,6 +120,13 @@ a:hover{text-decoration:underline}
 .modal{max-width:520px;width:calc(100% - 2rem)}
 .modal p{margin:.5rem 0 0;color:var(--muted)}
 .modal-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
+.modal-field{margin-top:.8rem}
+.modal-field input{
+  width:100%;
+  background:#0c1424;color:var(--text);border:1px solid var(--border);
+  border-radius:12px;padding:.7rem .8rem;min-height:44px
+}
+.modal-field input::placeholder{color:var(--muted)}
 
 /* Match summary */
 .match-summary{
