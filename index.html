@@ -60,23 +60,61 @@
     </a>
   </section>
 
-  <section class="home-info-grid" aria-label="Nopea aloitus">
+  <section class="home-info-grid" aria-label="Pelin ohjeet">
     <article class="card home-info-card">
-      <h3>Nopea aloitus</h3>
+      <h3>Pelin aloitus</h3>
       <ol class="home-steps">
-        <li>Valitse yksilö- tai joukkuepeli.</li>
-        <li>Lisää pelaajat tai tiimit ennen ensimmäistä heittoa.</li>
-        <li>Kirjaa pisteet alapalkin painikkeilla.</li>
+        <li>Aseta 12 keilaa tiiviiseen alkuasetelmaan ja merkitse heittolinja noin 3–4 metrin päähän.</li>
+        <li>Arvokaa ensimmäisen pelin aloitusvuoro. Seuraavissa peleissä pienin pistemäärä aloittaa.</li>
+        <li>Heitä Mölkkyä alakautta ja pysy heittolinjan takana koko heiton ajan.</li>
+        <li>Lisää tässä sovelluksessa pelaajat tai tiimit ennen ensimmäistä heittoa ja kirjaa pisteet alapalkin painikkeilla.</li>
       </ol>
     </article>
 
     <article class="card home-info-card">
-      <h3>Pelisäännöt sovelluksessa</h3>
+      <h3>Keilojen alkuasettelu</h3>
+      <p class="home-info-card__text">Katso muodostelmaa heittolinjalta kohti keiloja. Pidä keilat alussa tiiviisti yhdessä ja numerot kohti heittosuuntaa.</p>
+      <div class="home-pin-layout" aria-label="Mölkyn keilojen alkuasettelu">
+        <div class="home-pin-row">
+          <span class="home-pin">1</span>
+          <span class="home-pin">2</span>
+        </div>
+        <div class="home-pin-row">
+          <span class="home-pin">3</span>
+          <span class="home-pin">10</span>
+          <span class="home-pin">4</span>
+        </div>
+        <div class="home-pin-row">
+          <span class="home-pin">5</span>
+          <span class="home-pin">11</span>
+          <span class="home-pin">12</span>
+          <span class="home-pin">6</span>
+        </div>
+        <div class="home-pin-row">
+          <span class="home-pin">7</span>
+          <span class="home-pin">9</span>
+          <span class="home-pin">8</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card home-info-card">
+      <h3>Pisteiden lasku</h3>
       <ul class="home-rules">
-        <li>0 = huti, 1–12 = pisteet.</li>
-        <li>Yli 50 pistettä palauttaa 25 pisteeseen.</li>
-        <li>Tasalle 50 päättää pelin voittoon.</li>
-        <li>Kolmannen hudin kohdalla päätetään jatkaako pelaaja vai tiputetaanko hänet.</li>
+        <li>Jos kaatuu yksi keila, saat sen kyljessä näkyvän pistemäärän.</li>
+        <li>Jos kaatuu kaksi tai useampi keila, saat pisteiksi kaatuneiden keilojen lukumäärän.</li>
+        <li>Nojaava keila ei vielä laske kaatuneeksi. Sen pitää olla irti muista keiloista ja Mölkystä.</li>
+        <li>Jokaisen heiton jälkeen kaatuneet keilat nostetaan pystyyn juuri siihen kohtaan, mihin ne putosivat.</li>
+      </ul>
+    </article>
+
+    <article class="card home-info-card">
+      <h3>Voitto ja sovelluksen säännöt</h3>
+      <ul class="home-rules">
+        <li>Tasan 50 pistettä voittaa pelin.</li>
+        <li>Jos menee yli 50 pisteen, pistemäärä putoaa takaisin 25 pisteeseen.</li>
+        <li>Virallisissa perussäännöissä 3 peräkkäistä hutia pudottaa pelaajan pois pelistä.</li>
+        <li>Tässä sovelluksessa kolmannen hudin kohdalla valitaan, jatkaako pelaaja peliä vai tiputetaanko hänet.</li>
       </ul>
     </article>
   </section>

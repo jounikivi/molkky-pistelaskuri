@@ -342,6 +342,10 @@ a:hover{text-decoration:underline}
   margin-top:0;
   margin-bottom:.65rem;
 }
+.home-info-card__text{
+  margin:.2rem 0 0;
+  color:var(--muted);
+}
 .home-steps,
 .home-rules{
   margin:.2rem 0 0;
@@ -351,6 +355,36 @@ a:hover{text-decoration:underline}
 .home-steps li,
 .home-rules li{
   margin:.38rem 0;
+}
+.home-pin-layout{
+  display:flex;
+  flex-direction:column;
+  gap:.42rem;
+  margin-top:.8rem;
+  padding:.85rem;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:rgba(10,18,32,.58);
+}
+.home-pin-row{
+  display:flex;
+  justify-content:center;
+  gap:.45rem;
+  flex-wrap:nowrap;
+}
+.home-pin{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  min-width:2.55rem;
+  min-height:2.55rem;
+  padding:.2rem .35rem;
+  border-radius:999px;
+  border:1px solid #325177;
+  background:linear-gradient(180deg,#17314e,#102235);
+  color:#e7ecf3;
+  font-weight:800;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.06);
 }
 .home-footer{
   text-align:center;
