@@ -1,0 +1,46 @@
+{
+  "id": "./",
+  "name": "Molkky Pistelaskuri",
+  "short_name": "Molkky",
+  "description": "Offline-toimiva Molkky-pistelaskuri yksilo- ja joukkuepeleille.",
+  "lang": "fi",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b1018",
+  "theme_color": "#0b1018",
+  "categories": [
+    "games",
+    "sports",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Yksilopeli",
+      "short_name": "Yksilopeli",
+      "description": "Avaa yksilopelin pisteiden kirjaamista varten.",
+      "url": "./game.html"
+    },
+    {
+      "name": "Joukkuepeli",
+      "short_name": "Joukkuepeli",
+      "description": "Avaa joukkuepelin pisteiden kirjaamista varten.",
+      "url": "./team-game.html"
+    }
+  ],
+  "prefer_related_applications": false
+}

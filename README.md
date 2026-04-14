@@ -5,11 +5,20 @@ Selainpohjainen Mölkky-pistelaskuri yksilö- ja joukkuepeleille. Projekti on to
 ## Käynnistys
 
 1. Lataa tai kloonaa repositorio.
-2. Avaa [index.html](./index.html) selaimessa.
-3. Vaihtoehtoisesti voit käynnistää paikallisen palvelimen komennolla `python -m http.server` ja avata osoitteen `http://localhost:8000/index.html`.
+2. Kaynnista paikallinen palvelin projektikansiossa komennolla `python -m http.server`.
+3. Avaa osoite `http://localhost:8000/index.html`.
+
+Sovellus toimii edelleen myos avaamalla [index.html](./index.html) suoraan selaimessa, mutta PWA-asennus ja offline-cache toimivat vain `http://localhost`- tai `https://`-osoitteesta.
 
 Julkaistu versio:
 [jounikivi.github.io/molkky-pistelaskuri](https://jounikivi.github.io/molkky-pistelaskuri/)
+
+## PWA ja offline-kaytto
+
+- Sovellus voidaan asentaa puhelimen tai tietokoneen aloitusnayttoon PWA:na.
+- Offline-kaytto aktivoituu, kun sovellus on avattu kerran onnistuneesti `localhost`- tai `https://`-osoitteesta.
+- Taman jalkeen etusivu, yksilopeli, joukkuepeli ja niiden ydintiedostot latautuvat myos ilman verkkoyhteytta.
+- Pelitila tallentuu selaimen `localStorage`:en kuten ennenkin.
 
 ## Testit
 
@@ -51,4 +60,4 @@ Tarkeimmille pelipoluille on erillinen tarkistuslista:
 
 ## Selaintuki
 
-Sovellus toimii nykyaikaisilla selaimilla kuten Chrome, Edge, Firefox ja Safari.
+Sovellus toimii nykyaikaisilla selaimilla kuten Chrome, Edge, Firefox ja Safari. PWA-asennus ja offline-cache toimivat parhaiten selaimissa, jotka tukevat service workereita.

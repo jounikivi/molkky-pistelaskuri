@@ -71,6 +71,14 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Testaa 3 huti -modaali kokonaan ilman hiirta. Odotus: fokus siirtyy modaalin sisaan, `Tab` ja `Shift+Tab` kiertavat vain modaalin painikkeissa, `Escape` sulkee tilanteen tiputusvalinnalla ja fokus palautuu aiemmin aktiiviseen elementtiin.
 - Tarkista, etta uudelleenlataus palauttaa keskeneraisen pelin oikeaan tilaan seka yksilo- etta joukkuepelissa.
 
+## PWA ja offline
+
+- Avaa sovellus `http://localhost`- tai `https://`-osoitteesta. Odotus: sivu latautuu ilman service worker -virheita.
+- Avaa etusivu, yksilopeli ja joukkuepeli ainakin kerran verkkoyhteyden kanssa. Odotus: ydinsivut ja resurssit kayvat latautuneina valimuistiin.
+- Asenna sovellus selaimen `Asenna sovellus`- tai `Lisaa aloitusnayttoon` -toiminnolla. Odotus: sovellus avautuu omassa ikkunassaan ilman normaalia selaimen chromea.
+- Katkaise verkkoyhteys ja lataa etusivu uudelleen. Odotus: sovellus aukeaa edelleen offline-tilassa.
+- Avaa myos `game.html` ja `team-game.html` ilman verkkoyhteytta. Odotus: molemmat toimivat edelleen ja aiemmin tallennettu pelitila palautuu oikein.
+
 ## Hyvaksyntakriteeri taman kierroksen jalkeen
 
 - Kaikki ylla olevat polut toimivat ilman konsolivirheita tai ilmeisia UI-rikkoutumisia.

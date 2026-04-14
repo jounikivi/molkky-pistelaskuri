@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Molkky Pistelaskuri">
+  <rect width="64" height="64" rx="14" fill="#0b1018"/>
+  <rect x="8" y="8" width="48" height="48" rx="14" fill="#111826" stroke="#253245" stroke-width="2"/>
+  <rect x="14" y="17" width="9" height="27" rx="4" fill="#2f7af8"/>
+  <rect x="27.5" y="13" width="9" height="31" rx="4" fill="#f59e0b"/>
+  <rect x="41" y="17" width="9" height="27" rx="4" fill="#16a34a"/>
+  <text x="32" y="52" text-anchor="middle" font-size="11" font-weight="700" font-family="Segoe UI, Arial, sans-serif" fill="#e7ecf3">M</text>
+</svg>
