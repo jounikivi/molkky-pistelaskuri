@@ -73,7 +73,8 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 
 ## PWA ja offline
 
-- Avaa sovellus `http://localhost`- tai `https://`-osoitteesta. Odotus: sivu latautuu ilman service worker -virheita.
+- Avaa sovellus `http://localhost`, `http://127.0.0.1`- tai `https://`-osoitteesta. Odotus: sivu latautuu ilman service worker -virheita.
+- Tarkista etusivun `Asenna sovellus` -nappi. Odotus: nappi on näkyvissa, aktivoituu kun selain tarjoaa asennusta ja piiloutuu asennuksen jalkeen.
 - Avaa etusivu, yksilopeli ja joukkuepeli ainakin kerran verkkoyhteyden kanssa. Odotus: ydinsivut ja resurssit kayvat latautuneina valimuistiin.
 - Asenna sovellus selaimen `Asenna sovellus`- tai `Lisaa aloitusnayttoon` -toiminnolla. Odotus: sovellus avautuu omassa ikkunassaan ilman normaalia selaimen chromea.
 - Katkaise verkkoyhteys ja lataa etusivu uudelleen. Odotus: sovellus aukeaa edelleen offline-tilassa.

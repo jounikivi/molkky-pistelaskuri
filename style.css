@@ -257,6 +257,20 @@ a:hover{text-decoration:underline}
   color:var(--muted);
   max-width:62ch;
 }
+.home-install{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.45rem;
+  margin-top:1rem;
+}
+.home-install__button{
+  min-width:210px;
+}
+.home-install__status{
+  margin:0;
+  max-width:56ch;
+}
 .home-badges{
   display:flex;
   flex-wrap:wrap;
@@ -430,6 +444,13 @@ a:hover{text-decoration:underline}
   }
   .home-mode-card{
     min-height:0;
+  }
+  .home-install{
+    align-items:stretch;
+  }
+  .home-install__button{
+    width:100%;
+    min-width:0;
   }
   .game-page .app-card{
     margin:.75rem auto 0;
