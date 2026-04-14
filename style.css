@@ -346,6 +346,15 @@ a:hover{text-decoration:underline}
   margin:.2rem 0 0;
   color:var(--muted);
 }
+.home-info-card__actions{
+  display:flex;
+  gap:.55rem;
+  margin-top:1rem;
+  flex-wrap:wrap;
+}
+.home-info-card--compact{
+  max-width:720px;
+}
 .home-steps,
 .home-rules{
   margin:.2rem 0 0;
@@ -390,6 +399,35 @@ a:hover{text-decoration:underline}
   text-align:center;
   margin:1.2rem 0;
   padding:0 .95rem;
+}
+.guide-main{
+  display:grid;
+  gap:.9rem;
+}
+.guide-hero{
+  background:
+    radial-gradient(900px 420px at 100% 0%, rgba(22,163,74,.18) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(24,32,48,.96), rgba(17,24,38,.98));
+}
+.guide-hero__title{
+  margin:.15rem 0 .45rem;
+  font-size:clamp(1.35rem, 2.5vw, 2rem);
+  line-height:1.15;
+}
+.guide-hero__text{
+  margin:0;
+  color:var(--muted);
+  max-width:64ch;
+}
+.guide-grid{
+  display:grid;
+  gap:.85rem;
+  grid-template-columns:1fr;
+}
+.guide-actions{
+  display:flex;
+  gap:.65rem;
+  flex-wrap:wrap;
 }
 
 /* Team rows */
@@ -485,6 +523,10 @@ a:hover{text-decoration:underline}
   .home-install__button{
     width:100%;
     min-width:0;
+  }
+  .home-info-card__actions .btn,
+  .guide-actions .btn{
+    width:100%;
   }
   .game-page .app-card{
     margin:.75rem auto 0;
@@ -583,7 +625,8 @@ a:hover{text-decoration:underline}
 
 @media(min-width:760px){
   .home-mode-grid,
-  .home-info-grid{
+  .home-info-grid,
+  .guide-grid{
     grid-template-columns:1fr 1fr;
   }
 }

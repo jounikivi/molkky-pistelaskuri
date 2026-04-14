@@ -34,7 +34,7 @@ function updateInstallUi(message) {
   }
 
   installButton.disabled = true;
-  installStatus.textContent = message || "Asennuspainike aktivoituu, kun Brave tarjoaa sovelluksen asennusta. Jos nappi pysyy harmaana, lataa sivu kerran uudelleen.";
+  installStatus.textContent = message || "Asennuspainike aktivoituu, kun selain tarjoaa sovelluksen asennusta. Jos nappi pysyy harmaana, lataa sivu kerran uudelleen.";
 }
 
 if (canRegisterServiceWorker) {

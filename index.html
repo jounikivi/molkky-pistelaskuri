@@ -24,6 +24,7 @@
   <nav class="nav">
     <a class="btn blue" href="game.html">Yksilöpeli</a>
     <a class="btn" href="team-game.html">Joukkuepeli</a>
+    <a class="btn" href="ohjeet.html">Ohjeet</a>
   </nav>
 </header>
 
@@ -35,7 +36,7 @@
     </div>
     <div class="home-install" aria-live="polite">
       <button id="installAppButton" class="btn blue home-install__button" type="button" disabled>Asenna sovellus</button>
-      <p id="installAppStatus" class="home-install__status muted">Asennuspainike aktivoituu, kun Brave tarjoaa sovelluksen asennusta. Jos nappi pysyy harmaana, lataa sivu kerran uudelleen.</p>
+      <p id="installAppStatus" class="home-install__status muted">Asennuspainike aktivoituu, kun selain tarjoaa sovelluksen asennusta. Jos nappi pysyy harmaana, lataa sivu kerran uudelleen.</p>
     </div>
     <div class="home-badges">
       <span class="chip chip--score">Selainpohjainen</span>
@@ -60,62 +61,13 @@
     </a>
   </section>
 
-  <section class="home-info-grid" aria-label="Pelin ohjeet">
-    <article class="card home-info-card">
-      <h3>Pelin aloitus</h3>
-      <ol class="home-steps">
-        <li>Aseta 12 keilaa tiiviiseen alkuasetelmaan ja merkitse heittolinja noin 3–4 metrin päähän.</li>
-        <li>Arvokaa ensimmäisen pelin aloitusvuoro. Seuraavissa peleissä pienin pistemäärä aloittaa.</li>
-        <li>Heitä Mölkkyä alakautta ja pysy heittolinjan takana koko heiton ajan.</li>
-        <li>Lisää tässä sovelluksessa pelaajat tai tiimit ennen ensimmäistä heittoa ja kirjaa pisteet alapalkin painikkeilla.</li>
-      </ol>
-    </article>
-
-    <article class="card home-info-card">
-      <h3>Keilojen alkuasettelu</h3>
-      <p class="home-info-card__text">Katso muodostelmaa heittolinjalta kohti keiloja. Pidä keilat alussa tiiviisti yhdessä ja numerot kohti heittosuuntaa.</p>
-      <div class="home-pin-layout" aria-label="Mölkyn keilojen alkuasettelu">
-        <div class="home-pin-row">
-          <span class="home-pin">1</span>
-          <span class="home-pin">2</span>
-        </div>
-        <div class="home-pin-row">
-          <span class="home-pin">3</span>
-          <span class="home-pin">10</span>
-          <span class="home-pin">4</span>
-        </div>
-        <div class="home-pin-row">
-          <span class="home-pin">5</span>
-          <span class="home-pin">11</span>
-          <span class="home-pin">12</span>
-          <span class="home-pin">6</span>
-        </div>
-        <div class="home-pin-row">
-          <span class="home-pin">7</span>
-          <span class="home-pin">9</span>
-          <span class="home-pin">8</span>
-        </div>
+  <section class="home-info-grid" aria-label="Lisatiedot">
+    <article class="card home-info-card home-info-card--compact">
+      <h3>Tarvitsetko apua alkuun?</h3>
+      <p class="home-info-card__text">Varsinaiset Molkky-ohjeet, keilojen alkuasettelu ja sovelluksen kayttosaannot loytyvat nyt omalta sivultaan. Etusivu pysyy kevyena, mutta ohjeet ovat silti yhden napin paassa.</p>
+      <div class="home-info-card__actions">
+        <a class="btn" href="ohjeet.html">Avaa ohjeet</a>
       </div>
-    </article>
-
-    <article class="card home-info-card">
-      <h3>Pisteiden lasku</h3>
-      <ul class="home-rules">
-        <li>Jos kaatuu yksi keila, saat sen kyljessä näkyvän pistemäärän.</li>
-        <li>Jos kaatuu kaksi tai useampi keila, saat pisteiksi kaatuneiden keilojen lukumäärän.</li>
-        <li>Nojaava keila ei vielä laske kaatuneeksi. Sen pitää olla irti muista keiloista ja Mölkystä.</li>
-        <li>Jokaisen heiton jälkeen kaatuneet keilat nostetaan pystyyn juuri siihen kohtaan, mihin ne putosivat.</li>
-      </ul>
-    </article>
-
-    <article class="card home-info-card">
-      <h3>Voitto ja sovelluksen säännöt</h3>
-      <ul class="home-rules">
-        <li>Tasan 50 pistettä voittaa pelin.</li>
-        <li>Jos menee yli 50 pisteen, pistemäärä putoaa takaisin 25 pisteeseen.</li>
-        <li>Virallisissa perussäännöissä 3 peräkkäistä hutia pudottaa pelaajan pois pelistä.</li>
-        <li>Tässä sovelluksessa kolmannen hudin kohdalla valitaan, jatkaako pelaaja peliä vai tiputetaanko hänet.</li>
-      </ul>
     </article>
   </section>
 </main>

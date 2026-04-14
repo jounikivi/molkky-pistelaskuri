@@ -13,6 +13,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 ## Nopea savutesti
 
 - Avaa `index.html`. Odotus: etusivu latautuu ilman rikkinnaisia linkkeja.
+- Avaa `ohjeet.html`. Odotus: ohjesivu latautuu, keilojen alkuasettelu nakyy oikein ja linkit peleihin toimivat.
 - Avaa `game.html`. Odotus: yksilopelin nakyma latautuu ja `Vuorossa` nayttaa `-`, jos pelaajia ei ole viela lisatty.
 - Avaa `team-game.html`. Odotus: joukkuepelin nakyma latautuu ja tyhja tila kertoo, etta tiimeja ei ole viela lisatty.
 
@@ -76,6 +77,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Avaa sovellus `http://localhost`, `http://127.0.0.1`- tai `https://`-osoitteesta. Odotus: sivu latautuu ilman service worker -virheita.
 - Tarkista etusivun `Asenna sovellus` -nappi. Odotus: nappi on näkyvissa, aktivoituu kun selain tarjoaa asennusta ja piiloutuu asennuksen jalkeen.
 - Avaa etusivu, yksilopeli ja joukkuepeli ainakin kerran verkkoyhteyden kanssa. Odotus: ydinsivut ja resurssit kayvat latautuneina valimuistiin.
+- Avaa myos `ohjeet.html` ainakin kerran verkkoyhteyden kanssa. Odotus: ohjesivu kay valimuistiin offline-kayttoa varten.
 - Asenna sovellus selaimen `Asenna sovellus`- tai `Lisaa aloitusnayttoon` -toiminnolla. Odotus: sovellus avautuu omassa ikkunassaan ilman normaalia selaimen chromea.
 - Katkaise verkkoyhteys ja lataa etusivu uudelleen. Odotus: sovellus aukeaa edelleen offline-tilassa.
 - Avaa myos `game.html` ja `team-game.html` ilman verkkoyhteytta. Odotus: molemmat toimivat edelleen ja aiemmin tallennettu pelitila palautuu oikein.

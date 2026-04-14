@@ -42,6 +42,7 @@ Tarkeimmille pelipoluille on erillinen tarkistuslista:
 ## Rakenne
 
 - [index.html](./index.html): etusivu
+- [ohjeet.html](./ohjeet.html): Molkyn aloitusohjeet ja saannot
 - [game.html](./game.html): yksilöpelin näkymä
 - [team-game.html](./team-game.html): joukkuepelin näkymä
 - [style.css](./style.css): yhteiset tyylit

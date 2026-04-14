@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="Molkky-pistelaskurin ohjeet, keilojen alkuasettelu ja perussaannot.">
+  <meta name="theme-color" content="#0b1018">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Molkky">
+  <title>Mölkky – Ohjeet</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="home-page guide-page">
+<header class="site-header">
+  <a class="btn" href="index.html">← Etusivu</a>
+  <h1 class="brand">Ohjeet</h1>
+  <nav class="nav">
+    <a class="btn blue" href="game.html">Yksilöpeli</a>
+    <a class="btn" href="team-game.html">Joukkuepeli</a>
+  </nav>
+</header>
+
+<main class="app-card guide-main">
+  <section class="card guide-hero">
+    <div class="home-kicker">Mölkky alusta loppuun</div>
+    <h2 class="guide-hero__title">Tasta loydat keilojen alkuasettelun, pisteiden laskun ja sovelluksen kayton.</h2>
+    <p class="guide-hero__text">Ohjeet on pidetty omalla sivullaan, jotta etusivu pysyy nopeana aloitusnakymana ja varsinainen peli kaynnistyy ilman turhaa scrollausta.</p>
+  </section>
+
+  <section class="guide-grid" aria-label="Mölkkyohjeet">
+    <article class="card guide-card">
+      <h3>Pelin aloitus</h3>
+      <ol class="home-steps">
+        <li>Aseta 12 keilaa tiiviiseen alkuasetelmaan ja merkitse heittolinja noin 3–4 metrin paahan.</li>
+        <li>Arvokaa ensimmaisen pelin aloitusvuoro. Seuraavissa peleissa pienin pistemaara aloittaa.</li>
+        <li>Heita Molkkya alakautta ja pysy heittolinjan takana koko heiton ajan.</li>
+        <li>Lisaa tassa sovelluksessa pelaajat tai tiimit ennen ensimmaista heittoa ja kirjaa pisteet alapalkin painikkeilla.</li>
+      </ol>
+    </article>
+
+    <article class="card guide-card">
+      <h3>Keilojen alkuasettelu</h3>
+      <p class="home-info-card__text">Katso muodostelmaa heittolinjalta kohti keiloja. Pida keilat alussa tiiviisti yhdessa ja numerot kohti heittosuuntaa.</p>
+      <div class="home-pin-layout" aria-label="Mölkyn keilojen alkuasettelu">
+        <div class="home-pin-row">
+          <span class="home-pin">1</span>
+          <span class="home-pin">2</span>
+        </div>
+        <div class="home-pin-row">
+          <span class="home-pin">3</span>
+          <span class="home-pin">10</span>
+          <span class="home-pin">4</span>
+        </div>
+        <div class="home-pin-row">
+          <span class="home-pin">5</span>
+          <span class="home-pin">11</span>
+          <span class="home-pin">12</span>
+          <span class="home-pin">6</span>
+        </div>
+        <div class="home-pin-row">
+          <span class="home-pin">7</span>
+          <span class="home-pin">9</span>
+          <span class="home-pin">8</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card guide-card">
+      <h3>Pisteiden lasku</h3>
+      <ul class="home-rules">
+        <li>Jos kaatuu yksi keila, saat sen kyljessa nakyvan pistemaaran.</li>
+        <li>Jos kaatuu kaksi tai useampi keila, saat pisteiksi kaatuneiden keilojen lukumaaran.</li>
+        <li>Nojaava keila ei viela laske kaatuneeksi. Sen pitaa olla irti muista keiloista ja Molkkysta.</li>
+        <li>Jokaisen heiton jalkeen kaatuneet keilat nostetaan pystyyn juuri siihen kohtaan, mihin ne putosivat.</li>
+      </ul>
+    </article>
+
+    <article class="card guide-card">
+      <h3>Voitto ja sovelluksen säännöt</h3>
+      <ul class="home-rules">
+        <li>Tasan 50 pistetta voittaa pelin.</li>
+        <li>Jos menee yli 50 pisteen, pistemaara putoaa takaisin 25 pisteeseen.</li>
+        <li>Virallisissa perussaannoissa 3 perakkaista hutia pudottaa pelaajan pois pelista.</li>
+        <li>Tassa sovelluksessa kolmannen hudin kohdalla valitaan, jatkaako pelaaja pelia vai tiputetaanko hanet.</li>
+      </ul>
+    </article>
+  </section>
+
+  <section class="guide-actions" aria-label="Aloita peli">
+    <a class="btn blue" href="game.html">Aloita yksilöpeli</a>
+    <a class="btn" href="team-game.html">Aloita joukkuepeli</a>
+  </section>
+</main>
+
+<footer class="site-footer muted home-footer">Ohjeet pysyvat saatavilla myos offline-tilassa, kun sovellus on kerran avattu verkon kanssa.</footer>
+<script type="module" src="js/pwa.js"></script>
+</body>
+</html>
