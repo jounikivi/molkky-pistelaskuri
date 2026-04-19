@@ -32,14 +32,28 @@
     <div id="matchSummary" class="match-summary" aria-live="polite"></div>
   </section>
 
-  <section id="teamSetupCard" class="card">
-    <h3>Lisää tiimi</h3>
-    <div class="inline-input">
-      <input id="teamName" type="text" placeholder="Tiimin nimi">
-      <button id="addTeam" class="btn blue">Lisää</button>
-    </div>
-    <div class="muted" style="margin-top:.4rem">Säännöt kuten yksilöpelissä. Tiimi on pelivalmis, kun siinä on vähintään yksi pelaaja.</div>
-  </section>
+  <div id="teamSetupStack" class="setup-stack">
+    <section id="teamSetupCard" class="card">
+      <h3>Lisää tiimi</h3>
+      <div class="inline-input">
+        <input id="teamName" type="text" placeholder="Tiimin nimi">
+        <button id="addTeam" class="btn blue">Lisää</button>
+      </div>
+      <div class="muted" style="margin-top:.4rem">Säännöt kuten yksilöpelissä. Tiimi on pelivalmis, kun siinä on vähintään yksi pelaaja.</div>
+    </section>
+
+    <section id="teamRandomizeCard" class="card">
+      <h3>Arvo tiimit</h3>
+      <div class="stack-input">
+        <textarea id="randomPlayerNames" rows="5" placeholder="Kirjoita yksi pelaaja per rivi tai erottele nimet pilkulla"></textarea>
+        <div class="inline-input">
+          <input id="randomTeamCount" type="number" inputmode="numeric" min="2" max="8" value="2" placeholder="Tiimien määrä">
+          <button id="randomizeTeams" class="btn ok">Arvo tiimit</button>
+        </div>
+      </div>
+      <div class="muted" style="margin-top:.4rem">Arvonta luo valmiit tiimit nimillä `Tiimi 1`, `Tiimi 2` ja niin edelleen. Jos nykyinen kokoonpano on jo aloitettu käsin, arvonta kysyy ennen korvausta vahvistuksen.</div>
+    </section>
+  </div>
   <p id="teamLockNotice" class="section-note muted hidden">Kokoonpano lukittu pelin ajaksi. Aloita uusi peli, jos haluat muuttaa tiimejä tai pelaajia.</p>
 
   <p id="emptyState" class="muted">Ei vielä tiimejä. Lisää ensin tiimit ja niiden pelaajat.</p>

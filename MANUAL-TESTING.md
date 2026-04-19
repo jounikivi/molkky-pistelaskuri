@@ -42,6 +42,8 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 
 - Lisaa tiimit `Punainen` ja `Sininen`. Odotus: molemmat tiimit ilmestyvat korteiksi.
 - Lisaa kumpaankin tiimiin vahintaan kaksi pelaajaa `Lisaa pelaaja` -napilla. Odotus: pelaajat ilmestyvat oikean tiimin alle, eivatka duplikaatit mene saman tiimin sisalla lapi.
+- Testaa `Arvo tiimit` syottamalla esimerkiksi `Matti`, `Liisa`, `Teemu` ja `Aino`, valitse 2 tiimia ja paina arvontaa. Odotus: sovellus luo valmiit tiimit, jakaa pelaajat mahdollisimman tasaisesti ja nimeaa tiimit automaattisesti.
+- Testaa `Arvo tiimit` olemassa olevan mutta viela aloittamattoman kokoonpanon paalle. Odotus: sovellus kysyy vahvistuksen ennen kuin vanhat tiimit ja pelaajat korvataan.
 - Paina `Arvo aloitus`. Odotus: vuorossa on yksi tiimi ja yksi kyseisen tiimin aktiivinen pelaaja.
 - Tee nelja heittoa niin, etta kumpikin tiimi ehtii vuoroon kahdesti. Odotus: vuorotus etenee tiimikohtaisesti, esimerkiksi `Punainen - pelaaja 1`, `Sininen - pelaaja 1`, `Punainen - pelaaja 2`, `Sininen - pelaaja 2`.
 - Syota kaksi heittoa alapalkin pistepainikkeilla, mukaan lukien `Huti (0)`. Odotus: joukkueen pisteet tai huti paivittyvat oikein ja heitto kirjautuu oikealle pelaajalle oikeassa vuorossa.

@@ -2,6 +2,7 @@
 
 import { applyScoreRules, createPlayerState } from "./rules.js";
 import { canonName, getLatestHistoryEntry, sanitizeName } from "./shared.js";
+import { buildRandomTeams, parseTeamRandomizerNames } from "./team-randomizer.js";
 import {
   applyTeamThrowToTeam,
   getNextActivePlayerIndex,
@@ -137,9 +138,13 @@ function getTeamRanking(){
 const el = {
   grid: document.getElementById("teamsGrid"),
   empty: document.getElementById("emptyState"),
+  teamSetupStack: document.getElementById("teamSetupStack"),
   teamSetupCard: document.getElementById("teamSetupCard"),
   teamName: document.getElementById("teamName"),
   addTeam: document.getElementById("addTeam"),
+  randomPlayerNames: document.getElementById("randomPlayerNames"),
+  randomTeamCount: document.getElementById("randomTeamCount"),
+  randomizeTeams: document.getElementById("randomizeTeams"),
   teamLockNotice: document.getElementById("teamLockNotice"),
   shuffle: document.getElementById("shuffle"),
   shuffleAlt: document.getElementById("shuffleAlt"),
@@ -282,9 +287,12 @@ function trenderControls(){
   const rosterLocked = hasTeamGameStarted();
   [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuffle));
   [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
-  el.teamSetupCard?.classList.toggle("hidden", rosterLocked);
+  el.teamSetupStack?.classList.toggle("hidden", rosterLocked);
   if(el.addTeam) el.addTeam.disabled = rosterLocked;
   if(el.teamName) el.teamName.disabled = rosterLocked;
+  if(el.randomPlayerNames) el.randomPlayerNames.disabled = rosterLocked;
+  if(el.randomTeamCount) el.randomTeamCount.disabled = rosterLocked;
+  if(el.randomizeTeams) el.randomizeTeams.disabled = rosterLocked;
   el.teamLockNotice?.classList.toggle("hidden", !rosterLocked);
 }
 
@@ -326,6 +334,60 @@ function addPlayerToTeam(teamId, name){
   team.active = true;
   if(team.players.length === 1) team.nextPlayerIdx = 0;
   saveT(); trender();
+}
+
+async function randomizeTeamsFromInput(){
+  if(hasTeamGameStarted()){
+    ttoast("Tiimejä ei voi arpoa kesken pelin");
+    return;
+  }
+
+  const playerNames = parseTeamRandomizerNames(el.randomPlayerNames?.value);
+  if(playerNames.length < 2){
+    ttoast("Anna vähintään kaksi pelaajaa");
+    return;
+  }
+
+  const teamCount = Number(el.randomTeamCount?.value);
+  if(!Number.isInteger(teamCount) || teamCount < 2){
+    ttoast("Anna vähintään 2 tiimiä");
+    return;
+  }
+  if(teamCount > playerNames.length){
+    ttoast("Tiimejä ei voi olla enemmän kuin pelaajia");
+    return;
+  }
+
+  if(T.teams.length){
+    const confirmed = await askConfirm({
+      title: "Korvataanko nykyinen kokoonpano?",
+      text: "Arvonta poistaa nykyiset tiimit ja pelaajat ennen pelin alkua.",
+      confirmLabel: "Korvaa ja arvo"
+    });
+    if(!confirmed) return;
+  }
+
+  const randomizedTeams = buildRandomTeams(playerNames, teamCount);
+  T = defaultTeamState();
+  T.teams = randomizedTeams.map(team => ({
+    id: tuid(),
+    name: team.name,
+    score: 0,
+    active: true,
+    nextPlayerIdx: 0,
+    players: team.players.map(name => ({
+      id: tuid(),
+      ...createPlayerState(name),
+      history: []
+    }))
+  }));
+  T.order = T.teams.map(team => team.id);
+
+  if(el.teamName) el.teamName.value = "";
+  if(el.randomPlayerNames) el.randomPlayerNames.value = "";
+
+  trender();
+  ttoast(`Arvottiin ${T.teams.length} tiimiä`);
 }
 
 function removePlayer(teamId, playerId){
@@ -622,6 +684,7 @@ function ttoast(msg){ if(!el.toast) return; el.toast.textContent=msg; el.toast.c
 
 /* ---------- Eventit ---------- */
 el.addTeam?.addEventListener("click", addTeam);
+el.randomizeTeams?.addEventListener("click", randomizeTeamsFromInput);
 [el.shuffle, el.shuffleAlt].forEach(b=>b?.addEventListener("click", ()=>{
   if(teamsReadyCount() < 2) return;
   const arr = [...T.teams.map(t=>t.id)];

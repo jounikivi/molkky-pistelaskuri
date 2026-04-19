@@ -48,6 +48,7 @@ Tarkeimmille pelipoluille on erillinen tarkistuslista:
 - [style.css](./style.css): yhteiset tyylit
 - [js/app.js](./js/app.js): yksilöpelin UI-logiikka
 - [js/team-app.js](./js/team-app.js): joukkuepelin UI-logiikka
+- [js/team-randomizer.js](./js/team-randomizer.js): joukkuepelin tiimiarvonnan apulogiikka
 - [js/rules.js](./js/rules.js): yhteinen sääntömoottori
 - [js/shared.js](./js/shared.js): yleiset apufunktiot
 - [js/state-utils.js](./js/state-utils.js): tilamuutokset, vuorologiikka ja historiasta laskenta
@@ -60,6 +61,11 @@ Tarkeimmille pelipoluille on erillinen tarkistuslista:
 - tasan 50 = voitto
 - yli 50 = pisteet putoavat 25:een
 - 3 peräkkäisen hudin kohdalla sovellus kysyy jatkaako pelaaja vai tiputetaanko hänet
+
+## Joukkuepelin lisätoiminnot
+
+- Tiimit voi rakentaa käsin tai arpoa valmiiksi pelaajalistasta ennen ensimmäistä heittoa.
+- Arvonta jakaa pelaajat mahdollisimman tasaisesti tiimeihin `Tiimi 1`, `Tiimi 2` ja niin edelleen.
 
 ## Selaintuki
 

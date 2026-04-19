@@ -1,4 +1,4 @@
-const CACHE_NAME = "molkky-pwa-v2";
+const CACHE_NAME = "molkky-pwa-v3";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,7 @@ const APP_ASSETS = [
   "./js/pwa.js",
   "./js/app.js",
   "./js/team-app.js",
+  "./js/team-randomizer.js",
   "./js/rules.js",
   "./js/shared.js",
   "./js/state-utils.js",

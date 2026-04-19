@@ -65,6 +65,21 @@ a:hover{text-decoration:underline}
   background:#0c1424;color:var(--text);border:1px solid var(--border);
   border-radius:12px;padding:.6rem .7rem;min-height:44px;min-width:0
 }
+.stack-input{
+  display:grid;
+  gap:.55rem;
+}
+.stack-input textarea{
+  width:100%;
+  min-height:132px;
+  resize:vertical;
+  background:#0c1424;color:var(--text);border:1px solid var(--border);
+  border-radius:12px;padding:.7rem .8rem;line-height:1.45;
+}
+.stack-input textarea::placeholder{color:var(--muted)}
+.stack-input textarea:disabled{
+  opacity:.65; cursor:not-allowed; background:#0a1220;
+}
 .inline-input input::placeholder{color:var(--muted)}
 .inline-input input:disabled{
   opacity:.65; cursor:not-allowed; background:#0a1220;
@@ -112,6 +127,10 @@ a:hover{text-decoration:underline}
   border:1px solid var(--border);
   border-radius:12px;
   background:rgba(12,20,36,.55);
+}
+.setup-stack{
+  display:grid;
+  gap:.85rem;
 }
 
 /* Win modal */
@@ -550,6 +569,9 @@ a:hover{text-decoration:underline}
   }
   .game-page .inline-input .btn{
     width:100%;
+  }
+  .game-page .stack-input textarea{
+    min-height:144px;
   }
   .match-summary__item{
     padding:.52rem .58rem;
