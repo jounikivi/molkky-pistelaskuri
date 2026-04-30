@@ -155,7 +155,9 @@ const el = {
   turnTitle: document.getElementById("turnTitle"),
   matchSummary: document.getElementById("matchSummary"),
   winModal: document.getElementById("winModal"),
+  winPanel: document.querySelector("#winModal .win-modal"),
   winText: document.getElementById("winText"),
+  winConfetti: document.getElementById("winConfetti"),
   winSame: document.getElementById("winSame"),
   winFresh: document.getElementById("winFresh"),
   winClose: document.getElementById("winClose"),
@@ -186,6 +188,39 @@ let pendingConfirmDecision = null;
 let lastFocusedBeforeConfirmModal = null;
 let pendingEntryRequest = null;
 let lastFocusedBeforeEntryModal = null;
+const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+const winConfettiColors = ["#2f7af8", "#16a34a", "#f59e0b", "#d04756", "#e7ecf3"];
+
+function renderWinConfetti(){
+  if(!el.winConfetti) return;
+  el.winConfetti.innerHTML = "";
+  if(prefersReducedMotion?.matches) return;
+
+  Array.from({ length: 18 }, (_, index)=>index).forEach(index => {
+    const piece = document.createElement("span");
+    piece.className = "confetti-piece";
+    piece.style.left = `${4 + Math.random() * 92}%`;
+    piece.style.width = `${8 + Math.round(Math.random() * 5)}px`;
+    piece.style.height = `${14 + Math.round(Math.random() * 12)}px`;
+    piece.style.setProperty("--piece-color", winConfettiColors[index % winConfettiColors.length]);
+    piece.style.setProperty("--fall-delay", `${(index % 6) * 0.05}s`);
+    piece.style.setProperty("--fall-duration", `${1.15 + Math.random() * 0.75}s`);
+    piece.style.setProperty("--drift", `${Math.round(Math.random() * 90 - 45)}px`);
+    piece.style.setProperty("--spin", `${Math.round(Math.random() * 320 - 160)}deg`);
+    el.winConfetti.appendChild(piece);
+  });
+}
+
+function triggerWinCelebration(celebrate){
+  if(!el.winPanel) return;
+  el.winPanel.classList.remove("is-celebrating");
+  if(el.winConfetti) el.winConfetti.innerHTML = "";
+  if(!celebrate || prefersReducedMotion?.matches) return;
+
+  renderWinConfetti();
+  void el.winPanel.offsetWidth;
+  el.winPanel.classList.add("is-celebrating");
+}
 
 /* --------------------- RENDER --------------------- */
 function trender(){
@@ -443,10 +478,10 @@ async function submitThrowTeam(n){
   if(team.active){
     const res = applyScoreRules(previousScore, val);
     if(res.bounced) ttoast(`Yli 50 → 25`);
-    if(res.win){ T.ended = true; openWin(`Tiimi ${team.name} saavutti 50 pistettä!`); trender(); return; }
+    if(res.win){ T.ended = true; openWin(`Tiimi ${team.name} saavutti 50 pistettä!`, true); trender(); return; }
   }
 
-  if(shouldEndTeamGame(T.teams)){ T.ended=true; openWin(`Ei pelivalmiita tiimejä. Ei voittajaa.`); trender(); return; }
+  if(shouldEndTeamGame(T.teams)){ T.ended=true; openWin(`Ei pelivalmiita tiimejä. Ei voittajaa.`, false); trender(); return; }
 
   nextTurnTeam(); trender();
 }
@@ -480,8 +515,16 @@ async function askReset(){
 }
 
 /* ---------- WIN, TOAST & UI ---------- */
-function openWin(txt){ el.winText.textContent=txt; el.winModal?.removeAttribute("hidden"); }
-function closeWin(){ el.winModal?.setAttribute("hidden",""); }
+function openWin(txt, celebrate = true){
+  el.winText.textContent=txt;
+  el.winModal?.removeAttribute("hidden");
+  triggerWinCelebration(celebrate);
+}
+function closeWin(){
+  el.winModal?.setAttribute("hidden","");
+  el.winPanel?.classList.remove("is-celebrating");
+  if(el.winConfetti) el.winConfetti.innerHTML = "";
+}
 function handleMissModalKeydown(event){
   if(!pendingMissDecision) return;
   if(event.key === "Escape"){

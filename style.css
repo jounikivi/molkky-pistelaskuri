@@ -139,6 +139,55 @@ a:hover{text-decoration:underline}
 .modal{max-width:520px;width:calc(100% - 2rem)}
 .modal p{margin:.5rem 0 0;color:var(--muted)}
 .modal-actions{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-end;margin-top:.75rem}
+.win-modal{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+.win-modal::before{
+  content:"";
+  position:absolute;
+  inset:-18% -12% auto;
+  height:58%;
+  background:radial-gradient(circle at top, rgba(245,158,11,.28), rgba(47,122,248,.12) 45%, transparent 72%);
+  opacity:0;
+  pointer-events:none;
+  z-index:0;
+}
+.win-modal > :not(.win-modal__confetti){
+  position:relative;
+  z-index:1;
+}
+.win-modal__title{
+  margin:0;
+  font-size:clamp(1.55rem, 3.2vw, 2rem);
+  line-height:1.1;
+}
+.win-modal__confetti{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:0;
+}
+.confetti-piece{
+  position:absolute;
+  top:-14%;
+  border-radius:999px;
+  opacity:0;
+  box-shadow:0 10px 18px rgba(0,0,0,.22);
+}
+.win-modal.is-celebrating::before{
+  animation:win-glow 1.45s ease-out both;
+}
+.win-modal.is-celebrating .win-modal__title{
+  animation:win-title-pop .55s cubic-bezier(.2,.85,.24,1.2) both;
+}
+.win-modal.is-celebrating .confetti-piece{
+  animation:confetti-fall var(--fall-duration, 1.4s) ease-out forwards;
+  animation-delay:var(--fall-delay, 0s);
+  background:var(--piece-color, #2f7af8);
+}
 .modal-field{margin-top:.8rem}
 .modal-field input{
   width:100%;
@@ -486,7 +535,37 @@ a:hover{text-decoration:underline}
 
 /* Animations */
 @keyframes fade-in{from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none}}
+@keyframes win-title-pop{
+  0%{transform:translateY(10px) scale(.94);opacity:0}
+  65%{transform:translateY(0) scale(1.04);opacity:1}
+  100%{transform:none;opacity:1}
+}
+@keyframes win-glow{
+  0%{opacity:0;transform:translateY(-10px) scale(.96)}
+  25%{opacity:1}
+  100%{opacity:.18;transform:translateY(0) scale(1)}
+}
+@keyframes confetti-fall{
+  0%{
+    opacity:0;
+    transform:translate3d(0,-20px,0) rotate(0deg);
+  }
+  12%{
+    opacity:1;
+  }
+  100%{
+    opacity:0;
+    transform:translate3d(var(--drift, 0px), 340px, 0) rotate(var(--spin, 180deg));
+  }
+}
 @media (prefers-reduced-motion:reduce){.card,.player-card,.team-card,.turn-card,.controls,.modal{animation:none}.btn{transition:none}}
+@media (prefers-reduced-motion:reduce){
+  .win-modal::before,
+  .win-modal__title,
+  .confetti-piece{
+    animation:none!important;
+  }
+}
 
 /* Mobile/tablet */
 @media(max-width:700px){

@@ -72,8 +72,9 @@
 
 <!-- Win modal -->
 <div id="winModal" class="modal-backdrop" hidden>
-  <div class="modal">
-    <h3 id="winText">Voitto!</h3>
+  <div class="modal win-modal">
+    <div id="winConfetti" class="win-modal__confetti" aria-hidden="true"></div>
+    <h3 id="winText" class="win-modal__title">Voitto!</h3>
     <div class="modal-actions">
       <button id="winSame" class="btn ok">Aloita uusi peli samoilla pelaajilla</button>
       <button id="winFresh" class="btn">Aloita alusta</button>
