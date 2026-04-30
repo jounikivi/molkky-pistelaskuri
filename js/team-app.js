@@ -153,6 +153,8 @@ const el = {
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
   turnTitle: document.getElementById("turnTitle"),
+  turnSubtitle: document.getElementById("turnSubtitle"),
+  turnMeta: document.getElementById("turnMeta"),
   matchSummary: document.getElementById("matchSummary"),
   winModal: document.getElementById("winModal"),
   winPanel: document.querySelector("#winModal .win-modal"),
@@ -226,13 +228,74 @@ function triggerWinCelebration(celebrate){
 function trender(){
   trenderTurn(); trenderMatchSummary(); trenderTeams(); trenderControls(); saveT();
 }
+
+function trenderTurnMeta(chips = []){
+  if(!el.turnMeta) return;
+  el.turnMeta.innerHTML = chips.map(chip => `
+    <span class="turn-hero__chip ${chip.tone ? `turn-hero__chip--${chip.tone}` : ""}">${escapeHtml(chip.label)}</span>
+  `).join("");
+}
+
+function getUpcomingTeamTurnLabel(currentTeam, currentPlayer){
+  if(!currentTeam) return null;
+
+  if(teamsReadyCount() > 1){
+    const nextTurnIndex = getNextTeamTurnIndex(T.teams, T.order, T.teamTurnIdx);
+    const nextTeam = getTeam(T.order[nextTurnIndex]);
+    if(!nextTeam) return null;
+    const nextPlayerIdx = getNextActivePlayerIndex(nextTeam.players, nextTeam.nextPlayerIdx ?? 0);
+    const nextPlayer = nextPlayerIdx >= 0 ? nextTeam.players[nextPlayerIdx] : null;
+    return nextPlayer ? `${nextTeam.name} – ${nextPlayer.name}` : nextTeam.name;
+  }
+
+  if(!currentTeam.players?.length || !currentPlayer) return currentTeam.name;
+  const currentIdx = currentTeam.players.findIndex(player => player.id === currentPlayer.id);
+  const nextPlayerIdx = getNextActivePlayerIndex(currentTeam.players, currentIdx + 1);
+  const nextPlayer = nextPlayerIdx >= 0 ? currentTeam.players[nextPlayerIdx] : currentPlayer;
+  return nextPlayer ? `${currentTeam.name} – ${nextPlayer.name}` : currentTeam.name;
+}
+
 function trenderTurn(){
-  if(T.ended){ el.turnTitle.textContent = "Peli päättynyt"; return; }
+  if(T.ended){
+    el.turnTitle.textContent = "Peli päättynyt";
+    if(el.turnSubtitle) el.turnSubtitle.textContent = "Voit aloittaa uuden pelin samoilla tiimeillä tai tyhjentää tilanteen.";
+    trenderTurnMeta([]);
+    return;
+  }
+
+  if(!T.teams.length){
+    el.turnTitle.textContent = "Ei tiimejä";
+    if(el.turnSubtitle) el.turnSubtitle.textContent = "Lisää ensin tiimit, jotta peli voi alkaa.";
+    trenderTurnMeta([]);
+    return;
+  }
+
   const { team, player } = currentPlayerTeamScoped();
-  if(team && player) el.turnTitle.textContent = `Vuorossa: ${team.name} – ${player.name}`;
-  else if(team && !team.players?.length) el.turnTitle.textContent = `Vuorossa: ${team.name} – lisää pelaajia tiimiin`;
-  else if(team) el.turnTitle.textContent = `Vuorossa: ${team.name}`;
-  else el.turnTitle.textContent = "Vuorossa: –";
+  if(!team){
+    el.turnTitle.textContent = "Ei aktiivista tiimiä";
+    if(el.turnSubtitle) el.turnSubtitle.textContent = "Peli tarvitsee vähintään yhden pelivalmiin tiimin.";
+    trenderTurnMeta([]);
+    return;
+  }
+
+  if(team && !player){
+    el.turnTitle.textContent = team.name;
+    if(el.turnSubtitle) el.turnSubtitle.textContent = "Lisää tiimiin vähintään yksi aktiivinen pelaaja.";
+    trenderTurnMeta([
+      { label: `Tiimin pisteet ${team.score ?? 0}`, tone: "score" },
+      { label: "Heittäjä puuttuu", tone: "miss" }
+    ]);
+    return;
+  }
+
+  const nextLabel = getUpcomingTeamTurnLabel(team, player);
+  el.turnTitle.textContent = team.name;
+  if(el.turnSubtitle) el.turnSubtitle.textContent = player ? `Heittäjä: ${player.name}` : "Valmis heittämään";
+  trenderTurnMeta([
+    { label: `Tiimin pisteet ${team.score ?? 0}`, tone: "score" },
+    { label: `Hudit ${player?.misses ?? 0}/3`, tone: "miss" },
+    ...(nextLabel ? [{ label: `Seuraavana ${nextLabel}` }] : [])
+  ]);
 }
 function trenderMatchSummary(){
   if(!el.matchSummary) return;

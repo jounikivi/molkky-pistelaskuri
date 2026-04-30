@@ -28,7 +28,12 @@
 
 <main class="app-card">
   <section class="turn-card card">
-    <div id="turnTitle" class="turn-title">Vuorossa: –</div>
+    <div class="turn-hero">
+      <div class="turn-hero__eyebrow">Vuorossa</div>
+      <div id="turnTitle" class="turn-hero__primary">–</div>
+      <div id="turnSubtitle" class="turn-hero__secondary muted">Lisää ensin tiimit, jotta peli voi alkaa.</div>
+      <div id="turnMeta" class="turn-hero__meta" aria-live="polite"></div>
+    </div>
     <div id="matchSummary" class="match-summary" aria-live="polite"></div>
   </section>
 

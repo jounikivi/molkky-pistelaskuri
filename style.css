@@ -132,6 +132,59 @@ a:hover{text-decoration:underline}
   display:grid;
   gap:.85rem;
 }
+.turn-card{
+  background:
+    radial-gradient(720px 260px at 100% 0%, rgba(47,122,248,.18) 0%, transparent 58%),
+    linear-gradient(180deg, rgba(24,32,48,.96), rgba(17,24,38,.98));
+}
+.turn-hero{
+  display:grid;
+  gap:.4rem;
+}
+.turn-hero__eyebrow{
+  color:var(--muted);
+  font-size:.78rem;
+  font-weight:800;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+.turn-hero__primary{
+  font-size:clamp(1.85rem, 4vw, 2.65rem);
+  line-height:1.02;
+  font-weight:900;
+  letter-spacing:-.02em;
+  word-break:break-word;
+}
+.turn-hero__secondary{
+  font-size:1rem;
+  max-width:42ch;
+}
+.turn-hero__meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:.45rem;
+  margin-top:.1rem;
+}
+.turn-hero__chip{
+  display:inline-flex;
+  align-items:center;
+  min-height:30px;
+  padding:.28rem .6rem;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background:#0e1726;
+  color:var(--text);
+  font-size:.82rem;
+  font-weight:700;
+}
+.turn-hero__chip--score{
+  background:#0f243d;
+  border-color:#2b4d7c;
+}
+.turn-hero__chip--miss{
+  background:#31131d;
+  border-color:#7a1f29;
+}
 
 /* Win modal */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:30}
@@ -654,6 +707,19 @@ a:hover{text-decoration:underline}
   }
   .match-summary__item{
     padding:.52rem .58rem;
+  }
+  .turn-hero__primary{
+    font-size:clamp(2rem, 8vw, 2.5rem);
+  }
+  .turn-hero__secondary{
+    font-size:.96rem;
+  }
+  .turn-hero__meta{
+    gap:.4rem;
+  }
+  .turn-hero__chip{
+    width:100%;
+    justify-content:center;
   }
   .section-note{
     font-size:.92rem;

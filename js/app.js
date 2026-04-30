@@ -101,6 +101,8 @@ const els = {
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
   turnTitle: document.getElementById("turnTitle"),
+  turnSubtitle: document.getElementById("turnSubtitle"),
+  turnMeta: document.getElementById("turnMeta"),
   matchSummary: document.getElementById("matchSummary"),
   winModal: document.getElementById("winModal"),
   winPanel: document.querySelector("#winModal .win-modal"),
@@ -169,10 +171,51 @@ function render(){
   renderControls();
   save();
 }
+
+function renderTurnMeta(chips = []){
+  if(!els.turnMeta) return;
+  els.turnMeta.innerHTML = chips.map(chip => `
+    <span class="turn-hero__chip ${chip.tone ? `turn-hero__chip--${chip.tone}` : ""}">${escapeHtml(chip.label)}</span>
+  `).join("");
+}
+
 function renderTurn(){
-  if(state.ended){ els.turnTitle.textContent = "Peli päättynyt"; return; }
+  if(state.ended){
+    els.turnTitle.textContent = "Peli päättynyt";
+    if(els.turnSubtitle) els.turnSubtitle.textContent = "Voit aloittaa uuden pelin samoilla pelaajilla tai tyhjentää tilanteen.";
+    renderTurnMeta([]);
+    return;
+  }
+  if(!state.players.length){
+    els.turnTitle.textContent = "Ei pelaajia";
+    if(els.turnSubtitle) els.turnSubtitle.textContent = "Lisää ensin pelaajat, jotta peli voi alkaa.";
+    renderTurnMeta([]);
+    return;
+  }
+
   const p = currentPlayer();
-  els.turnTitle.textContent = p ? `Vuorossa: ${p.name}` : "Vuorossa: –";
+  if(!p){
+    els.turnTitle.textContent = "Ei aktiivista pelaajaa";
+    if(els.turnSubtitle) els.turnSubtitle.textContent = "Peli tarvitsee vähintään yhden aktiivisen pelaajan.";
+    renderTurnMeta([]);
+    return;
+  }
+
+  const activePlayers = state.players.filter(player => player.active);
+  const nextTurnIndex = getNextSoloTurnIndex(state.players, state.order, state.turnIndex);
+  const nextPlayerId = state.order[nextTurnIndex];
+  const nextPlayer = getPlayer(nextPlayerId);
+  const nextLabel = activePlayers.length > 1 && nextPlayer
+    ? `Seuraavana: ${nextPlayer.name}`
+    : "Valmis heittämään";
+
+  els.turnTitle.textContent = p.name;
+  if(els.turnSubtitle) els.turnSubtitle.textContent = nextLabel;
+  renderTurnMeta([
+    { label: `Pisteet ${p.score ?? 0}`, tone: "score" },
+    { label: `Hudit ${p.misses ?? 0}/3`, tone: "miss" },
+    { label: `Voittoon ${Math.max(0, 50 - (p.score ?? 0))}` }
+  ]);
 }
 function renderMatchSummary(){
   if(!els.matchSummary) return;
