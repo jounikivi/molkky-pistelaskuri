@@ -4,8 +4,10 @@ import { createPlayerState, applyScoreRules } from "./rules.js";
 import { canonName, getLatestHistoryEntry, sanitizeName } from "./shared.js";
 import {
   applySoloThrowToPlayer,
+  getTurnIndexForParticipant,
   getNextSoloTurnIndex,
   recomputePlayerFromHistory,
+  shouldAskMissDecision,
   shouldEndSoloGame
 } from "./state-utils.js";
 
@@ -232,22 +234,15 @@ async function applyThrow(n){
   const p = currentPlayer(); if(!p) return;
   const val = Number(n)||0;
   const previousScore = p.score || 0;
-  const isMiss = val===0;
   let missDecision = null;
-  if(isMiss){
-    p.misses=(p.misses||0)+1;
-    if(p.misses>=3){
-      const shouldContinue = await askMissDecision(p.name);
-      missDecision = shouldContinue ? "continue" : "eliminate";
-      if(shouldContinue){
-        p.misses = 0;
-        toast(`${p.name} jatkaa peliä`);
-      } else {
-        p.active=false;
-        toast(`${p.name} tippui (3 hutia)`);
-      }
+  if(shouldAskMissDecision(p.misses, val)){
+    const shouldContinue = await askMissDecision(p.name);
+    missDecision = shouldContinue ? "continue" : "eliminate";
+    if(shouldContinue){
+      toast(`${p.name} jatkaa peliä`);
+    } else {
+      toast(`${p.name} tippui (3 hutia)`);
     }
-  } else {
   }
   Object.assign(p, applySoloThrowToPlayer(p, val, missDecision));
 
@@ -266,7 +261,7 @@ function undo(){
 
   latest.player.history.pop();
   recomputePlayerState(latest.player);
-  state.turnIndex = latest.index;
+  state.turnIndex = getTurnIndexForParticipant(state.order, latest.player.id, state.turnIndex);
   state.ended=false;
   closeWin();
   toast("Peruttu viimeisin heitto");

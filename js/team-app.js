@@ -5,9 +5,11 @@ import { canonName, getLatestHistoryEntry, sanitizeName } from "./shared.js";
 import { buildRandomTeams, parseTeamRandomizerNames } from "./team-randomizer.js";
 import {
   applyTeamThrowToTeam,
+  getTurnIndexForParticipant,
   getNextActivePlayerIndex,
   getNextTeamTurnIndex,
   recomputeTeamFromHistory,
+  shouldAskMissDecision,
   shouldEndTeamGame
 } from "./state-utils.js";
 
@@ -425,26 +427,18 @@ async function submitThrowTeam(n){
 
   const val = Number(n)||0;
   const previousScore = team.score || 0;
-  const isMiss = val===0;
   let missDecision = null;
-  if(isMiss){
-    player.misses=(player.misses||0)+1;
-    if(player.misses>=3){
-      const shouldContinue = await askMissDecision(player.name);
-      missDecision = shouldContinue ? "continue" : "eliminate";
-      if(shouldContinue){
-        player.misses = 0;
-        ttoast(`${player.name} jatkaa peliä`);
-      } else {
-        player.active=false;
-        ttoast(`${player.name} tippui (3 hutia)`);
-      }
+  if(shouldAskMissDecision(player.misses, val)){
+    const shouldContinue = await askMissDecision(player.name);
+    missDecision = shouldContinue ? "continue" : "eliminate";
+    if(shouldContinue){
+      ttoast(`${player.name} jatkaa peliä`);
+    } else {
+      ttoast(`${player.name} tippui (3 hutia)`);
     }
-  } else {
   }
   const applied = applyTeamThrowToTeam(team, player.id, val, missDecision);
   Object.assign(team, applied.team);
-  const playerIdx = applied.playerIndex;
 
   if(team.active){
     const res = applyScoreRules(previousScore, val);
@@ -464,7 +458,7 @@ function undoTeam(){
   latest.player.history.pop();
   recomputeTeamState(latest.team);
   latest.team.nextPlayerIdx = latest.playerIndex;
-  T.teamTurnIdx = latest.teamIndex;
+  T.teamTurnIdx = getTurnIndexForParticipant(T.order, latest.team.id, T.teamTurnIdx);
   T.playerTurnIdx = 0;
   T.ended=false;
   closeWin();

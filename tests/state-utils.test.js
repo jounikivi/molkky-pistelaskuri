@@ -4,11 +4,13 @@ import assert from "node:assert/strict";
 import {
   applySoloThrowToPlayer,
   applyTeamThrowToTeam,
+  getTurnIndexForParticipant,
   getNextActivePlayerIndex,
   getNextSoloTurnIndex,
   getNextTeamTurnIndex,
   recomputePlayerFromHistory,
   recomputeTeamFromHistory,
+  shouldAskMissDecision,
   shouldEndSoloGame,
   shouldEndTeamGame
 } from "../js/state-utils.js";
@@ -92,6 +94,22 @@ test("getNextActivePlayerIndex skips inactive players", () => {
   ];
 
   assert.equal(getNextActivePlayerIndex(players, 0), 2);
+});
+
+test("shouldAskMissDecision only triggers on the third consecutive miss", () => {
+  assert.equal(shouldAskMissDecision(0, 0), false);
+  assert.equal(shouldAskMissDecision(1, 0), false);
+  assert.equal(shouldAskMissDecision(2, 0), true);
+  assert.equal(shouldAskMissDecision(2, 7), false);
+});
+
+test("getTurnIndexForParticipant resolves shuffled order indices", () => {
+  const order = ["b", "a", "c"];
+
+  assert.equal(getTurnIndexForParticipant(order, "b", 0), 0);
+  assert.equal(getTurnIndexForParticipant(order, "a", 0), 1);
+  assert.equal(getTurnIndexForParticipant(order, "c", 0), 2);
+  assert.equal(getTurnIndexForParticipant(order, "missing", 2), 2);
 });
 
 test("applySoloThrowToPlayer records throw and resets misses on continue decision", () => {

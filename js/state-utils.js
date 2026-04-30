@@ -1,6 +1,16 @@
 import { applyScoreRules } from "./rules.js";
 import { sortByTimestamp } from "./shared.js";
 
+export function shouldAskMissDecision(currentMisses, value){
+  const nextMisses = (Number(currentMisses) || 0) + 1;
+  return (Number(value) || 0) === 0 && nextMisses >= 3;
+}
+
+export function getTurnIndexForParticipant(order, participantId, fallbackIndex = 0){
+  const turnIndex = (order ?? []).findIndex(id => id === participantId);
+  return turnIndex >= 0 ? turnIndex : fallbackIndex;
+}
+
 export function getNextActivePlayerIndex(players, startIdx = 0){
   if(!players?.length) return -1;
   const len = players.length;
