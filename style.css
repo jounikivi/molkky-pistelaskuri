@@ -26,6 +26,43 @@ a:hover{text-decoration:underline}
 }
 .brand{margin:0;font-weight:800;letter-spacing:.2px}
 .nav{display:flex;gap:.5rem;flex-wrap:wrap}
+.back-link{
+  display:inline-flex;
+  align-items:center;
+  gap:.38rem;
+}
+.header-menu{
+  display:none;
+  position:relative;
+}
+.header-menu summary{
+  list-style:none;
+}
+.header-menu summary::-webkit-details-marker{
+  display:none;
+}
+.icon-btn{
+  min-width:44px;
+  padding:.5rem .75rem;
+  font-size:1.2rem;
+  line-height:1;
+}
+.header-menu__panel{
+  position:absolute;
+  top:calc(100% + .45rem);
+  right:0;
+  min-width:192px;
+  display:grid;
+  gap:.45rem;
+  padding:.55rem;
+  border:1px solid var(--border);
+  border-radius:14px;
+  background:linear-gradient(180deg, rgba(24,32,48,.98), rgba(17,24,38,.98));
+  box-shadow:var(--shadow);
+}
+.header-menu__panel .btn{
+  width:100%;
+}
 
 /* Layout & cards */
 .app-card{max-width:1000px;margin:1rem auto;padding:0 .95rem}
@@ -656,34 +693,42 @@ a:hover{text-decoration:underline}
 @media(max-width:700px){
   .game-page .site-header{
     display:grid;
-    grid-template-columns:auto 1fr;
+    grid-template-columns:auto minmax(0,1fr) auto;
     align-items:center;
-    gap:.55rem .7rem;
+    gap:.5rem;
+    padding:.55rem .75rem;
   }
   .game-page .site-header > .brand{
     grid-column:2;
     grid-row:1;
-    justify-self:start;
+    justify-self:center;
     min-width:0;
-    font-size:1.2rem;
+    font-size:1.14rem;
+    text-align:center;
   }
-  .game-page .site-header > .btn{
+  .game-page .site-header > .back-link{
     grid-column:1;
     grid-row:1;
-    white-space:nowrap;
+  }
+  .game-page .site-header > .header-menu{
+    grid-column:3;
+    grid-row:1;
+    display:block;
+    justify-self:end;
   }
   .game-page .site-header > .nav{
-    grid-column:1 / -1;
-    grid-row:2;
-    width:100%;
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-  .game-page .site-header > .nav .btn{
-    width:100%;
-  }
-  .game-page #undo{
     display:none;
+  }
+  .game-page .back-link{
+    min-width:44px;
+    justify-content:center;
+    padding-inline:.7rem;
+  }
+  .game-page .back-link__label{
+    display:none;
+  }
+  .game-page .header-menu__panel{
+    min-width:176px;
   }
   .home-page .site-header{
     align-items:flex-start;

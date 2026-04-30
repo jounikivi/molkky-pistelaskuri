@@ -17,13 +17,20 @@
 </head>
 <body class="game-page">
 <header class="site-header">
-  <a class="btn" href="index.html">← Etusivu</a>
+  <a class="btn back-link" href="index.html"><span aria-hidden="true">←</span> <span class="back-link__label">Etusivu</span></a>
   <h1 class="brand">Joukkuepeli</h1>
   <nav class="nav">
     <button class="btn" id="shuffle">Arvo aloitus</button>
     <button class="btn" id="undo">Peru</button>
     <button class="btn danger" id="reset">Nollaa peli</button>
   </nav>
+  <details class="header-menu" id="headerMenu">
+    <summary class="btn icon-btn" aria-label="Avaa valikko">⋯</summary>
+    <div class="header-menu__panel">
+      <button class="btn" id="shuffleMenu">Arvo aloitus</button>
+      <button class="btn danger" id="resetMenu">Nollaa peli</button>
+    </div>
+  </details>
 </header>
 
 <main class="app-card">

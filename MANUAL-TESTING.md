@@ -69,7 +69,8 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Tarkista, etta napit ovat kaytettavia myos kapealla leveydella eika heittopaneeli peita kriittista sisaltoa.
 - Tarkista, etta aloitustilassa `Vuorossa`-kortti on kompaktimpi kuin pelin aikana, mutta muuttuu selkeaksi isoksi vuoronakymaksi ensimmaisen heiton jalkeen.
 - Tarkista puhelinleveydella, etta ylapalkin toiminnot pinoutuvat siististi omalle rivilleen eivatka valu ruudun ulos.
-- Tarkista puhelinleveydella, etta ylapalkissa naytetaan vain `Arvo aloitus` ja `Nollaa peli`, ja etta `Peru` naytetaan vain alapalkissa pistepainikkeiden yhteydessa.
+- Tarkista puhelinleveydella, etta ylapalkissa naytetaan vain takaisinpaluu, otsikko ja `⋯`-valikko, ja etta `Arvo aloitus` seka `Nollaa peli` toimivat valikon kautta oikein.
+- Tarkista puhelinleveydella, etta `Peru` naytetaan vain alapalkissa pistepainikkeiden yhteydessa.
 - Tarkista puhelinleveydella, etta pisteita lisataan vain alapalkin heittopaneelista ja etta punainen `Huti (0)` toimii samalla tavalla kuin muutkin pistepainikkeet.
 - Tarkista puhelinleveydella, etta alapalkin heittopainikkeet ovat helposti painettavia, mahtuvat ruudulle ilman vaakasuuntaista scrollausta ja etta sivun loppu sisalto nousee niiden ylapuolelle.
 - Tarkista, etta `Pelitilanne`-osio paivittyy jokaisen heiton jalkeen oikein ja etta johtaja, sijoitukset ja vuorossa oleva pelaaja tai tiimi vastaavat todellista tilannetta.

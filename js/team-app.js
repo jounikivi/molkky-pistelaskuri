@@ -142,6 +142,7 @@ function getTeamRanking(){
 
 /* --------------------- DOM --------------------- */
 const el = {
+  headerMenu: document.getElementById("headerMenu"),
   grid: document.getElementById("teamsGrid"),
   empty: document.getElementById("emptyState"),
   teamSetupStack: document.getElementById("teamSetupStack"),
@@ -154,6 +155,7 @@ const el = {
   teamLockNotice: document.getElementById("teamLockNotice"),
   shuffle: document.getElementById("shuffle"),
   shuffleAlt: document.getElementById("shuffleAlt"),
+  shuffleMenu: document.getElementById("shuffleMenu"),
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
   turnCard: document.querySelector(".turn-card"),
@@ -188,6 +190,7 @@ const el = {
   toast: document.getElementById("toast"),
   reset: document.getElementById("reset"),
   resetAlt: document.getElementById("resetAlt"),
+  resetMenu: document.getElementById("resetMenu"),
   throwBar: document.querySelector(".throwbar"),
 };
 
@@ -229,6 +232,10 @@ function triggerWinCelebration(celebrate){
   renderWinConfetti();
   void el.winPanel.offsetWidth;
   el.winPanel.classList.add("is-celebrating");
+}
+
+function closeHeaderMenu(){
+  el.headerMenu?.removeAttribute("open");
 }
 
 /* --------------------- RENDER --------------------- */
@@ -409,7 +416,7 @@ function trenderControls(){
   const rosterLocked = hasTeamGameStarted();
   const readyToThrow = !T.ended && hasPlayableTeams();
   const compactTurn = !T.ended && !hasTeamGameStarted();
-  [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuffle));
+  [el.shuffle, el.shuffleAlt, el.shuffleMenu].forEach(b=>b&&(b.disabled=!canShuffle));
   [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
   el.teamSetupStack?.classList.toggle("hidden", rosterLocked);
   if(el.addTeam) el.addTeam.disabled = rosterLocked;
@@ -814,12 +821,12 @@ function ttoast(msg){ if(!el.toast) return; el.toast.textContent=msg; el.toast.c
 /* ---------- Eventit ---------- */
 el.addTeam?.addEventListener("click", addTeam);
 el.randomizeTeams?.addEventListener("click", randomizeTeamsFromInput);
-[el.shuffle, el.shuffleAlt].forEach(b=>b?.addEventListener("click", ()=>{
+[el.shuffle, el.shuffleAlt, el.shuffleMenu].forEach(b=>b?.addEventListener("click", ()=>{
   if(teamsReadyCount() < 2) return;
   const arr = [...T.teams.map(t=>t.id)];
   for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]]; }
   T.teams.forEach(t=>{ t.nextPlayerIdx = 0; });
-  T.order = arr; T.teamTurnIdx=0; T.playerTurnIdx=0; trender();
+  T.order = arr; T.teamTurnIdx=0; T.playerTurnIdx=0; trender(); closeHeaderMenu();
 }));
 [el.undo, el.undoAlt].forEach(b=>b?.addEventListener("click", undoTeam));
 el.winSame?.addEventListener("click", newTeamSame);
@@ -827,7 +834,10 @@ el.winFresh?.addEventListener("click", newTeamFresh);
 el.winClose?.addEventListener("click", closeWin);
 
 /* Nollausnapit */
-[el.reset, el.resetAlt].forEach(b=>b?.addEventListener("click", askReset));
+[el.reset, el.resetAlt, el.resetMenu].forEach(b=>b?.addEventListener("click", ()=>{
+  closeHeaderMenu();
+  askReset();
+}));
 
 /* Heittopaneeli delegoituna */
 const tThrowBar = document.querySelector(".throwbar");
@@ -862,6 +872,18 @@ el.grid?.addEventListener("click",(e)=>{
       if(name == null) return;
       addPlayerToTeam(teamId, name);
     });
+  }
+});
+
+document.addEventListener("click", (event)=>{
+  if(!el.headerMenu?.open) return;
+  if(el.headerMenu.contains(event.target)) return;
+  closeHeaderMenu();
+});
+
+document.addEventListener("keydown", (event)=>{
+  if(event.key === "Escape"){
+    closeHeaderMenu();
   }
 });
 

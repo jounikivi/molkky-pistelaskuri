@@ -94,6 +94,7 @@ function getSoloRanking(){
 }
 
 const els = {
+  headerMenu: document.getElementById("headerMenu"),
   playersGrid: document.getElementById("playersGrid"),
   emptyState: document.getElementById("emptyState"),
   playerSetupCard: document.getElementById("playerSetupCard"),
@@ -102,6 +103,7 @@ const els = {
   playerLockNotice: document.getElementById("playerLockNotice"),
   shuffle: document.getElementById("shuffle"),
   shuffleAlt: document.getElementById("shuffleAlt"),
+  shuffleMenu: document.getElementById("shuffleMenu"),
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
   turnCard: document.querySelector(".turn-card"),
@@ -130,6 +132,7 @@ const els = {
   toast: document.getElementById("toast"),
   reset: document.getElementById("reset"),
   resetAlt: document.getElementById("resetAlt"),
+  resetMenu: document.getElementById("resetMenu"),
   throwBar: document.querySelector(".throwbar"),
 };
 
@@ -169,6 +172,10 @@ function triggerWinCelebration(celebrate){
   renderWinConfetti();
   void els.winPanel.offsetWidth;
   els.winPanel.classList.add("is-celebrating");
+}
+
+function closeHeaderMenu(){
+  els.headerMenu?.removeAttribute("open");
 }
 
 function render(){
@@ -306,7 +313,7 @@ function renderControls(){
   const rosterLocked = hasSoloGameStarted();
   const readyToThrow = !state.ended && hasSoloPlayableRoster() && Boolean(currentPlayer());
   const compactTurn = !state.ended && !hasSoloGameStarted();
-  [els.shuffle,els.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuf));
+  [els.shuffle,els.shuffleAlt, els.shuffleMenu].forEach(b=>b&&(b.disabled=!canShuf));
   [els.undo,els.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
   els.playerSetupCard?.classList.toggle("hidden", rosterLocked);
   if(els.addPlayer) els.addPlayer.disabled = rosterLocked;
@@ -526,14 +533,20 @@ function toast(msg){ if(!els.toast) return; els.toast.textContent=msg; els.toast
 
 /* Events */
 els.addPlayer?.addEventListener("click", addPlayer);
-[els.shuffle, els.shuffleAlt].forEach(b=>b?.addEventListener("click", shuffleOrder));
+[els.shuffle, els.shuffleAlt, els.shuffleMenu].forEach(b=>b?.addEventListener("click", ()=>{
+  shuffleOrder();
+  closeHeaderMenu();
+}));
 [els.undo, els.undoAlt].forEach(b=>b?.addEventListener("click", undo));
 els.winSame?.addEventListener("click", newGameSame);
 els.winFresh?.addEventListener("click", newGameFresh);
 els.winClose?.addEventListener("click", closeWin);
 
 /* Nollausnapit */
-[els.reset, els.resetAlt].forEach(b=>b?.addEventListener("click", askReset));
+[els.reset, els.resetAlt, els.resetMenu].forEach(b=>b?.addEventListener("click", ()=>{
+  closeHeaderMenu();
+  askReset();
+}));
 
 /* Heittopaneeli delegoituna */
 const throwBar = document.querySelector(".throwbar");
@@ -546,5 +559,17 @@ if(throwBar && !throwBar.dataset.bound){
   });
   throwBar.dataset.bound="1";
 }
+
+document.addEventListener("click", (event)=>{
+  if(!els.headerMenu?.open) return;
+  if(els.headerMenu.contains(event.target)) return;
+  closeHeaderMenu();
+});
+
+document.addEventListener("keydown", (event)=>{
+  if(event.key === "Escape"){
+    closeHeaderMenu();
+  }
+});
 
 render();
