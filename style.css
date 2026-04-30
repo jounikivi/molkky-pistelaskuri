@@ -8,6 +8,7 @@
 
 *{box-sizing:border-box}
 html,body{height:100%}
+[hidden]{display:none!important}
 body{
   margin:0; font:16px/1.45 system-ui, Segoe UI, Roboto, Arial;
   color:var(--text); background:radial-gradient(1200px 800px at 10% -20%, #142034 0%, #0b1018 55%) fixed;
@@ -37,9 +38,15 @@ a:hover{text-decoration:underline}
 }
 .header-menu summary{
   list-style:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
 }
 .header-menu summary::-webkit-details-marker{
   display:none;
+}
+.header-menu summary::marker{
+  content:"";
 }
 .icon-btn{
   min-width:44px;
@@ -147,6 +154,9 @@ a:hover{text-decoration:underline}
   padding:.65rem .95rem calc(.65rem + env(safe-area-inset-bottom));
   background:rgba(16,24,38,.92); backdrop-filter:blur(8px) saturate(120%);
   border-top:1px solid var(--border)
+}
+.throwbar[hidden]{
+  display:none!important;
 }
 .throwbar > .tb-key{min-width:82px}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem}
