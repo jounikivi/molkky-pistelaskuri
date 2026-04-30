@@ -79,6 +79,10 @@ function hasSoloGameStarted(){
   return state.players.some(player => player.history?.length);
 }
 
+function hasSoloPlayableRoster(){
+  return state.players.some(player => player.active);
+}
+
 function getSoloRanking(){
   return [...state.players].sort((a, b)=>{
     const scoreDiff = (b.score || 0) - (a.score || 0);
@@ -100,6 +104,8 @@ const els = {
   shuffleAlt: document.getElementById("shuffleAlt"),
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
+  turnCard: document.querySelector(".turn-card"),
+  turnEyebrow: document.querySelector(".turn-hero__eyebrow"),
   turnTitle: document.getElementById("turnTitle"),
   turnSubtitle: document.getElementById("turnSubtitle"),
   turnMeta: document.getElementById("turnMeta"),
@@ -124,6 +130,7 @@ const els = {
   toast: document.getElementById("toast"),
   reset: document.getElementById("reset"),
   resetAlt: document.getElementById("resetAlt"),
+  throwBar: document.querySelector(".throwbar"),
 };
 
 let pendingMissDecision = null;
@@ -181,23 +188,36 @@ function renderTurnMeta(chips = []){
 
 function renderTurn(){
   if(state.ended){
+    if(els.turnEyebrow) els.turnEyebrow.textContent = "Peli valmis";
     els.turnTitle.textContent = "Peli päättynyt";
     if(els.turnSubtitle) els.turnSubtitle.textContent = "Voit aloittaa uuden pelin samoilla pelaajilla tai tyhjentää tilanteen.";
     renderTurnMeta([]);
     return;
   }
   if(!state.players.length){
-    els.turnTitle.textContent = "Ei pelaajia";
-    if(els.turnSubtitle) els.turnSubtitle.textContent = "Lisää ensin pelaajat, jotta peli voi alkaa.";
+    if(els.turnEyebrow) els.turnEyebrow.textContent = "Valmistele peli";
+    els.turnTitle.textContent = "Lisää pelaajat";
+    if(els.turnSubtitle) els.turnSubtitle.textContent = "Lisää ensin pelaajat. Aloitusjärjestyksen voi arpoa, kun pelaajia on vähintään kaksi.";
     renderTurnMeta([]);
     return;
   }
 
   const p = currentPlayer();
   if(!p){
-    els.turnTitle.textContent = "Ei aktiivista pelaajaa";
-    if(els.turnSubtitle) els.turnSubtitle.textContent = "Peli tarvitsee vähintään yhden aktiivisen pelaajan.";
+    if(els.turnEyebrow) els.turnEyebrow.textContent = "Peli ei ole valmis";
+    els.turnTitle.textContent = "Tarvitaan aktiivinen pelaaja";
+    if(els.turnSubtitle) els.turnSubtitle.textContent = "Vähintään yhden pelaajan pitää olla mukana pelissä, jotta heitot voidaan aloittaa.";
     renderTurnMeta([]);
+    return;
+  }
+
+  if(!hasSoloGameStarted()){
+    if(els.turnEyebrow) els.turnEyebrow.textContent = "Aloitusvuoro";
+    els.turnTitle.textContent = p.name;
+    if(els.turnSubtitle) els.turnSubtitle.textContent = "Peli on valmis alkamaan. Lisää ensimmäinen heitto alhaalta.";
+    renderTurnMeta([
+      { label: `Pelaajia ${state.players.length}` }
+    ]);
     return;
   }
 
@@ -209,6 +229,7 @@ function renderTurn(){
     ? `Seuraavana: ${nextPlayer.name}`
     : "Valmis heittämään";
 
+  if(els.turnEyebrow) els.turnEyebrow.textContent = "Vuorossa";
   els.turnTitle.textContent = p.name;
   if(els.turnSubtitle) els.turnSubtitle.textContent = nextLabel;
   renderTurnMeta([
@@ -220,9 +241,12 @@ function renderTurn(){
 function renderMatchSummary(){
   if(!els.matchSummary) return;
   if(!state.players.length){
-    els.matchSummary.innerHTML = `<div class="match-summary__empty muted">Pelitilanne näkyy tässä, kun pelaajat on lisätty.</div>`;
+    els.matchSummary.innerHTML = "";
+    els.matchSummary.hidden = true;
     return;
   }
+
+  els.matchSummary.hidden = false;
 
   const ranking = getSoloRanking();
   const currentId = currentPlayer()?.id;
@@ -280,12 +304,19 @@ function renderControls(){
   const canShuf = state.players.length>=2 && !state.ended;
   const canUndo = state.players.some(p=>p.history?.length) && !state.ended;
   const rosterLocked = hasSoloGameStarted();
+  const readyToThrow = !state.ended && hasSoloPlayableRoster() && Boolean(currentPlayer());
+  const compactTurn = !state.ended && !hasSoloGameStarted();
   [els.shuffle,els.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuf));
   [els.undo,els.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
   els.playerSetupCard?.classList.toggle("hidden", rosterLocked);
   if(els.addPlayer) els.addPlayer.disabled = rosterLocked;
   if(els.playerName) els.playerName.disabled = rosterLocked;
   els.playerLockNotice?.classList.toggle("hidden", !rosterLocked);
+  els.turnCard?.classList.toggle("turn-card--compact", compactTurn);
+  if(els.throwBar){
+    els.throwBar.hidden = !readyToThrow;
+  }
+  document.body.classList.toggle("has-throwbar", readyToThrow);
 }
 
 function addPlayer(){

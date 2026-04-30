@@ -14,12 +14,13 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 
 - Avaa `index.html`. Odotus: etusivu latautuu ilman rikkinnaisia linkkeja.
 - Avaa `ohjeet.html`. Odotus: ohjesivu latautuu, keilojen alkuasettelu nakyy oikein ja linkit peleihin toimivat.
-- Avaa `game.html`. Odotus: yksilopelin nakyma latautuu ja `Vuorossa` nayttaa `-`, jos pelaajia ei ole viela lisatty.
-- Avaa `team-game.html`. Odotus: joukkuepelin nakyma latautuu ja tyhja tila kertoo, etta tiimeja ei ole viela lisatty.
+- Avaa `game.html`. Odotus: yksilopelin nakyma latautuu kompaktissa aloitustilassa, heittopaneeli ei nay viela ja ohje kehottaa lisaamaan pelaajat ensin.
+- Avaa `team-game.html`. Odotus: joukkuepelin nakyma latautuu kompaktissa aloitustilassa, heittopaneeli ei nay viela ja ohje kehottaa lisaamaan tiimit ensin.
 
 ## Yksilopeli
 
 - Lisaa pelaajat `Matti` ja `Liisa`. Odotus: molemmat ilmestyvat korteiksi, `Arvo aloitus` aktivoituu ja `Peru` pysyy pois paalta ennen ensimmaista heittoa.
+- Kun pelaajat on lisatty, tarkista aloitustila. Odotus: `Vuorossa`-kortti pysyy kompaktina, ensimmaisen heittajan nimi nakyy ja heittopaneeli tulee esiin vasta kun peli on valmis aloitettavaksi.
 - Yrita lisata duplikaatti, esimerkiksi `matti`. Odotus: duplikaattia ei lisata.
 - Yrita lisata nimi, jossa on turhia valeja tai kulmasulkeita, esimerkiksi `  <Teemu>  `. Odotus: nimi siistiytyy turvalliseen muotoon eika riko layoutia.
 - Paina `Arvo aloitus`. Odotus: vuorojarjestys voi vaihtua, mutta vuorossa on edelleen vain yksi aktiivinen pelaaja kerrallaan.
@@ -36,12 +37,13 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Rakenna tilanne, jossa pelaaja saavuttaa tasan 50 pistetta. Odotus: voittomodaali aukeaa, peli paattyy eika uusia heittoja voi syottaa ennen uuden pelin aloitusta.
 - Testaa voittomodaalista `Aloita uusi peli samoilla pelaajilla`. Odotus: nimet ja jarjestys sailyvat, mutta pisteet, hudit ja historiat nollautuvat.
 - Testaa voittomodaalista `Aloita alusta`. Odotus: koko peli tyhjenee takaisin alkutilaan.
-- Testaa `Nollaa peli`. Odotus: selain kysyy vahvistuksen ja vahvistuksen jalkeen peli tyhjenee kokonaan.
+- Testaa `Nollaa peli`. Odotus: sovellus avaa oman vahvistusmodaalin ja vahvistuksen jalkeen peli tyhjenee kokonaan.
 
 ## Joukkuepeli
 
 - Lisaa tiimit `Punainen` ja `Sininen`. Odotus: molemmat tiimit ilmestyvat korteiksi.
 - Lisaa kumpaankin tiimiin vahintaan kaksi pelaajaa `Lisaa pelaaja` -napilla. Odotus: pelaajat ilmestyvat oikean tiimin alle, eivatka duplikaatit mene saman tiimin sisalla lapi.
+- Kun tiimit ja pelaajat on lisatty, tarkista aloitustila. Odotus: `Vuorossa`-kortti pysyy kompaktina, ensimmaisen tiimin ja heittajan tiedot nakyvat ja heittopaneeli tulee esiin vasta kun ainakin yksi pelivalmis tiimi on olemassa.
 - Testaa `Arvo tiimit` syottamalla esimerkiksi `Matti`, `Liisa`, `Teemu` ja `Aino`, valitse 2 tiimia ja paina arvontaa. Odotus: sovellus luo valmiit tiimit, jakaa pelaajat mahdollisimman tasaisesti ja nimeaa tiimit automaattisesti.
 - Testaa `Arvo tiimit` olemassa olevan mutta viela aloittamattoman kokoonpanon paalle. Odotus: sovellus kysyy vahvistuksen ennen kuin vanhat tiimit ja pelaajat korvataan.
 - Paina `Arvo aloitus`. Odotus: vuorossa on yksi tiimi ja yksi kyseisen tiimin aktiivinen pelaaja.
@@ -58,12 +60,14 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Jos joukkueesta poistuu kaikki aktiiviset pelaajat, tarkista etta joukkue ei enaa saa vuoroa. Odotus: vuorotus siirtyy vain aktiivisille joukkueille.
 - Testaa voittomodaalista `Aloita uusi peli samoilla tiimeilla`. Odotus: tiimit ja pelaajat sailyvat, mutta pisteet, hudit, historiat ja sisaiset vuoroindeksit nollautuvat.
 - Testaa voittomodaalista `Aloita alusta`. Odotus: kaikki tiimit ja pelaajat poistuvat.
-- Testaa `Nollaa peli`. Odotus: selain kysyy vahvistuksen ja vahvistuksen jalkeen peli tyhjenee kokonaan.
+- Testaa `Nollaa peli`. Odotus: sovellus avaa oman vahvistusmodaalin ja vahvistuksen jalkeen peli tyhjenee kokonaan.
 
 ## Naytto ja kaytettavyys
 
 - Tarkista, etta pitkat nimet eivat riko korttien layoutia yksilo- tai joukkuepelissa.
+- Tarkista, etta ennen pelin aloitusta heittopaneeli pysyy piilossa, kunnes pelissa on oikeasti pelivalmis kokoonpano.
 - Tarkista, etta napit ovat kaytettavia myos kapealla leveydella eika heittopaneeli peita kriittista sisaltoa.
+- Tarkista, etta aloitustilassa `Vuorossa`-kortti on kompaktimpi kuin pelin aikana, mutta muuttuu selkeaksi isoksi vuoronakymaksi ensimmaisen heiton jalkeen.
 - Tarkista puhelinleveydella, etta ylapalkin toiminnot pinoutuvat siististi omalle rivilleen eivatka valu ruudun ulos.
 - Tarkista puhelinleveydella, etta ylapalkissa naytetaan vain `Arvo aloitus` ja `Nollaa peli`, ja etta `Peru` naytetaan vain alapalkissa pistepainikkeiden yhteydessa.
 - Tarkista puhelinleveydella, etta pisteita lisataan vain alapalkin heittopaneelista ja etta punainen `Huti (0)` toimii samalla tavalla kuin muutkin pistepainikkeet.

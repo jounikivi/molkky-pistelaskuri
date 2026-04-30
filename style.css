@@ -32,6 +32,9 @@ a:hover{text-decoration:underline}
 .game-page .app-card{
   padding-bottom:calc(7.5rem + env(safe-area-inset-bottom));
 }
+.game-page:not(.has-throwbar) .app-card{
+  padding-bottom:1.25rem;
+}
 .card,.player-card,.team-card,.turn-card,.controls,.modal{
   background:linear-gradient(180deg, rgba(24,32,48,.9), rgba(17,24,38,.95));
   border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
@@ -136,6 +139,35 @@ a:hover{text-decoration:underline}
   background:
     radial-gradient(720px 260px at 100% 0%, rgba(47,122,248,.18) 0%, transparent 58%),
     linear-gradient(180deg, rgba(24,32,48,.96), rgba(17,24,38,.98));
+}
+.turn-card--compact{
+  padding-block:.9rem;
+}
+.turn-card--compact .turn-hero{
+  gap:.28rem;
+}
+.turn-card--compact .turn-hero__eyebrow{
+  font-size:.74rem;
+  letter-spacing:.08em;
+}
+.turn-card--compact .turn-hero__primary{
+  font-size:clamp(1.3rem, 3.6vw, 1.85rem);
+  line-height:1.08;
+}
+.turn-card--compact .turn-hero__secondary{
+  font-size:.95rem;
+  max-width:54ch;
+}
+.turn-card--compact .turn-hero__meta{
+  margin-top:.2rem;
+}
+.turn-card--compact .turn-hero__chip{
+  min-height:28px;
+  font-size:.78rem;
+}
+.turn-card--compact .match-summary{
+  margin-top:.7rem;
+  padding-top:.7rem;
 }
 .turn-hero{
   display:grid;
@@ -683,6 +715,9 @@ a:hover{text-decoration:underline}
     margin:.75rem auto 0;
     padding:0 .75rem calc(18rem + env(safe-area-inset-bottom));
   }
+  .game-page:not(.has-throwbar) .app-card{
+    padding:0 .75rem 1rem;
+  }
   .card,.player-card,.team-card,.turn-card,.modal{
     padding:.9rem;
   }
@@ -710,6 +745,9 @@ a:hover{text-decoration:underline}
   }
   .turn-hero__primary{
     font-size:clamp(2rem, 8vw, 2.5rem);
+  }
+  .turn-card--compact .turn-hero__primary{
+    font-size:clamp(1.45rem, 6.4vw, 1.95rem);
   }
   .turn-hero__secondary{
     font-size:.96rem;

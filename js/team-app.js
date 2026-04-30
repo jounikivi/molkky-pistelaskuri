@@ -126,6 +126,10 @@ function hasTeamGameStarted(){
   return T.teams.some(team => team.players?.some(player => player.history?.length));
 }
 
+function hasPlayableTeams(){
+  return teamsReadyCount() > 0 && Boolean(currentPlayerTeamScoped().player);
+}
+
 function getTeamRanking(){
   return [...T.teams].sort((a, b)=>{
     const scoreDiff = (b.score || 0) - (a.score || 0);
@@ -152,6 +156,8 @@ const el = {
   shuffleAlt: document.getElementById("shuffleAlt"),
   undo: document.getElementById("undo"),
   undoAlt: document.getElementById("undoAlt"),
+  turnCard: document.querySelector(".turn-card"),
+  turnEyebrow: document.querySelector(".turn-hero__eyebrow"),
   turnTitle: document.getElementById("turnTitle"),
   turnSubtitle: document.getElementById("turnSubtitle"),
   turnMeta: document.getElementById("turnMeta"),
@@ -182,6 +188,7 @@ const el = {
   toast: document.getElementById("toast"),
   reset: document.getElementById("reset"),
   resetAlt: document.getElementById("resetAlt"),
+  throwBar: document.querySelector(".throwbar"),
 };
 
 let pendingMissDecision = null;
@@ -257,6 +264,7 @@ function getUpcomingTeamTurnLabel(currentTeam, currentPlayer){
 
 function trenderTurn(){
   if(T.ended){
+    if(el.turnEyebrow) el.turnEyebrow.textContent = "Peli valmis";
     el.turnTitle.textContent = "Peli päättynyt";
     if(el.turnSubtitle) el.turnSubtitle.textContent = "Voit aloittaa uuden pelin samoilla tiimeillä tai tyhjentää tilanteen.";
     trenderTurnMeta([]);
@@ -264,31 +272,42 @@ function trenderTurn(){
   }
 
   if(!T.teams.length){
-    el.turnTitle.textContent = "Ei tiimejä";
-    if(el.turnSubtitle) el.turnSubtitle.textContent = "Lisää ensin tiimit, jotta peli voi alkaa.";
+    if(el.turnEyebrow) el.turnEyebrow.textContent = "Valmistele peli";
+    el.turnTitle.textContent = "Lisää tiimit";
+    if(el.turnSubtitle) el.turnSubtitle.textContent = "Lisää ensin tiimit tai arvo tiimit automaattisesti.";
     trenderTurnMeta([]);
     return;
   }
 
   const { team, player } = currentPlayerTeamScoped();
   if(!team){
-    el.turnTitle.textContent = "Ei aktiivista tiimiä";
-    if(el.turnSubtitle) el.turnSubtitle.textContent = "Peli tarvitsee vähintään yhden pelivalmiin tiimin.";
+    if(el.turnEyebrow) el.turnEyebrow.textContent = "Peli ei ole valmis";
+    el.turnTitle.textContent = "Tarvitaan pelivalmis tiimi";
+    if(el.turnSubtitle) el.turnSubtitle.textContent = "Lisää vähintään yhteen tiimiin aktiivinen pelaaja, jotta heitot voidaan aloittaa.";
     trenderTurnMeta([]);
     return;
   }
 
   if(team && !player){
+    if(el.turnEyebrow) el.turnEyebrow.textContent = "Peli ei ole valmis";
     el.turnTitle.textContent = team.name;
     if(el.turnSubtitle) el.turnSubtitle.textContent = "Lisää tiimiin vähintään yksi aktiivinen pelaaja.";
+    trenderTurnMeta([]);
+    return;
+  }
+
+  if(!hasTeamGameStarted()){
+    if(el.turnEyebrow) el.turnEyebrow.textContent = "Aloitusvuoro";
+    el.turnTitle.textContent = team.name;
+    if(el.turnSubtitle) el.turnSubtitle.textContent = player ? `Heittäjä: ${player.name}. Lisää ensimmäinen heitto alhaalta.` : "Peli on valmis alkamaan.";
     trenderTurnMeta([
-      { label: `Tiimin pisteet ${team.score ?? 0}`, tone: "score" },
-      { label: "Heittäjä puuttuu", tone: "miss" }
+      { label: `Pelivalmiit tiimit ${teamsReadyCount()}` }
     ]);
     return;
   }
 
   const nextLabel = getUpcomingTeamTurnLabel(team, player);
+  if(el.turnEyebrow) el.turnEyebrow.textContent = "Vuorossa";
   el.turnTitle.textContent = team.name;
   if(el.turnSubtitle) el.turnSubtitle.textContent = player ? `Heittäjä: ${player.name}` : "Valmis heittämään";
   trenderTurnMeta([
@@ -300,9 +319,12 @@ function trenderTurn(){
 function trenderMatchSummary(){
   if(!el.matchSummary) return;
   if(!T.teams.length){
-    el.matchSummary.innerHTML = `<div class="match-summary__empty muted">Pelitilanne näkyy tässä, kun tiimit on lisätty.</div>`;
+    el.matchSummary.innerHTML = "";
+    el.matchSummary.hidden = true;
     return;
   }
+
+  el.matchSummary.hidden = false;
 
   const ranking = getTeamRanking();
   const current = currentTeam();
@@ -385,6 +407,8 @@ function trenderControls(){
   const canShuffle = teamsReadyCount() >= 2 && !T.ended;
   const canUndo = T.teams.some(t=>t.players?.some(p=>p.history?.length)) && !T.ended;
   const rosterLocked = hasTeamGameStarted();
+  const readyToThrow = !T.ended && hasPlayableTeams();
+  const compactTurn = !T.ended && !hasTeamGameStarted();
   [el.shuffle, el.shuffleAlt].forEach(b=>b&&(b.disabled=!canShuffle));
   [el.undo, el.undoAlt].forEach(b=>b&&(b.disabled=!canUndo));
   el.teamSetupStack?.classList.toggle("hidden", rosterLocked);
@@ -394,6 +418,11 @@ function trenderControls(){
   if(el.randomTeamCount) el.randomTeamCount.disabled = rosterLocked;
   if(el.randomizeTeams) el.randomizeTeams.disabled = rosterLocked;
   el.teamLockNotice?.classList.toggle("hidden", !rosterLocked);
+  el.turnCard?.classList.toggle("turn-card--compact", compactTurn);
+  if(el.throwBar){
+    el.throwBar.hidden = !readyToThrow;
+  }
+  document.body.classList.toggle("has-throwbar", readyToThrow);
 }
 
 /* --------------------- ACTIONS --------------------- */
