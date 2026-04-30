@@ -1,4 +1,4 @@
-const CACHE_NAME = "molkky-pwa-v3";
+const CACHE_NAME = "molkky-pwa-v4";
 const APP_ASSETS = [
   "./",
   "./index.html",
@@ -72,13 +72,18 @@ async function handleNavigationRequest(request) {
 }
 
 async function handleAssetRequest(request) {
-  const cachedResponse = await caches.match(request, { ignoreSearch: true });
-  if (cachedResponse) return cachedResponse;
+  const cache = await caches.open(CACHE_NAME);
 
-  const response = await fetch(request);
-  if (response.ok) {
-    const cache = await caches.open(CACHE_NAME);
-    cache.put(request, response.clone());
+  try {
+    const freshResponse = await fetch(request);
+    if (freshResponse.ok) {
+      cache.put(request, freshResponse.clone());
+    }
+    return freshResponse;
+  } catch {
+    return (
+      (await cache.match(request, { ignoreSearch: true })) ||
+      (await caches.match(request, { ignoreSearch: true }))
+    );
   }
-  return response;
 }

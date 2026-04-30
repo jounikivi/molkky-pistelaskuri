@@ -20,6 +20,7 @@ Julkaistu versio:
 - Sovellus voidaan asentaa puhelimen tai tietokoneen aloitusnayttoon PWA:na.
 - Offline-kaytto aktivoituu, kun sovellus on avattu kerran onnistuneesti `localhost`, `127.0.0.1`- tai `https://`-osoitteesta.
 - Taman jalkeen etusivu, yksilopeli, joukkuepeli ja niiden ydintiedostot latautuvat myos ilman verkkoyhteytta.
+- Kun julkaiset uuden version, avaa sovellus kerran verkkoyhteyden kanssa. Service worker paivittaa silloin uusimmat HTML-, CSS- ja JS-tiedostot valimuistiin.
 - Pelitila tallentuu selaimen `localStorage`:en kuten ennenkin.
 
 ## Testit
