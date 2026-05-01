@@ -73,6 +73,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Tarkista puhelinleveydella, etta `Peru` naytetaan vain alapalkissa pistepainikkeiden yhteydessa.
 - Tarkista puhelinleveydella, etta pisteita lisataan vain alapalkin heittopaneelista ja etta punainen `Huti (0)` toimii samalla tavalla kuin muutkin pistepainikkeet.
 - Tarkista puhelinleveydella, etta alapalkin heittopainikkeet ovat helposti painettavia, mahtuvat ruudulle ilman vaakasuuntaista scrollausta ja etta sivun loppu sisalto nousee niiden ylapuolelle.
+- Tarkista puhelimella ja tabletilla, etta asennettu PWA kaantyy seka pysty- etta vaaka-asentoon ilman etta sovellus lukittuu vain portrait-nakymaan.
 - Tarkista, etta `Pelitilanne`-osio paivittyy jokaisen heiton jalkeen oikein ja etta johtaja, sijoitukset ja vuorossa oleva pelaaja tai tiimi vastaavat todellista tilannetta.
 - Tarkista joukkuepelissa puhelinleveydella, etta pelaajarivit, poistopainike ja tilastochipit pinoutuvat luettavasti eivatka leikkaannu.
 - Tarkista tablettileveydella, etta kortit asettuvat kahteen sarakkeeseen ilman ahtautta ja etta alapalkki pysyy kaytettavana pysty- ja vaakasuunnassa.
