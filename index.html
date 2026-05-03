@@ -10,6 +10,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Molkky">
   <title>Mölkky – Etusivu</title>
+  <script>
+    (() => {
+      try {
+        if (localStorage.getItem("molkky_theme_v1") === "sunlight") {
+          document.documentElement.dataset.theme = "sunlight";
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#f7f9fb");
+        }
+      } catch {}
+    })();
+  </script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -22,6 +32,7 @@
     <h1 class="brand">Valitse pelimuoto</h1>
   </div>
   <nav class="nav">
+    <button class="btn" type="button" data-theme-toggle></button>
     <a class="btn blue" href="game.html">Yksilöpeli</a>
     <a class="btn" href="team-game.html">Joukkuepeli</a>
     <a class="btn" href="ohjeet.html">Ohjeet</a>
@@ -73,6 +84,7 @@
 </main>
 
 <footer class="site-footer muted home-footer">Selainpohjainen Mölkky-pistelaskuri yksilö- ja joukkuepeleihin. © 2026 Jouni Kiviperä</footer>
+<script type="module" src="js/theme.js"></script>
 <script type="module" src="js/pwa.js"></script>
 </body>
 </html>

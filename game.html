@@ -10,6 +10,16 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Molkky">
   <title>Mölkky – Yksilöpeli</title>
+  <script>
+    (() => {
+      try {
+        if (localStorage.getItem("molkky_theme_v1") === "sunlight") {
+          document.documentElement.dataset.theme = "sunlight";
+          document.querySelector('meta[name="theme-color"]')?.setAttribute("content", "#f7f9fb");
+        }
+      } catch {}
+    })();
+  </script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -20,6 +30,7 @@
   <a class="btn back-link" href="index.html"><span aria-hidden="true">←</span> <span class="back-link__label">Etusivu</span></a>
   <h1 class="brand">Yksilöpeli</h1>
   <nav class="nav">
+    <button class="btn" type="button" data-theme-toggle></button>
     <button class="btn" id="shuffle">Arvo aloitus</button>
     <button class="btn" id="undo">Peru</button>
     <button class="btn danger" id="reset">Nollaa peli</button>
@@ -27,6 +38,7 @@
   <details class="header-menu" id="headerMenu">
     <summary class="btn icon-btn" aria-label="Avaa valikko">⋯</summary>
     <div class="header-menu__panel">
+      <button class="btn" type="button" data-theme-toggle></button>
       <button class="btn" id="shuffleMenu">Arvo aloitus</button>
       <button class="btn danger" id="resetMenu">Nollaa peli</button>
     </div>
@@ -118,6 +130,7 @@
 </div>
 
 <div id="toast" class="toast"></div>
+<script type="module" src="js/theme.js"></script>
 <script type="module" src="js/pwa.js"></script>
 <script type="module" src="js/app.js"></script>
 </body>

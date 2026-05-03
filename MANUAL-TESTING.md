@@ -67,6 +67,7 @@ Tama tarkistuslista on tarkoitettu nykyisen toimivan kaytoksen varmistamiseen se
 - Tarkista, etta pitkat nimet eivat riko korttien layoutia yksilo- tai joukkuepelissa.
 - Tarkista, etta ennen pelin aloitusta heittopaneeli pysyy piilossa, kunnes pelissa on oikeasti pelivalmis kokoonpano.
 - Tarkista, etta napit ovat kaytettavia myos kapealla leveydella eika heittopaneeli peita kriittista sisaltoa.
+- Vaihda `Kirkas ulkotila` paalle ja takaisin pois. Odotus: teema vaihtuu heti, valinta sailyy sivua vaihdettaessa ja kirkas teema parantaa kontrastia ulkona tai kirkkaassa valossa.
 - Tarkista, etta aloitustilassa `Vuorossa`-kortti on kompaktimpi kuin pelin aikana, mutta muuttuu selkeaksi isoksi vuoronakymaksi ensimmaisen heiton jalkeen.
 - Tarkista puhelinleveydella, etta ylapalkin toiminnot pinoutuvat siististi omalle rivilleen eivatka valu ruudun ulos.
 - Tarkista puhelinleveydella, etta ylapalkissa naytetaan vain takaisinpaluu, otsikko ja `⋯`-valikko, ja etta `Arvo aloitus` seka `Nollaa peli` toimivat valikon kautta oikein.

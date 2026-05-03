@@ -18,6 +18,109 @@ body{
 a{color:var(--accent);text-decoration:none}
 a:hover{text-decoration:underline}
 
+:root[data-theme="sunlight"]{
+  --bg:#f7f9fb; --text:#111827; --muted:#4b5a6b;
+  --card:#ffffff; --surface:#f0f4f8; --border:#aab8c7;
+  --accent:#155eef; --danger:#c53b49; --ok:#18834d; --warn:#b7791f;
+  --shadow:0 10px 28px rgba(15,23,35,.09);
+  --focus:0 0 0 3px rgba(21,94,239,.2);
+}
+:root[data-theme="sunlight"] body{
+  background:linear-gradient(180deg, #f7f9fb 0%, #e7edf4 100%) fixed;
+}
+:root[data-theme="sunlight"] .site-header{
+  background:rgba(249,251,253,.95);
+  border-bottom-color:#b9c5d2;
+}
+:root[data-theme="sunlight"] .card,
+:root[data-theme="sunlight"] .player-card,
+:root[data-theme="sunlight"] .team-card,
+:root[data-theme="sunlight"] .turn-card,
+:root[data-theme="sunlight"] .controls,
+:root[data-theme="sunlight"] .modal,
+:root[data-theme="sunlight"] .header-menu__panel{
+  background:linear-gradient(180deg, rgba(255,255,255,.99), rgba(244,248,251,.99));
+  border-color:#b9c5d2;
+}
+:root[data-theme="sunlight"] .turn-card{
+  background:
+    radial-gradient(720px 260px at 100% 0%, rgba(21,94,239,.12) 0%, transparent 58%),
+    linear-gradient(180deg, rgba(255,255,255,.99), rgba(244,248,251,.99));
+}
+:root[data-theme="sunlight"] .btn{
+  background:#f1f5f9;
+  border-color:#aab8c7;
+  color:var(--text);
+}
+:root[data-theme="sunlight"] .inline-input input,
+:root[data-theme="sunlight"] .stack-input textarea,
+:root[data-theme="sunlight"] .modal-field input{
+  background:#fff;
+  border-color:#b9c5d2;
+}
+:root[data-theme="sunlight"] .inline-input input:disabled,
+:root[data-theme="sunlight"] .stack-input textarea:disabled{
+  background:#eef2f6;
+}
+:root[data-theme="sunlight"] .chip,
+:root[data-theme="sunlight"] .turn-hero__chip,
+:root[data-theme="sunlight"] .match-summary__badge,
+:root[data-theme="sunlight"] .section-note,
+:root[data-theme="sunlight"] .match-summary__item,
+:root[data-theme="sunlight"] .home-pin-layout,
+:root[data-theme="sunlight"] .toast{
+  background:#eef3f8;
+  border-color:#b9c5d2;
+  color:var(--text);
+}
+:root[data-theme="sunlight"] .chip--score,
+:root[data-theme="sunlight"] .turn-hero__chip--score,
+:root[data-theme="sunlight"] .match-summary__badge--turn{
+  background:#e3edff;
+  border-color:#8fb0f3;
+  color:#123c93;
+}
+:root[data-theme="sunlight"] .chip--avg{
+  background:#e7f7ef;
+  border-color:#8ccaa5;
+  color:#166534;
+}
+:root[data-theme="sunlight"] .chip--miss,
+:root[data-theme="sunlight"] .turn-hero__chip--miss,
+:root[data-theme="sunlight"] .match-summary__badge--out{
+  background:#fde8eb;
+  border-color:#efacb4;
+  color:#8f1d2c;
+}
+:root[data-theme="sunlight"] .throwbar{
+  background:rgba(249,251,253,.97);
+  border-top-color:#b9c5d2;
+}
+:root[data-theme="sunlight"] .home-mode-card{
+  color:var(--text);
+  border-color:#b9c5d2;
+}
+:root[data-theme="sunlight"] .home-mode-card--solo{
+  background:
+    radial-gradient(600px 260px at 100% 0%, rgba(21,94,239,.12) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.99), rgba(244,248,251,.99));
+  border-color:#8fb0f3;
+}
+:root[data-theme="sunlight"] .home-mode-card--team{
+  background:
+    radial-gradient(600px 260px at 100% 0%, rgba(24,131,77,.11) 0%, transparent 55%),
+    linear-gradient(180deg, rgba(255,255,255,.99), rgba(244,248,251,.99));
+  border-color:#96ccb0;
+}
+:root[data-theme="sunlight"] .home-mode-card__cta{
+  color:#123c93;
+}
+:root[data-theme="sunlight"] .home-pin{
+  border-color:#8fb0f3;
+  background:linear-gradient(180deg, #eef4ff, #dfeafb);
+  color:var(--text);
+}
+
 /* Header */
 .site-header{
   position:sticky; top:0; z-index:10;
